@@ -165,8 +165,8 @@ def main():
         return
 
     elif mode == "fullbacktest":
-        run_full_backtest(ib):
-'''        for symbol, cfg in tickers.items():
+        run_full_backtest(ib)
+         for symbol, cfg in tickers.items():
             fn = f"{symbol}_data.csv"
             contract = cfg["contract"]  # z. B. Stock(symbol, "SMART", "USD")
             df = update_historical_data_csv(ib, contract, fn)
@@ -204,7 +204,7 @@ def main():
 
     else:
         print(f"⚠️ Unbekannter Modus: {mode}")
-'''
+
     ib.disconnect()
 
 if __name__ == "__main__":

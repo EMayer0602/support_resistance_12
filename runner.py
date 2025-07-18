@@ -15,10 +15,10 @@ import json
 import os
 
 def load_trades_for_day(date_str, json_path="trades_by_day.json"):
-    """
+    '''
     Lädt die Trades für einen bestimmten Tag aus der Backtest-Datei.
     Gibt (trades, portfolio_snapshot) zurück.
-    """
+    '''
     if not os.path.exists(json_path):
         print(f"⚠️ Datei {json_path} nicht gefunden.")
         return [], {}

@@ -339,6 +339,22 @@ def run_full_backtest(ib):
             print(f"⚠️ Ungültiger Wert für {ticker} in Spalte {price_col}: '{val}'")
             continue  # Ticker überspringen
 
+        # ENDLESS LOOP PROTECTION: check for too many consecutive missing price days
+        max_missing_days = 10
+        missing_days = 0
+        for idx, date in enumerate(df.index):
+            price = df.at[date, price_col] if date in df.index else None
+            if price is None or np.isnan(price):
+                print(f"{ticker}: Keine Preisdaten für {date.strftime('%Y-%m-%d')}")
+                missing_days += 1
+                if missing_days >= max_missing_days:
+                    print(f"\nAborting backtest for {ticker}: {missing_days} consecutive days without price data.")
+                    break
+                continue
+            else:
+                missing_days = 0
+            # You can place any per-day logic here if needed (e.g. signal generation)
+
         # 2) Initialisieren (verhindert UnboundLocalError)
         ext_long, ext_short = pd.DataFrame(), pd.DataFrame()
         trades_long, trades_short = [], []
@@ -355,8 +371,8 @@ def run_full_backtest(ib):
 
             # ─── DEBUG EXTENDED LONG SIGNALS
             print(f"\n🔍 EXT_LONG for {ticker} ({len(ext_long)} Rows):")
-            print(ext_long)     # alle Spalten + Zeilen
- 
+            print(ext_long)
+
             cap_long, trades_long = simulate_trades_compound_extended(
                 ext_long, df, cfg,
                 COMMISSION_RATE, MIN_COMMISSION,
@@ -366,8 +382,7 @@ def run_full_backtest(ib):
                 direction="long"
             )
 
-          # ─── DEBUG MATCHED LONG TRADES ─────────────────────────────────────────
-            # ─── DEBUG MATCHED TRADES_LONG als Tabelle ────────────────────────────────
+            # ─── DEBUG MATCHED LONG TRADES ─────────────────────────────────────────
             if trades_long:
                 df_trades_long = pd.DataFrame(trades_long)
                 print(f"\n🗒️ MATCHED TRADES_LONG ({len(df_trades_long)})")
@@ -405,10 +420,10 @@ def run_full_backtest(ib):
                 print(f"\n🗒️ MATCHED TRADES_SHORT ({len(df_trades_short)})")
                 print(df_trades_short.to_string(index=False))
             else:
-                print("\n🗒️ MATCHED TRADES_SHPRT: Keine Trades")
+                print("\n🗒️ MATCHED TRADES_SHORT: Keine Trades")
 
         else:
-            cap_short = 0
+            cap_short, trades_short = 0, []
 
         # 5) Stats ausgeben
         print(f"{ticker} Final Capital: Long={cap_long:.2f}  Short={cap_short:.2f}")
@@ -418,9 +433,6 @@ def run_full_backtest(ib):
         # 6) Equity-Kurven bauen & debug-print
         eq_long  = compute_equity_curve(df, trades_long,  cfg["initialCapitalLong"],  long=True)
         eq_short = compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=False)
-#        print("🔍 DEBUG eq_long head:", eq_long, "tail:", eq_long[-5:])
-#        print("🔍 DEBUG eq_short head:", eq_short, "tail:", eq_short[-5:])
-
         eq_combined = [l+s for l,s in zip(eq_long, eq_short)]
         buyhold     = [cfg["initialCapitalLong"] * (p/df["Close"].iloc[0]) for p in df["Close"]]
 
@@ -444,99 +456,6 @@ def run_full_backtest(ib):
         pd.DataFrame(trades_short).to_csv(f"trades_short_{ticker}.csv", index=False)
         ext_long.to_csv(f"extended_long_{ticker}.csv", index=False)
         ext_short.to_csv(f"extended_short_{ticker}.csv", index=False)
-
-
-def test_trading_for_date(ib, date_str):
-    """
-    Gibt alle Trades für ein gegebenes Datum testweise aus, inkl. Market- & Limit-Orders.
-    Sucht in trades_long_<ticker>.csv und trades_short_<ticker>.csv
-    """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== TESTMODE TRADES für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        # Trades laden
-        try:
-            trades_l = pd.read_csv(f"trades_long_{ticker}.csv", parse_dates=["buy_date", "sell_date"])
-        except (FileNotFoundError, EmptyDataError):
-            trades_l = pd.DataFrame(columns=["buy_date", "sell_date", "shares", "buy_price", "sell_price", "fee", "pnl"])
-        try:
-            trades_s = pd.read_csv(f"trades_short_{ticker}.csv", parse_dates=["short_date", "cover_date"])
-        except (FileNotFoundError, EmptyDataError):
-            trades_s = pd.DataFrame(columns=["short_date", "cover_date", "shares", "short_price", "cover_price", "fee", "pnl"])
-
-        # Filter
-        buys   = trades_l[trades_l["buy_date"].dt.date == today]
-        sells  = trades_l[trades_l["sell_date"].dt.date == today]
-        shorts = trades_s[trades_s["short_date"].dt.date == today]
-        covers = trades_s[trades_s["cover_date"].dt.date == today]
-
-        if buys.empty and sells.empty and shorts.empty and covers.empty:
-            continue
-
-        print(f"\n{ticker}:")
-        used = set()
-
-        # Paired LONG (buy + cover am selben Tag)
-        for _, b in buys.iterrows():
-            cov = covers[covers["cover_date"].dt.date == b["buy_date"].date()]
-            if not cov.empty and b["buy_date"] not in used:
-                c = cov.iloc[0]
-                qty = int(b["shares"] + c["shares"])
-                price = b["buy_price"]
-                print(f" PAIRED LONG {qty}@{price:.2f}")
-                print(f"   → Market Buy  {qty} @ {price:.2f}")
-                print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-                used.add(b["buy_date"])
-
-        # Paired SHORT (sell + short am selben Tag)
-        for _, s in sells.iterrows():
-            sho = shorts[shorts["short_date"].dt.date == s["sell_date"].date()]
-            if not sho.empty and s["sell_date"] not in used:
-                sh = sho.iloc[0]
-                qty = int(s["shares"] + sh["shares"])
-                price = sh["short_price"]
-                print(f" PAIRED SHORT {qty}@{price:.2f}")
-                print(f"   → Market Sell {qty} @ {price:.2f}")
-                print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-                used.add(s["sell_date"])
-
-        # Einzelorders BUY
-        for _, b in buys.iterrows():
-            if b["buy_date"] in used: continue
-            qty = int(b["shares"]); price = b["buy_price"]
-            print(f" BUY   {qty}@{price:.2f}")
-            print(f"   → Market Buy  {qty} @ {price:.2f}")
-            print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-            used.add(b["buy_date"])
-
-        # Einzelorders SELL
-        for _, s in sells.iterrows():
-            if s["sell_date"] in used: continue
-            qty = int(s["shares"]); price = s["sell_price"]
-            print(f" SELL  {qty}@{price:.2f}")
-            print(f"   → Market Sell {qty} @ {price:.2f}")
-            print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-            used.add(s["sell_date"])
-
-        # Einzelorders COVER
-        for _, c in covers.iterrows():
-            if c["cover_date"] in used: continue
-            qty = int(c["shares"]); price = c["cover_price"]
-            print(f" COVER {qty}@{price:.2f}")
-            print(f"   → Market Buy  {qty} @ {price:.2f}")
-            print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-            used.add(c["cover_date"])
-
-        # Einzelorders SHORT
-        for _, sh in shorts.iterrows():
-            if sh["short_date"] in used: continue
-            qty = int(sh["shares"]); price = sh["short_price"]
-            print(f" SHORT {qty}@{price:.2f}")
-            print(f"   → Market Sell {qty} @ {price:.2f}")
-            print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-            used.add(sh["short_date"])
-
 import os
 import pandas as pd
 from pandas.errors import EmptyDataError

@@ -40,10 +40,10 @@ def load_trades_for_day(date_str, json_path="trades_by_day.json"):
     return trades, portfolio
 
 def list_trade_days(json_path="trades_by_day.json"):
-    """
+    '''
     Gibt alle Tage zurück, für die in trades_by_day.json aktive Trades vorliegen.
     Nur Tage mit mindestens einem Trade werden angezeigt.
-    """
+    '''
     if not os.path.exists(json_path):
         print(f"⚠️ Datei {json_path} nicht gefunden.")
         return
@@ -130,7 +130,6 @@ def generate_trades_for_day(date_str):
             portfolio[symbol] += delta
 
     return trades
-
 def main():
     if len(sys.argv) < 2:
         print("⚠️ Bitte gib einen Modus an: testdate, tradedate, fullbacktest")
@@ -166,7 +165,7 @@ def main():
 
     elif mode == "fullbacktest":
         run_full_backtest(ib)
-         for symbol, cfg in tickers.items():
+        for symbol, cfg in tickers.items():
             fn = f"{symbol}_data.csv"
             contract = cfg["contract"]  # z. B. Stock(symbol, "SMART", "USD")
             df = update_historical_data_csv(ib, contract, fn)

@@ -165,6 +165,7 @@ def main():
         return
 
     elif mode == "fullbacktest":
+        run_full_backtest(ib)
         # --- BEGIN PATCHED BLOCK ---
         max_missing_days = 3
         missing_days = {symbol: 0 for symbol in tickers}

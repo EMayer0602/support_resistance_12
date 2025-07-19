@@ -165,46 +165,68 @@ def main():
         return
 
     elif mode == "fullbacktest":
-        run_full_backtest(ib)
-        for symbol, cfg in tickers.items():
-            fn = f"{symbol}_data.csv"
-            contract = cfg["contract"]  # z. B. Stock(symbol, "SMART", "USD")
-            df = update_historical_data_csv(ib, contract, fn)
-            # Weitere Verarbeitung / Simulationslogik …
-            print("✅ Historische Kursdaten aktualisiert – starte Trade-Generierung.")
-
-            # Trade-Erzeugung für jeden Tag im gewünschten Zeitraum
-            from datetime import datetime
-
-            backtest_trades = {}
-            for date_str in generate_backtest_date_range("2025-07-01", "2025-07-18"):
-                trades = generate_trades_for_day(date_str)
-                backtest_trades[date_str] = trades
-                print(f"📅 {date_str}: {len(trades)} Trades erzeugt.")
-
-            # Exportiere als JSON
-            import json
-            with open("trades_by_day.json", "w") as f:
-                json.dump(backtest_trades, f, indent=2)
-
-            print("✅ Full-Backtest abgeschlossen und Trades exportiert.")
-
-        print("✅ Full-Backtest abgeschlossen.")
-        import json
+        # --- BEGIN PATCHED BLOCK ---
+        max_missing_days = 3
+        missing_days = {symbol: 0 for symbol in tickers}
+        skip_tickers = set()
 
         backtest_trades = {}
 
-        for date_str in generate_backtest_date_range():  # z. B. 2025-07-01 bis 2025-07-18
-            trades = generate_trades_for_day(date_str)   # ← deine Strategie
-            backtest_trades[date_str] = trades
+        for date_str in generate_backtest_date_range("2025-07-01", "2025-07-18"):
+            trades = []
+            portfolio = {s: 0 for s in tickers}
+            for symbol, cfg in tickers.items():
+                if symbol in skip_tickers:
+                    continue
+                field = cfg.get("trade_on", "Close").capitalize()
+                price = get_backtest_price(symbol, date_str, field)
+                if price is None:
+                    missing_days[symbol] += 1
+                    print(f"{symbol}: keine Daten für {date_str}")
+                    if missing_days[symbol] >= max_missing_days:
+                        print(f"\nAborting for {symbol}: {missing_days[symbol]} consecutive days without price data. Skipping this ticker for the rest of the backtest.")
+                        skip_tickers.add(symbol)
+                    continue
+                else:
+                    missing_days[symbol] = 0
 
-        # Datei speichern
+                for side in ("BUY", "SHORT", "SELL", "COVER"):
+                    if not cfg.get(side.lower(), False):
+                        continue
+                    if side in ("SELL", "COVER"):
+                        qty = abs(portfolio.get(symbol, 0))
+                        if qty == 0:
+                            continue
+                    else:
+                        qty = plan_trade_qty(symbol, side, portfolio, price)
+                        if qty <= 0:
+                            continue
+
+                    trades.append({
+                        "symbol": symbol,
+                        "side": side,
+                        "qty": qty,
+                        "price": round(price, 2)
+                    })
+
+                    delta = qty if side in ("BUY", "COVER") else -qty
+                    portfolio[symbol] += delta
+
+            backtest_trades[date_str] = trades
+            print(f"📅 {date_str}: {len(trades)} Trades erzeugt.")
+
+        # Exportiere als JSON
+        import json
         with open("trades_by_day.json", "w") as f:
             json.dump(backtest_trades, f, indent=2)
+
+        print("✅ Full-Backtest abgeschlossen und Trades exportiert.")
+        # --- END PATCHED BLOCK ---
 
     else:
         print(f"⚠️ Unbekannter Modus: {mode}")
 
     ib.disconnect()
+
 if __name__ == "__main__":
     main()

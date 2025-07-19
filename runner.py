@@ -130,6 +130,7 @@ def generate_trades_for_day(date_str):
             portfolio[symbol] += delta
 
     return trades
+
 def main():
     if len(sys.argv) < 2:
         print("⚠️ Bitte gib einen Modus an: testdate, tradedate, fullbacktest")
@@ -205,6 +206,5 @@ def main():
         print(f"⚠️ Unbekannter Modus: {mode}")
 
     ib.disconnect()
-
 if __name__ == "__main__":
     main()

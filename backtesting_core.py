@@ -346,114 +346,9 @@ def get_backtesting_slice(df, begin_pct=0, end_pct=20):
     end   = int(n * end_pct   / 100)
     return df.iloc[start:end]
 
-
-def test_trading_for_date(ib, date_str):
-    """
-    Gibt alle simulierten Trades für ein gegebenes Datum testweise aus.
-    Sucht in trades_long_<ticker>.csv und trades_short_<ticker>.csv.
-    """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== TESTMODE TRADES für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        # 1) CSV einlesen (oder leere DF mit den Spalten):
-        try:
-            trades_l = pd.read_csv(
-                f"trades_long_{ticker}.csv",
-                parse_dates=["buy_date", "sell_date"]
-            )
-        except (FileNotFoundError, EmptyDataError):
-            trades_l = pd.DataFrame(
-                columns=["buy_date","sell_date","shares","buy_price","sell_price","fee","pnl"]
-            )
-
-        try:
-            trades_s = pd.read_csv(
-                f"trades_short_{ticker}.csv",
-                parse_dates=["short_date", "cover_date"]
-            )
-        except (FileNotFoundError, EmptyDataError):
-            trades_s = pd.DataFrame(
-                columns=["short_date","cover_date","shares","short_price","cover_price","fee","pnl"]
-            )
-
-        # 2) Erzwungene Umwandlung in datetime64 (verhindert .dt-Accessor-Fehler)
-        for col in ["buy_date","sell_date"]:
-            if col in trades_l.columns:
-                trades_l[col] = pd.to_datetime(trades_l[col], errors="coerce")
-        for col in ["short_date","cover_date"]:
-            if col in trades_s.columns:
-                trades_s[col] = pd.to_datetime(trades_s[col], errors="coerce")
-
-        # 3) Filtern nach dem Datum
-        buys   = trades_l.loc[trades_l["buy_date"].dt.date   == today]
-        sells  = trades_l.loc[trades_l["sell_date"].dt.date  == today]
-        shorts = trades_s.loc[trades_s["short_date"].dt.date == today]
-        covers = trades_s.loc[trades_s["cover_date"].dt.date == today]
-
-        if buys.empty and sells.empty and shorts.empty and covers.empty:
-            continue
-
-        print(f"\n📦 Trades für {ticker}:")
-        used = set()
-
-        # paired + einzelne Orders ausgeben
-        def show(df, label, price_field, offset):
-            for _, r in df.iterrows():
-                price = r[price_field]
-                qty   = int(r["shares"])
-                print(f" {label:<6} {qty}@{price:.2f}")
-                # Market
-                print(f"   → MARKET {label}  {qty} @ {price:.2f}")
-                # Limit
-                lim = price * offset
-                print(f"   → LIMIT  {label}  {qty} @ {lim:.2f}")
-
-        # Paired LONG: buy_date + cover_date am selben Tag
-        for _, b in buys.iterrows():
-            match = covers[covers["cover_date"].dt.date == b["buy_date"].date()]
-            if not match.empty and b["buy_date"] not in used:
-                c = match.iloc[0]
-                qty   = int(b["shares"] + c["shares"])
-                price = b["buy_price"]
-                print(f" PAIRED LONG {qty}@{price:.2f}")
-                show(pd.DataFrame([b]), "BUY",  "buy_price",  1.002)
-                show(pd.DataFrame([c]), "COVER","cover_price", 1.002)
-                used.add(b["buy_date"])
-
-        # Paired SHORT: sell_date + short_date
-        for _, s in sells.iterrows():
-            match = shorts[shorts["short_date"].dt.date == s["sell_date"].date()]
-            if not match.empty and s["sell_date"] not in used:
-                sh = match.iloc[0]
-                qty   = int(s["shares"] + sh["shares"])
-                price = sh["short_price"]
-                print(f" PAIRED SHORT {qty}@{price:.2f}")
-                show(pd.DataFrame([s]),   "SELL", "sell_price", 0.998)
-                show(pd.DataFrame([sh]),  "SHORT","short_price",0.998)
-                used.add(s["sell_date"])
-
-        # Einzelorders Long/Short/Cover
-        show(buys.loc[~buys["buy_date"].isin(used)],   "BUY",   "buy_price",   1.002)
-        show(sells.loc[~sells["sell_date"].isin(used)],"SELL",  "sell_price",  0.998)
-        show(covers.loc[~covers["cover_date"].isin(used)],"COVER","cover_price",1.002)
-        show(shorts.loc[~shorts["short_date"].isin(used)],"SHORT","short_price",0.998)
-
-
-def trade_trading_for_today(ib, date_str=None):
-    """
-    Wrapper, um test_trading_for_date mit einem Datum (oder heute) zu
-    starten. Wird von runner.py aufgerufen.
-    """
-    from datetime import date
-    ds = date_str if date_str else str(date.today())
-    print(f"\n📆 trade_trading_for_today() für {ds}")
-    test_trading_for_date(ib, ds)
-
 import os
 import pandas as pd
 from ib_insync import util
-
 
 def update_historical_data_csv(ib, contract, fn):
     """
@@ -761,52 +656,12 @@ def run_full_backtest(ib):
         ext_long.to_csv(f"extended_long_{ticker}.csv", index=False)
         ext_short.to_csv(f"extended_short_{ticker}.csv", index=False)
 
+from tickers_config import tickers  # falls nicht schon oben importiert
+
 import os
 import pandas as pd
 from pandas.errors import EmptyDataError
 from tickers_config import tickers  # falls nicht schon oben importiert
-
-def test_extended_for_date(date_str, report_dir="reports"):
-    """
-    Zeigt Extended-Signale für ein Datum an.
-    Liest CSVs aus report_dir und filtert nach Spalte 'date'.
-    """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== EXTENDED SIGNALS für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        # Pfade zusammenbauen
-        path_l = os.path.join(report_dir, f"extended_Long_signals_{ticker}.csv")
-        path_s = os.path.join(report_dir, f"extended_Short_signals_{ticker}.csv")
-
-        # Long-CSV einlesen
-        try:
-            ext_l = pd.read_csv(path_l)
-            if "date" not in ext_l.columns:
-                ext_l = ext_l.reset_index().rename(columns={"index":"date"})
-            ext_l["date"] = pd.to_datetime(ext_l["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_l = pd.DataFrame()
-
-        # Short-CSV einlesen
-        try:
-            ext_s = pd.read_csv(path_s)
-            if "date" not in ext_s.columns:
-                ext_s = ext_s.reset_index().rename(columns={"index":"date"})
-            ext_s["date"] = pd.to_datetime(ext_s["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_s = pd.DataFrame()
-
-        # Filtern und Ausgeben
-        sel_l = ext_l.loc[ext_l["date"].dt.date == today]
-        sel_s = ext_s.loc[ext_s["date"].dt.date == today]
-
-        if not sel_l.empty:
-            print(f"\n{ticker} EXT LONG:")
-            print(sel_l.to_string(index=False))
-        if not sel_s.empty:
-            print(f"\n{ticker} EXT SHORT:")
-            print(sel_s.to_string(index=False))
 
 def test_trading_for_date(ib, date_str, report_dir="reports"):
     import pandas as pd
@@ -872,41 +727,36 @@ def test_trading_for_date(ib, date_str, report_dir="reports"):
             print(f"   → MARKET SELL {net_short}@{avg_price:.2f}")
             print(f"   → LIMIT  SELL {net_short}@{avg_price * 0.998:.2f}")
 
-import os
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers
-
 def test_extended_for_date(date_str, report_dir="reports"):
     """
     Zeigt Extended-Signale für ein Datum an.
-    Liest CSVs aus report_dir und filtert nach Spalte 'date'.
+    Liest CSVs aus report_dir und filtert nach Spalte 'Long Trade Day' und 'Short Trade Day'.
     """
     today = pd.to_datetime(date_str).date()
     print(f"\n=== EXTENDED SIGNALS für {today} ===")
 
     for ticker, cfg in tickers.items():
+        # Pfade zusammenbauen
         path_l = os.path.join(report_dir, f"extended_Long_signals_{ticker}.csv")
         path_s = os.path.join(report_dir, f"extended_Short_signals_{ticker}.csv")
 
+        # Long-CSV einlesen
         try:
             ext_l = pd.read_csv(path_l)
-            if "date" not in ext_l.columns:
-                ext_l = ext_l.reset_index().rename(columns={"index":"date"})
-            ext_l["date"] = pd.to_datetime(ext_l["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
+            ext_l["Long Trade Day"] = pd.to_datetime(ext_l["Long Trade Day"], errors="coerce")
+        except (FileNotFoundError, EmptyDataError, ValueError, KeyError):
             ext_l = pd.DataFrame()
 
+        # Short-CSV einlesen
         try:
             ext_s = pd.read_csv(path_s)
-            if "date" not in ext_s.columns:
-                ext_s = ext_s.reset_index().rename(columns={"index":"date"})
-            ext_s["date"] = pd.to_datetime(ext_s["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
+            ext_s["Short Trade Day"] = pd.to_datetime(ext_s["Short Trade Day"], errors="coerce")
+        except (FileNotFoundError, EmptyDataError, ValueError, KeyError):
             ext_s = pd.DataFrame()
 
-        sel_l = ext_l.loc[ext_l["date"].dt.date == today]
-        sel_s = ext_s.loc[ext_s["date"].dt.date == today]
+        # Filtern und Ausgeben
+        sel_l = ext_l.loc[ext_l["Long Trade Day"].dt.date == today] if not ext_l.empty else pd.DataFrame()
+        sel_s = ext_s.loc[ext_s["Short Trade Day"].dt.date == today] if not ext_s.empty else pd.DataFrame()
 
         if not sel_l.empty:
             print(f"\n{ticker} EXT LONG:")
@@ -928,269 +778,156 @@ def trade_trading_for_today(ib, date_str=None):
     """
     Wrapper: ruft test_trading_for_date mit heutigem Datum (oder date_str) auf.
     """
+    from datetime import date
+    ds = date_str if date_str else str(date.today())
+    print(f"\n📆 trade_trading_for_today() für {ds}")
+    test_trading_for_date(ib, ds)
+
+import pandas as pd
+import os
+from tickers_config import tickers
+
+def extract_extended_trades_with_price(
+    tickers, start_date, end_date, current_prices=None
+):
+    """
+    Extract trades from extended signals for all tickers,
+    using the correct price (Open, Close, or current minute for today).
+    Returns dict: {date: [trade, ...]}
+    """
+    all_trades_by_date = {}
+
+    for ticker, cfg in tickers.items():
+        # Load daily price data
+        fn = f"{ticker}_data.csv"
+        if not os.path.exists(fn):
+            print(f"⚠️ Keine Tagesdaten für {ticker}")
+            continue
+        daily_df = pd.read_csv(fn, index_col="Date", parse_dates=["Date"])
+        daily_df.rename(columns={"open":"Open","high":"High","low":"Low","close":"Close"}, inplace=True)
+        daily_df.index = pd.to_datetime(daily_df.index)
+
+        # Load extended signals
+        ext_long_fn = f"extended_long_{ticker}.csv"
+        ext_short_fn = f"extended_short_{ticker}.csv"
+        ext_long = pd.read_csv(ext_long_fn) if os.path.exists(ext_long_fn) else pd.DataFrame()
+        ext_short = pd.read_csv(ext_short_fn) if os.path.exists(ext_short_fn) else pd.DataFrame()
+
+        # LONG trades
+        for _, row in ext_long.iterrows():
+            action = row.get('Long Action')
+            trade_date = str(row.get('Long Date detected'))[:10]
+            if not (start_date <= trade_date <= end_date):
+                continue
+            if action in ['buy', 'sell']:
+                price_field = cfg.get('trade_on', 'Close').capitalize()
+                # Use current price for today
+                if (
+                    current_prices
+                    and trade_date == pd.Timestamp.now().strftime('%Y-%m-%d')
+                    and ticker in current_prices
+                ):
+                    price = current_prices[ticker]
+                else:
+                    price = daily_df.loc[trade_date, price_field] if trade_date in daily_df.index else None
+                trade = {
+                    "symbol": ticker,
+                    "side": "BUY" if action == "buy" else "SELL",
+                    "Date": trade_date,
+                    "price": round(float(price), 2) if price is not None else None
+                }
+                all_trades_by_date.setdefault(trade_date, []).append(trade)
+
+        # SHORT trades
+        for _, row in ext_short.iterrows():
+            action = row.get('Short Action')
+            trade_date = str(row.get('Short Date detected'))[:10]
+            if not (start_date <= trade_date <= end_date):
+                continue
+            if action in ['short', 'cover']:
+                price_field = cfg.get('trade_on', 'Close').capitalize()
+                if (
+                    current_prices
+                    and trade_date == pd.Timestamp.now().strftime('%Y-%m-%d')
+                    and ticker in current_prices
+                ):
+                    price = current_prices[ticker]
+                else:
+                    price = daily_df.loc[trade_date, price_field] if trade_date in daily_df.index else None
+                trade = {
+                    "symbol": ticker,
+                    "side": "SHORT" if action == "short" else "COVER",
+                    "Date": trade_date,
+                    "price": round(float(price), 2) if price is not None else None
+                }
+                all_trades_by_date.setdefault(trade_date, []).append(trade)
+
+    return all_trades_by_date
+    """
+    Wrapper: ruft test_trading_for_date mit heutigem Datum (oder date_str) auf.
+    """
     ds = date_str or str(date.today())
     print(f"\n📆 TRADE FOR {ds}")
     test_trading_for_date(ib, ds)
 
+import pandas as pd
+import os
+from datetime import datetime
+from tickers_config import tickers
 
-def test_trading_for_date(ib, date_str):
+def fill_level_close_and_trade(symbol, current_prices=None):
     """
-    Gibt alle Trades für ein gegebenes Datum testweise aus, inkl. Market- & Limit-Orders.
-    Sucht in trades_long_<ticker>.csv und trades_short_<ticker>.csv
+    Fill Level Close and Level trade columns for the extended signal files for a given symbol.
+    - current_prices: dict like {'AAPL': 220.17, ...} with live prices for today during NY hours.
     """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== TESTMODE TRADES für {today} ===")
+    # Load daily price data
+    daily_fn = f"{symbol}_data.csv"
+    if not os.path.exists(daily_fn):
+        print(f"⚠️ Keine Tagesdaten für {symbol}")
+        return
+    daily_df = pd.read_csv(daily_fn, index_col="Date", parse_dates=["Date"])
+    daily_df.rename(columns={"open":"Open","close":"Close"}, inplace=True)
+    daily_df.index = pd.to_datetime(daily_df.index)
 
-    for ticker, cfg in tickers.items():
-        # Trades laden
-        try:
-            trades_l = pd.read_csv(f"trades_long_{ticker}.csv", parse_dates=["buy_date", "sell_date"])
-        except (FileNotFoundError, EmptyDataError):
-            trades_l = pd.DataFrame(columns=["buy_date", "sell_date", "shares", "buy_price", "sell_price", "fee", "pnl"])
-        try:
-            trades_s = pd.read_csv(f"trades_short_{ticker}.csv", parse_dates=["short_date", "cover_date"])
-        except (FileNotFoundError, EmptyDataError):
-            trades_s = pd.DataFrame(columns=["short_date", "cover_date", "shares", "short_price", "cover_price", "fee", "pnl"])
+    trade_field = tickers[symbol].get("trade_on", "Close").capitalize()
 
-        # Filter
-        buys   = trades_l[trades_l["buy_date"].dt.date == today]
-        sells  = trades_l[trades_l["sell_date"].dt.date == today]
-        shorts = trades_s[trades_s["short_date"].dt.date == today]
-        covers = trades_s[trades_s["cover_date"].dt.date == today]
-
-        if buys.empty and sells.empty and shorts.empty and covers.empty:
+    # Choose files
+    for ext_type in ["long", "short"]:
+        ext_fn = f"extended_{ext_type}_{symbol}.csv"
+        if not os.path.exists(ext_fn):
             continue
 
-        print(f"\n{ticker}:")
-        used = set()
+        df = pd.read_csv(ext_fn)
+        # Which date col?
+        action_col = "Long Action" if ext_type=="long" else "Short Action"
+        date_col   = "Long Date detected" if ext_type=="long" else "Short Date detected"
 
-        # Paired LONG (buy + cover am selben Tag)
-        for _, b in buys.iterrows():
-            cov = covers[covers["cover_date"].dt.date == b["buy_date"].date()]
-            if not cov.empty and b["buy_date"] not in used:
-                c = cov.iloc[0]
-                qty = int(b["shares"] + c["shares"])
-                price = b["buy_price"]
-                print(f" PAIRED LONG {qty}@{price:.2f}")
-                print(f"   → Market Buy  {qty} @ {price:.2f}")
-                print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-                used.add(b["buy_date"])
+        # Fill columns
+        lc_col = "Level Close"
+        lt_col = "Level trade"
+        today_str = datetime.now().strftime("%Y-%m-%d")
 
-        # Paired SHORT (sell + short am selben Tag)
-        for _, s in sells.iterrows():
-            sho = shorts[shorts["short_date"].dt.date == s["sell_date"].date()]
-            if not sho.empty and s["sell_date"] not in used:
-                sh = sho.iloc[0]
-                qty = int(s["shares"] + sh["shares"])
-                price = sh["short_price"]
-                print(f" PAIRED SHORT {qty}@{price:.2f}")
-                print(f"   → Market Sell {qty} @ {price:.2f}")
-                print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-                used.add(s["sell_date"])
+        for i, row in df.iterrows():
+            exec_date = str(row[date_col])[:10]
+            # Default: use daily price
+            price = None
+            if exec_date in daily_df.index:
+                price = daily_df.loc[exec_date, trade_field]
+            # If today and current_prices provided, use live price
+            if current_prices and exec_date == today_str and symbol in current_prices:
+                price = current_prices[symbol]
+            # Set both columns
+            df.at[i, lc_col] = price
+            df.at[i, lt_col] = price
 
-        # Einzelorders BUY
-        for _, b in buys.iterrows():
-            if b["buy_date"] in used: continue
-            qty = int(b["shares"]); price = b["buy_price"]
-            print(f" BUY   {qty}@{price:.2f}")
-            print(f"   → Market Buy  {qty} @ {price:.2f}")
-            print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-            used.add(b["buy_date"])
+        # Save file
+        df.to_csv(ext_fn, index=False)
+        print(f"✅ Updated {ext_fn}")
 
-        # Einzelorders SELL
-        for _, s in sells.iterrows():
-            if s["sell_date"] in used: continue
-            qty = int(s["shares"]); price = s["sell_price"]
-            print(f" SELL  {qty}@{price:.2f}")
-            print(f"   → Market Sell {qty} @ {price:.2f}")
-            print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-            used.add(s["sell_date"])
-
-        # Einzelorders COVER
-        for _, c in covers.iterrows():
-            if c["cover_date"] in used: continue
-            qty = int(c["shares"]); price = c["cover_price"]
-            print(f" COVER {qty}@{price:.2f}")
-            print(f"   → Market Buy  {qty} @ {price:.2f}")
-            print(f"   → Limit Buy   {qty} @ {price * 1.002:.2f}")
-            used.add(c["cover_date"])
-
-        # Einzelorders SHORT
-        for _, sh in shorts.iterrows():
-            if sh["short_date"] in used: continue
-            qty = int(sh["shares"]); price = sh["short_price"]
-            print(f" SHORT {qty}@{price:.2f}")
-            print(f"   → Market Sell {qty} @ {price:.2f}")
-            print(f"   → Limit Sell  {qty} @ {price * 0.998:.2f}")
-            used.add(sh["short_date"])
-
-import os
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers  # falls nicht schon oben importiert
-
-def test_extended_for_date(date_str, report_dir="reports"):
-    """
-    Zeigt Extended-Signale für ein Datum an.
-    Liest CSVs aus report_dir und filtert nach Spalte 'date'.
-    """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== EXTENDED SIGNALS für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        # Pfade zusammenbauen
-        path_l = os.path.join(report_dir, f"extended_Long_signals_{ticker}.csv")
-        path_s = os.path.join(report_dir, f"extended_Short_signals_{ticker}.csv")
-
-        # Long-CSV einlesen
-        try:
-            ext_l = pd.read_csv(path_l)
-            if "date" not in ext_l.columns:
-                ext_l = ext_l.reset_index().rename(columns={"index":"date"})
-            ext_l["date"] = pd.to_datetime(ext_l["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_l = pd.DataFrame()
-
-        # Short-CSV einlesen
-        try:
-            ext_s = pd.read_csv(path_s)
-            if "date" not in ext_s.columns:
-                ext_s = ext_s.reset_index().rename(columns={"index":"date"})
-            ext_s["date"] = pd.to_datetime(ext_s["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_s = pd.DataFrame()
-
-        # Filtern und Ausgeben
-        sel_l = ext_l.loc[ext_l["date"].dt.date == today]
-        sel_s = ext_s.loc[ext_s["date"].dt.date == today]
-
-        if not sel_l.empty:
-            print(f"\n{ticker} EXT LONG:")
-            print(sel_l.to_string(index=False))
-        if not sel_s.empty:
-            print(f"\n{ticker} EXT SHORT:")
-            print(sel_s.to_string(index=False))
-
-def test_trading_for_date(ib, date_str, report_dir="reports"):
-    import pandas as pd
-    from pandas.errors import EmptyDataError
-    from tickers_config import tickers
-
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== TESTMODE TRADES für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        # 1) Tabellen einlesen
-        def load(fname, date_cols, cols):
-            try:
-                df = pd.read_csv(f"{report_dir}/{fname}", parse_dates=date_cols)
-            except (FileNotFoundError, EmptyDataError):
-                df = pd.DataFrame(columns=cols)
-            for c in date_cols:
-                if c in df.columns:
-                    df[c] = pd.to_datetime(df[c], errors="coerce")
-            return df
-
-        trades_l = load(f"trades_long_{ticker}.csv",
-                        ["buy_date","sell_date"],
-                        ["buy_date","sell_date","shares","buy_price","sell_price"])
-        trades_s = load(f"trades_short_{ticker}.csv",
-                        ["short_date","cover_date"],
-                        ["short_date","cover_date","shares","short_price","cover_price"])
-
-        # 2) Heute gefilterte Einträge
-        buys   = trades_l.loc[trades_l["buy_date"].dt.date   == today]
-        covers = trades_s.loc[trades_s["cover_date"].dt.date == today]
-        sells  = trades_l.loc[trades_l["sell_date"].dt.date  == today]
-        shorts = trades_s.loc[trades_s["short_date"].dt.date == today]
-
-        # 3) Netto-Buy = alle Käufe + alle Cover (alles Käufe von heute)
-        buy_qty   = buys["shares"].sum()
-        cover_qty = covers["shares"].sum()
-        net_buy   = buy_qty + cover_qty
-
-        if net_buy > 0:
-            # gewichteter Durchschnittspreis
-            cost_buy   = (buys["shares"]   * buys["buy_price"]).sum()
-            cost_cover = (covers["shares"] * covers["cover_price"]).sum()
-            avg_price  = (cost_buy + cost_cover) / net_buy
-
-            print(f"\n📦 NET TOP-LONG für {ticker}:")
-            print(f" NET BUY {net_buy}@{avg_price:.2f}")
-            print(f"   → MARKET BUY {net_buy}@{avg_price:.2f}")
-            print(f"   → LIMIT  BUY {net_buy}@{avg_price * 1.002:.2f}")
-
-        # 4) Netto-Short = alle Shorts + alle Sells (alles Verkäufe/Shorts von heute)
-        sell_qty  = sells["shares"].sum()
-        short_qty = shorts["shares"].sum()
-        net_short = sell_qty + short_qty
-
-        if net_short > 0:
-            cost_sell  = (sells["shares"]  * sells["sell_price"]).sum()
-            cost_short = (shorts["shares"] * shorts["short_price"]).sum()
-            avg_price  = (cost_sell + cost_short) / net_short
-
-            print(f"\n📦 NET TOP-SHORT für {ticker}:")
-            print(f" NET SELL {net_short}@{avg_price:.2f}")
-            print(f"   → MARKET SELL {net_short}@{avg_price:.2f}")
-            print(f"   → LIMIT  SELL {net_short}@{avg_price * 0.998:.2f}")
-
-import os
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers
-
-def test_extended_for_date(date_str, report_dir="reports"):
-    """
-    Zeigt Extended-Signale für ein Datum an.
-    Liest CSVs aus report_dir und filtert nach Spalte 'date'.
-    """
-    today = pd.to_datetime(date_str).date()
-    print(f"\n=== EXTENDED SIGNALS für {today} ===")
-
-    for ticker, cfg in tickers.items():
-        path_l = os.path.join(report_dir, f"extended_Long_signals_{ticker}.csv")
-        path_s = os.path.join(report_dir, f"extended_Short_signals_{ticker}.csv")
-
-        try:
-            ext_l = pd.read_csv(path_l)
-            if "date" not in ext_l.columns:
-                ext_l = ext_l.reset_index().rename(columns={"index":"date"})
-            ext_l["date"] = pd.to_datetime(ext_l["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_l = pd.DataFrame()
-
-        try:
-            ext_s = pd.read_csv(path_s)
-            if "date" not in ext_s.columns:
-                ext_s = ext_s.reset_index().rename(columns={"index":"date"})
-            ext_s["date"] = pd.to_datetime(ext_s["date"], errors="coerce")
-        except (FileNotFoundError, EmptyDataError, ValueError):
-            ext_s = pd.DataFrame()
-
-        sel_l = ext_l.loc[ext_l["date"].dt.date == today]
-        sel_s = ext_s.loc[ext_s["date"].dt.date == today]
-
-        if not sel_l.empty:
-            print(f"\n{ticker} EXT LONG:")
-            print(sel_l.to_string(index=False))
-        if not sel_s.empty:
-            print(f"\n{ticker} EXT SHORT:")
-            print(sel_s.to_string(index=False))
-
-def preview_trades_for_today(ib, date_str=None, report_dir="reports"):
-    from datetime import date
-    ds = date_str or str(date.today())
-    print(f"\n🔍 PREVIEW TRADES für {ds}")
-    test_trading_for_date(ib, ds)
-    test_extended_for_date(ds, report_dir=report_dir)
+# Example usage:
+# current_prices = {'AAPL': 220.17, 'QUBT': 19.51}
+# for symbol in tickers:
+#     fill_level_close_and_trade(symbol, current_prices=current_prices)
 
 
-# ————————————————————————————————————————————————
-def trade_trading_for_today(ib, date_str=None):
-    """
-    Wrapper: ruft test_trading_for_date mit heutigem Datum (oder date_str) auf.
-    """
-    ds = date_str or str(date.today())
-    print(f"\n📆 TRADE FOR {ds}")
-    test_trading_for_date(ib, ds)
+

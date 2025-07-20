@@ -5,11 +5,13 @@ from trade_execution import calculate_shares
 from tickers_config import tickers
 from datetime import datetime, timedelta
 
+
 def generate_backtest_date_range(start="2025-07-01", end="2025-07-18"):
     """
     Gibt eine Liste von Datum-Strings im Format 'YYYY-MM-DD' zurück
     zwischen Start und End (beide inklusive).
     """
+    from datetime import datetime, timedelta
     start_date = datetime.strptime(start, "%Y-%m-%d")
     end_date   = datetime.strptime(end, "%Y-%m-%d")
     days = []
@@ -20,11 +22,10 @@ def generate_backtest_date_range(start="2025-07-01", end="2025-07-18"):
 
     return days
 
-
 def get_trade_price(df, cfg, date):
-    """
+    '''
     Gibt den Preis für einen Tag laut trade_on-Vorgabe zurück ('open' oder 'close').
-    """
+    '''
     col = "Open" if cfg.get("trade_on", "close").lower() == "open" else "Close"
     if date in df.index:
         return float(df.at[date, col])
@@ -34,10 +35,10 @@ def get_trade_price(df, cfg, date):
     return None
 
 def compute_equity_curve(df, trades, start_capital, long=True):
-    """
+    '''
     Berechnet die Equity-Kurve exakt entlang df.index.
     Nutzt reale Entry/Exit und täglich aktuelle Close-Preise.
-    """
+    '''
     equity = []
     cap = start_capital
     pos = 0
@@ -75,10 +76,10 @@ def compute_equity_curve(df, trades, start_capital, long=True):
     return equity  # ← exakt gleich lang wie df.index
 
 def debug_equity_alignment(df, equity_curve):
-    """
+    '''
     Prüft, ob die Equity-Kurve exakt die gleiche Länge und Zeitachse wie df.index hat.
     Gibt Warnungen bei Diskrepanzen.
-    """
+    '''
     n_df = len(df.index)
     n_eq = len(equity_curve)
     print(f"✅ Candlestick-Zeilen: {n_df}")

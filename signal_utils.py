@@ -129,6 +129,91 @@ def assign_long_signals_extended(support, resistance, data, trade_window, interv
     return df[["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
                "Long Date detected", "Level Close", "Long Trade Day", "Level trade"]]
 
+import pandas as pd
+from tickers_config import tickers
+
+def extract_trades_by_date(ticker, ext_long, ext_short, cfg, daily_df, current_prices=None):
+    """
+    Extracts trades from extended signals and groups them by date.
+    Uses Open/Close prices from daily_df, or current minute price for today if provided.
+    Returns: dict of date -> list of trades
+    """
+    trades_by_date = {}
+    today_str = pd.Timestamp.now().strftime('%Y-%m-%d')
+
+    # LONG trades
+    if not ext_long.empty:
+        for _, row in ext_long.iterrows():
+            action = row.get('Long Action')
+            trade_date = str(row.get('Long Date detected'))[:10]  # Format YYYY-MM-DD
+            if action in ['buy', 'sell']:
+                price_field = cfg.get('trade_on', 'Close').capitalize()
+                # Use minute price if today and current_prices given
+                if trade_date == today_str and current_prices:
+                    price = current_prices.get(ticker)
+                else:
+                    price = daily_df.loc[trade_date, price_field] if trade_date in daily_df.index else None
+                trade = {
+                    "symbol": ticker,
+                    "side": "BUY" if action == "buy" else "SELL",
+                    "date": trade_date,
+                    "price": round(float(price), 2) if price is not None else None
+                }
+                trades_by_date.setdefault(trade_date, []).append(trade)
+
+    # SHORT trades
+    if not ext_short.empty:
+        for _, row in ext_short.iterrows():
+            action = row.get('Short Action')
+            trade_date = str(row.get('Short Date detected'))[:10]
+            if action in ['short', 'cover']:
+                price_field = cfg.get('trade_on', 'Close').capitalize()
+                if trade_date == today_str and current_prices:
+                    price = current_prices.get(ticker)
+                else:
+                    price = daily_df.loc[trade_date, price_field] if trade_date in daily_df.index else None
+                trade = {
+                    "symbol": ticker,
+                    "side": "SHORT" if action == "short" else "COVER",
+                    "date": trade_date,
+                    "price": round(float(price), 2) if price is not None else None
+                }
+                trades_by_date.setdefault(trade_date, []).append(trade)
+    return trades_by_date
+
+def list_all_trades_by_date():
+    """
+    For all tickers, loads daily data and extended signals, and prints all trades grouped by date.
+    """
+    all_trades_by_date = {}
+
+    for ticker, cfg in tickers.items():
+        # Load daily price data
+        fn = f"{ticker}_data.csv"
+        daily_df = pd.read_csv(fn, index_col="date", parse_dates=["date"])
+        daily_df.rename(columns={"open":"Open","high":"High","low":"Low","close":"Close"}, inplace=True)
+        daily_df.index = pd.to_datetime(daily_df.index)
+
+        # Load extended signals
+        ext_long_fn = f"extended_long_{ticker}.csv"
+        ext_short_fn = f"extended_short_{ticker}.csv"
+        ext_long = pd.read_csv(ext_long_fn) if os.path.exists(ext_long_fn) else pd.DataFrame()
+        ext_short = pd.read_csv(ext_short_fn) if os.path.exists(ext_short_fn) else pd.DataFrame()
+
+        trades_by_date = extract_trades_by_date(ticker, ext_long, ext_short, cfg, daily_df)
+        for date, trades in trades_by_date.items():
+            all_trades_by_date.setdefault(date, []).extend(trades)
+
+    # List trades by date
+    for date in sorted(all_trades_by_date):
+        print(f"📅 {date}:")
+        for t in all_trades_by_date[date]:
+            print(f"  {t['side']:6} {t['symbol']:6} @ {t['price']}")
+
+# To run:
+if __name__ == "__main__":
+    list_all_trades_by_date()
+
 def assign_short_signals_extended(support, resistance, data, trade_window, interval="1d"):
     df = assign_short_signals(support, resistance, data, trade_window, interval).copy()
     df["Short Action"] = df["Short"]

@@ -302,9 +302,7 @@ def get_last_price(df: pd.DataFrame, cfg: dict, ticker: str) -> float | None:
         print(f"⚠️ Ungültiger Preiswert: '{val}' für {ticker}")
         return None
 
-import os
-import pandas as pd
-import numpy as np
+
 from ib_insync import Stock
 
 from plot_utils import plot_combined_chart_and_equity

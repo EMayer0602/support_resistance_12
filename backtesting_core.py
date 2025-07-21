@@ -176,7 +176,7 @@ def update_historical_data_csv(ib, contract, fn):
     # 2) Dauer berechnen
     today = pd.Timestamp.now().normalize()
     if df_old.empty:
-        duration = "10 Y"
+        duration = "1 Y"
     else:
         last_date = df_old.index.max()
         days = (today - last_date).days
@@ -344,8 +344,6 @@ def get_backtesting_slice(df, begin_pct=0, end_pct=20):
     end   = int(n * end_pct   / 100)
     return df.iloc[start:end]
 
-import os
-import pandas as pd
 from ib_insync import util
 
 def update_historical_data_csv(ib, contract, fn):
@@ -373,7 +371,7 @@ def update_historical_data_csv(ib, contract, fn):
     # 2) Dauer berechnen
     today = pd.Timestamp.now().normalize()
     if df_old.empty:
-        duration = "10 Y"
+        duration = "1 Y"
     else:
         last_date = df_old.index.max()
         days = (today - last_date).days

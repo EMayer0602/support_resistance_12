@@ -139,7 +139,7 @@ def plot_combined_chart_and_equity(
     fig.update_xaxes(range=[start,end], row=2, col=1)
 
     # Show & Save
-    fig.show()
+    #fig.show()
     fn = f"{ticker}_chart.html"
     fig.write_html(fn, auto_open=True)
     print(f"🔧 Chart saved to {fn}")
@@ -188,19 +188,19 @@ def plot_trades_with_equity(df, trades, equity_curve, ticker="TICKER"):
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         height=600
     )
-    plot_combined_chart_and_equity(
-        df, ext_long, ext_short,
-        sup_long, res_short,
-        compute_trend(df, 20),
-        compute_equity_curve(df, trades_long, cfg["initialCapitalLong"], long=True),
-        compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=False),
-        [l + s for l, s in zip(
-            compute_equity_curve(df, trades_long, cfg["initialCapitalLong"], long=True),
-            compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=False)
-        )],
-        [cfg["initialCapitalLong"] * (p / df["Close"].iloc[0]) for p in df["Close"]],
-        ticker
-    )
+#    plot_combined_chart_and_equity(
+#        df, ext_long, ext_short,
+#        sup_long, res_short,
+#        compute_trend(df, 20),
+#        compute_equity_curve(df, trades_long, cfg["initialCapitalLong"], long=True),
+#        compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=False),
+#        [l + s for l, s in zip(
+#            compute_equity_curve(df, trades_long, cfg["initialCapitalLong"], long=True),
+#            compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=Fal#se)
+#        )],
+#        [cfg["initialCapitalLong"] * (p / df["Close"].iloc[0]) for p in df["Close"]],
+#        ticker
+#     )
 
     # Debug: Marker-Zählung
     print(f"🔧 PLOT: Buy={len(buy_idx)}, Sell={len(sell_idx)}, Short={len(short_idx)}, Cover={len(cover_idx)}")
@@ -254,4 +254,4 @@ def debug_plot_extrema(df, support, resistance, ticker=""):
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
     plt.xticks(rotation=45)
 
-    plt.show()
+    #plt.show()

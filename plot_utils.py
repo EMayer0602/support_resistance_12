@@ -139,7 +139,7 @@ def plot_combined_chart_and_equity(
     fig.update_xaxes(range=[start,end], row=2, col=1)
 
     # Show & Save
-#    fig.show()
+    fig.show()
     fn = f"{ticker}_chart.html"
     fig.write_html(fn, auto_open=True)
     print(f"🔧 Chart saved to {fn}")

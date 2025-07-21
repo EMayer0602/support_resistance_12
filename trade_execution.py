@@ -39,7 +39,7 @@ def get_price(ib, symbol: str, fallback: bool = True) -> float | None:
             print(f"⚠️ Yahoo-Fallback für {symbol} fehlgeschlagen: {e}")
     
     return None
-
+                                                                                       
 # ─── 2. Live-Preis-Getter (unverändert) ────────────────────────────────────────
 def get_realtime_price(ib: IB, contract: Stock) -> float:
     ib.qualifyContracts(contract)

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+from datetime import timedelta
 
 from scipy.signal import argrelextrema
 def compute_trend(df, window=20):
@@ -8,6 +9,18 @@ def compute_trend(df, window=20):
     Berechnet den einfachen gleitenden Durchschnitt (SMA) auf Basis der Close‑Preise.
     """
     return df["Close"].rolling(window=window).mean()
+
+def get_next_trading_day(dt):
+    """Return the next trading day (Mon-Fri). Does not account for holidays."""
+    if pd.isna(dt):
+        return pd.NaT
+    d = pd.Timestamp(dt).normalize()
+    # Move to next day
+    d = d + timedelta(days=1)
+    # Skip weekends
+    while d.weekday() >= 5:
+        d = d + timedelta(days=1)
+    return d
 
 def get_trade_day_offset(base_date, trade_window, df):
     future_dates = df.index[df.index > base_date]

@@ -1,3 +1,4 @@
+from datetime import datetime, date
 import os
 import pandas as pd
 import numpy as np
@@ -18,9 +19,8 @@ from signal_utils import (
 from simulation_utils import debug_equity_alignment
 from simulation_utils import simulate_trades_compound_extended, compute_equity_curve
 from stats_tools import stats
-from config import ORDER_ROUND_FACTOR, COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end
-COMMISSION_RATE = 0.0018
-MIN_COMMISSION = 1.0
+from config import ORDER_ROUND_FACTOR, DEFAULT_COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end
+COMMISSION_RATE = DEFAULT_COMMISSION_RATE  # Use the config value
 from pandas.errors import EmptyDataError
 from ib_insync import util
 # backtesting_utils.py
@@ -82,7 +82,7 @@ def test_trading_for_date(ib, date_str):
         if buys.empty and sells.empty and shorts.empty and covers.empty:
             continue
 
-        print(f"\n📦 Trades für {ticker}:")
+        print(f"\nTrades for {ticker}:")
         used = set()
 
         # paired + einzelne Orders ausgeben
@@ -92,10 +92,10 @@ def test_trading_for_date(ib, date_str):
                 qty   = int(r["shares"])
                 print(f" {label:<6} {qty}@{price:.2f}")
                 # Market
-                print(f"   → MARKET {label}  {qty} @ {price:.2f}")
+                print(f"   -> MARKET {label}  {qty} @ {price:.2f}")
                 # Limit
                 lim = price * offset
-                print(f"   → LIMIT  {label}  {qty} @ {lim:.2f}")
+                print(f"   -> LIMIT  {label}  {qty} @ {lim:.2f}")
 
         # Paired LONG: buy_date + cover_date am selben Tag
         for _, b in buys.iterrows():
@@ -135,7 +135,7 @@ def trade_trading_for_today(ib, date_str=None):
     """
     from datetime import date
     ds = date_str if date_str else str(date.today())
-    print(f"\n📆 trade_trading_for_today() für {ds}")
+    print(f"\ntrade_trading_for_today() for {ds}")
     test_trading_for_date(ib, ds)
 
 
@@ -169,11 +169,11 @@ def update_historical_data_csv(ib, contract, fn):
         last_date = df_old.index.max()
         days = (today - last_date).days
         if days <= 0:
-            print(f"✅ {contract.symbol} bereits aktuell bis {last_date.date()}")
+            print(f"OK {contract.symbol} already up to date until {last_date.date()}")
             return df_old
         duration = f"{days} D" if days <= 365 else f"{(days // 365) + 1} Y"
 
-    print(f"🔄 Lade historische Daten für {contract.symbol}: durationStr={duration}")
+    print(f"Loading historical data for {contract.symbol}: durationStr={duration}")
 
     # 3) IB-Anfrage
     bars = ib.reqHistoricalData(
@@ -186,7 +186,7 @@ def update_historical_data_csv(ib, contract, fn):
         formatDate=1
     )
     if not bars:
-        print(f"⚠️ Keine neuen Daten für {contract.symbol}")
+        print(f"WARN No new data for {contract.symbol}")
         return df_old
 
     df_new = util.df(bars)
@@ -205,7 +205,7 @@ def update_historical_data_csv(ib, contract, fn):
 
     # 5) Speichern
     df_all.to_csv(fn)
-    print(f"✅ CSV aktualisiert: {fn} mit {len(df_all)} Zeilen")
+    print(f"OK CSV updated: {fn} with {len(df_all)} rows")
 
     return df_all
 
@@ -280,13 +280,13 @@ def berechne_best_p_tw_short(df, config, begin=0, end=20, verbose=True, ticker="
 def get_last_price(df: pd.DataFrame, cfg: dict, ticker: str) -> float | None:
     price_col = "Open" if cfg.get("trade_on", "close").lower() == "open" else "Close"
     if price_col not in df:
-        print(f"⚠️ Spalte {price_col} fehlt für {ticker}")
+        print(f"WARN Column {price_col} missing for {ticker}")
         return None
     val = df[price_col].iloc[-1]
     try:
         return float(val)
     except Exception:
-        print(f"⚠️ Ungültiger Preiswert: '{val}' für {ticker}")
+        print(f"WARN Invalid price value: '{val}' for {ticker}")
         return None
 
 # backtesting_utils.py
@@ -330,11 +330,11 @@ def update_historical_data_csv(ib, contract, fn):
         last_date = df_old.index.max()
         days = (today - last_date).days
         if days <= 0:
-            print(f"✅ {contract.symbol} bereits aktuell bis {last_date.date()}")
+            print(f"OK {contract.symbol} already up to date until {last_date.date()}")
             return df_old
         duration = f"{days} D" if days <= 365 else f"{(days // 365) + 1} Y"
 
-    print(f"🔄 Lade historische Daten für {contract.symbol}: durationStr={duration}")
+    print(f"Loading historical data for {contract.symbol}: durationStr={duration}")
 
     # 3) IB-Anfrage
     bars = ib.reqHistoricalData(
@@ -347,7 +347,7 @@ def update_historical_data_csv(ib, contract, fn):
         formatDate=1
     )
     if not bars:
-        print(f"⚠️ Keine neuen Daten für {contract.symbol}")
+        print(f"WARN No new data for {contract.symbol}")
         return df_old
 
     df_new = util.df(bars)
@@ -366,7 +366,7 @@ def update_historical_data_csv(ib, contract, fn):
 
     # 5) Speichern
     df_all.to_csv(fn)
-    print(f"✅ CSV aktualisiert: {fn} mit {len(df_all)} Zeilen")
+    print(f"OK CSV updated: {fn} with {len(df_all)} rows")
 
     return df_all
 
@@ -442,13 +442,13 @@ def berechne_best_p_tw_short(df, config, begin=0, end=20, verbose=True, ticker="
 def get_last_price(df: pd.DataFrame, cfg: dict, ticker: str) -> float | None:
     price_col = "Open" if cfg.get("trade_on", "close").lower() == "open" else "Close"
     if price_col not in df:
-        print(f"⚠️ Spalte {price_col} fehlt für {ticker}")
+        print(f"WARN Column {price_col} missing for {ticker}")
         return None
     val = df[price_col].iloc[-1]
     try:
         return float(val)
     except Exception:
-        print(f"⚠️ Ungültiger Preiswert: '{val}' für {ticker}")
+        print(f"WARN Invalid price value: '{val}' for {ticker}")
         return None
 
 
@@ -468,10 +468,10 @@ def run_full_backtest(ib):
 
         df.rename(columns={"open":"Open","high":"High","low":"Low","close":"Close"}, inplace=True)
         df.sort_index(inplace=True)
-        # ✅ Preis holen & absichern
+    # Price fetch & validation
         last_price = get_last_price(df, cfg, ticker)
         if last_price is None:
-            print(f"{ticker}: letzter Preis nicht verfügbar – Backtest übersprungen.")
+            print(f"{ticker}: last price not available - skipping backtest.")
             continue
 
         # Datum der letzten Zeile (brauchst du später)
@@ -481,11 +481,11 @@ def run_full_backtest(ib):
         # Hole den letzten Wert aus der Spalte
         val = df[price_col].iloc[-1]
 
-        # Versuche, float daraus zu machen – nur wenn gültig
+    # Try converting to float if valid
         try:
             last_price = float(val)
         except (TypeError, ValueError):
-            print(f"⚠️ Ungültiger Wert für {ticker} in Spalte {price_col}: '{val}'")
+            print(f"WARN Invalid value for {ticker} in column {price_col}: '{val}'")
             continue  # Ticker überspringen
 
         # ENDLESS LOOP PROTECTION: check for too many consecutive missing price days
@@ -554,7 +554,7 @@ def run_full_backtest(ib):
             if {"Short Date detected","Short Action"}.issubset(ext_short.columns):
                 print(ext_short[["Short Date detected","Short Action"]].dropna().head(5))
             else:
-                print("→ EXT_SHORT enthält keine Spalten Short Date detected/Short Action")
+                print("EXT_SHORT missing columns: Short Date detected/Short Action")
 
             cap_short, trades_short = simulate_trades_compound_extended(
                 ext_short, df, cfg,
@@ -597,7 +597,7 @@ def run_full_backtest(ib):
                 )
             except Exception:
                 import traceback
-                print(f"⚠️ Plot für {ticker} fehlgeschlagen:")
+                print(f"WARN Plot for {ticker} failed:")
                 traceback.print_exc()
 
         # 8) CSV speichern
@@ -650,10 +650,10 @@ def test_trading_for_date(ib, date_str, report_dir="reports"):
             cost_cover = (covers["shares"] * covers["cover_price"]).sum()
             avg_price  = (cost_buy + cost_cover) / net_buy
 
-            print(f"\n📦 NET TOP-LONG für {ticker}:")
+            print(f"\nNET TOP-LONG for {ticker}:")
             print(f" NET BUY {net_buy}@{avg_price:.2f}")
-            print(f"   → MARKET BUY {net_buy}@{avg_price:.2f}")
-            print(f"   → LIMIT  BUY {net_buy}@{avg_price * 1.002:.2f}")
+            print(f"   -> MARKET BUY {net_buy}@{avg_price:.2f}")
+            print(f"   -> LIMIT  BUY {net_buy}@{avg_price * 1.002:.2f}")
 
         # 4) Netto-Short = alle Shorts + alle Sells (alles Verkäufe/Shorts von heute)
         sell_qty  = sells["shares"].sum()
@@ -665,10 +665,10 @@ def test_trading_for_date(ib, date_str, report_dir="reports"):
             cost_short = (shorts["shares"] * shorts["short_price"]).sum()
             avg_price  = (cost_sell + cost_short) / net_short
 
-            print(f"\n📦 NET TOP-SHORT für {ticker}:")
+            print(f"\nNET TOP-SHORT for {ticker}:")
             print(f" NET SELL {net_short}@{avg_price:.2f}")
-            print(f"   → MARKET SELL {net_short}@{avg_price:.2f}")
-            print(f"   → LIMIT  SELL {net_short}@{avg_price * 0.998:.2f}")
+            print(f"   -> MARKET SELL {net_short}@{avg_price:.2f}")
+            print(f"   -> LIMIT  SELL {net_short}@{avg_price * 0.998:.2f}")
 
 def test_extended_for_date(date_str, report_dir="reports"):
     """
@@ -723,7 +723,7 @@ def trade_trading_for_today(ib, date_str=None):
     """
     from datetime import date
     ds = date_str if date_str else str(date.today())
-    print(f"\n📆 trade_trading_for_today() für {ds}")
+    print(f"\ntrade_trading_for_today() for {ds}")
     test_trading_for_date(ib, ds)
 
 def extract_extended_trades_with_price(
@@ -740,7 +740,7 @@ def extract_extended_trades_with_price(
         # Load daily price data
         fn = f"{ticker}_data.csv"
         if not os.path.exists(fn):
-            print(f"⚠️ Keine Tagesdaten für {ticker}")
+            print(f"WARN No daily data for {ticker}")
             continue
         daily_df = pd.read_csv(fn, index_col="Date", parse_dates=["Date"])
         daily_df.rename(columns={"open":"Open","high":"High","low":"Low","close":"Close"}, inplace=True)
@@ -806,7 +806,7 @@ def extract_extended_trades_with_price(
     Wrapper: ruft test_trading_for_date mit heutigem Datum (oder date_str) auf.
     """
     ds = date_str or str(date.today())
-    print(f"\n📆 TRADE FOR {ds}")
+    print(f"\nTRADE FOR {ds}")
     test_trading_for_date(ib, ds)
 
 def fill_level_close_and_trade(symbol, current_prices=None):
@@ -817,7 +817,7 @@ def fill_level_close_and_trade(symbol, current_prices=None):
     # Load daily price data
     daily_fn = f"{symbol}_data.csv"
     if not os.path.exists(daily_fn):
-        print(f"⚠️ Keine Tagesdaten für {symbol}")
+        print(f"WARN No daily data for {symbol}")
         return
     daily_df = pd.read_csv(daily_fn, index_col="Date", parse_dates=["Date"])
     daily_df.rename(columns={"open":"Open","close":"Close"}, inplace=True)
@@ -856,7 +856,7 @@ def fill_level_close_and_trade(symbol, current_prices=None):
 
         # Save file
         df.to_csv(ext_fn, index=False)
-        print(f"✅ Updated {ext_fn}")
+    print(f"OK Updated {ext_fn}")
 
 
 

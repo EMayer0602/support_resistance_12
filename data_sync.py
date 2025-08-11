@@ -7,7 +7,7 @@ from ib_insync import Stock
 from tickers_config      import tickers
 from trade_execution     import get_realtime_price, get_yf_price, calculate_shares
 from signal_utils        import (
-    calculate_support_resistance, get_next_trading_day,
+    calculate_support_resistance,
     assign_long_signals_extended, assign_short_signals_extended,
     update_level_close_long,  update_level_close_short
 )
@@ -71,15 +71,15 @@ def update_today_row(ticker, df_daily, df_minute, ib, contract):
 
     if is_ny_trading_time():
         today_row = construct_today_from_minute_data(df_minute, today)
-        print(f"{ticker}: NY offen → Tageszeile aus Minutedaten aktualisiert.")
+        print(f"{ticker}: NY open -> Updated daily row from minute data.")
     else:
         csv_fn = f"{ticker}_data.csv"
         df_updated = update_historical_data_csv(ib, contract, csv_fn)
         if today in df_updated.index:
             today_row = df_updated.loc[today]
-            print(f"{ticker}: NY geschlossen → Echte Tageszeile aus CSV geladen.")
+            print(f"{ticker}: NY closed -> Loaded final daily row from CSV.")
         else:
-            print(f"{ticker}: Keine finale Tageszeile gefunden – heute wird übersprungen.")
+            print(f"{ticker}: No final daily row found - skipping today.")
             return df_daily
 
     df_daily.loc[today] = today_row

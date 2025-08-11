@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 from ib_insync import IB, Stock, util
 
 from tickers_config import tickers
-from config import COMMISSION_RATE, MIN_COMMISSION, backtesting_begin, backtesting_end, trade_years
+from config import DEFAULT_COMMISSION_RATE, MIN_COMMISSION, backtesting_begin, backtesting_end, trade_years
+COMMISSION_RATE = DEFAULT_COMMISSION_RATE  # Use the config value
 from signal_utils import (
     calculate_support_resistance,
     assign_long_signals_extended,

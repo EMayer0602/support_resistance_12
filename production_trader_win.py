@@ -87,29 +87,34 @@ def setup_logging(verbose=False):
 class ProductionAutoTrader:
     def __init__(self, paper_trading=True, dry_run=False, test_mode=False, verbose=False):
         """Initialize the production auto trader"""
+        # Mode flags
         self.paper_trading = paper_trading
         self.dry_run = dry_run
         self.test_mode = test_mode
         self.verbose = verbose
         self.running = True
-        
+
+        # Track last backtest timestamp to avoid duplicate runs
+        self._last_backtest_run = None
+        self._min_backtest_interval_min = 10  # minutes
+
         # Setup logging
         self.logger = setup_logging(verbose)
-        
+
         # Calculate trading times
         self.calculate_trading_times()
-        
+
         # Session tracking
         self.sessions_completed = {
             'date': None,
             'open': False,
             'close': False
         }
-        
+
         # Setup signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
-        
+
         self.logger.info("PRODUCTION AUTO TRADER INITIALIZED")
         self.logger.info(f"MODE: {'Paper' if paper_trading else 'LIVE'} Trading")
         self.logger.info(f"DRY RUN: {'ON' if dry_run else 'OFF'}")
@@ -135,22 +140,22 @@ class ProductionAutoTrader:
             self.market_close = (now + timedelta(minutes=5)).time()
             self.logger.info("TEST MODE: Using accelerated timing")
         else:
-            # Production: 5 minutes after open, 5 minutes before close
+            # Production: use config-driven offsets for open/close sessions
             market_open = datetime.strptime(MARKET_OPEN_TIME, "%H:%M")
             market_close = datetime.strptime(MARKET_CLOSE_TIME, "%H:%M")
-            
-            # OPEN session: 5 minutes after market open
-            open_plus_5 = market_open + timedelta(minutes=5)
-            self.open_trade_time = open_plus_5.time()
-            
-            # CLOSE session: 5 minutes before market close
-            close_minus_5 = market_close - timedelta(minutes=5)
-            self.close_trade_time = close_minus_5.time()
+
+            # OPEN session: OPEN_TRADE_DELAY minutes after market open
+            open_plus_delay = market_open + timedelta(minutes=OPEN_TRADE_DELAY)
+            self.open_trade_time = open_plus_delay.time()
+
+            # CLOSE session: CLOSE_TRADE_ADVANCE minutes before market close
+            close_minus_advance = market_close - timedelta(minutes=CLOSE_TRADE_ADVANCE)
+            self.close_trade_time = close_minus_advance.time()
             self.market_close = market_close.time()
-        
+
         self.logger.info(f"TRADING SCHEDULE:")
-        self.logger.info(f"  OPEN trades: {self.open_trade_time.strftime('%H:%M')}")
-        self.logger.info(f"  CLOSE trades: {self.close_trade_time.strftime('%H:%M')}")
+        self.logger.info(f"  OPEN trades: {self.open_trade_time.strftime('%H:%M')} (open + {OPEN_TRADE_DELAY}m)")
+        self.logger.info(f"  CLOSE trades: {self.close_trade_time.strftime('%H:%M')} (close - {CLOSE_TRADE_ADVANCE}m)")
         self.logger.info(f"  Market close: {self.market_close.strftime('%H:%M')}")
 
     def is_trading_day(self, check_date: datetime = None) -> bool:
@@ -179,13 +184,18 @@ class ProductionAutoTrader:
         return check_date.date() not in holidays_2025
 
     def reset_daily_sessions(self, date):
-        """Reset session tracking for a new day"""
+        """Reset session tracking for a new day. If started after open_trade_time, skip open session."""
+        now = datetime.now()
+        # Determine if we are past the open_trade_time for today
+        skip_open = now.time() > self.open_trade_time
         self.sessions_completed = {
             'date': date,
-            'open': False,
+            'open': skip_open,
             'close': False
         }
         self.logger.info(f"NEW TRADING DAY: {date.strftime('%Y-%m-%d (%A)')}")
+        if skip_open:
+            self.logger.info(f"SKIPPING OPEN SESSION (already past open_trade_time: {self.open_trade_time.strftime('%H:%M')})")
 
     def run_comprehensive_backtest(self) -> bool:
         """Run the comprehensive backtest to get fresh signals"""
@@ -196,10 +206,10 @@ class ProductionAutoTrader:
         self.logger.info("RUNNING COMPREHENSIVE BACKTEST...")
         
         try:
-            # Run the backtest script
+            # Run the original backtest script
             result = subprocess.run([
                 sys.executable, 'complete_comprehensive_backtest.py'
-            ], capture_output=True, text=True, timeout=600)  # 10 minute timeout
+            ], capture_output=True, text=True, timeout=600, encoding='utf-8', errors='ignore')  # Handle Unicode gracefully
             
             if result.returncode == 0:
                 self.logger.info("COMPREHENSIVE BACKTEST COMPLETED SUCCESSFULLY")
@@ -218,8 +228,143 @@ class ProductionAutoTrader:
             self.logger.error(f"ERROR running backtest: {e}")
             return False
 
-    def get_todays_signals(self, session_type: str) -> List:
+    def run_backtest_if_needed(self, session_label: str) -> bool:
+        """Run backtest unless it was executed very recently to prevent duplicate runs."""
+        if self.dry_run:
+            self.logger.info("DRY RUN: Skipping real backtest (simulated)")
+            return True
+
+        now = datetime.now()
+        if self._last_backtest_run is not None:
+            delta_min = (now - self._last_backtest_run).total_seconds() / 60.0
+            if delta_min < self._min_backtest_interval_min:
+                self.logger.info(
+                    f"RECENT BACKTEST FOUND ({delta_min:.1f} min ago) - reusing results for {session_label} session"
+                )
+                return True
+
+        ok = self.run_comprehensive_backtest()
+        if ok:
+            self._last_backtest_run = now
+        return ok
+
+    async def check_portfolio_exits(self) -> List[dict]:
+        """Check current portfolio for exit signals - STRATEGY SIGNALS ONLY"""
+        try:
+            if self.dry_run:
+                self.logger.info("DRY RUN: Would check portfolio for STRATEGY-BASED exit signals only")
+                # No automatic exits in dry run - only strategy signals
+                return []
+            
+            from manual_trading import ManualTrader
+            from check_todays_signals import check_todays_signals
+            
+            # Create trader instance for portfolio access
+            trader = ManualTrader(paper_trading=self.paper_trading)
+            
+            if not await trader.connect_ib():
+                self.logger.error("CANNOT CONNECT TO IB FOR PORTFOLIO CHECK")
+                return []
+            
+            try:
+                # Sync portfolio
+                await trader.sync_portfolio_with_ib()
+                
+                # Get current positions
+                positions = trader.ib.positions()
+                current_tickers = set()
+                position_directions = {}
+                
+                for pos in positions:
+                    ticker = pos.contract.symbol
+                    shares = int(pos.position)
+                    if shares != 0:
+                        current_tickers.add(ticker)
+                        position_directions[ticker] = "LONG" if shares > 0 else "SHORT"
+                
+                if not current_tickers:
+                    self.logger.info("NO CURRENT POSITIONS - NO EXIT SIGNALS NEEDED")
+                    return []
+                
+                # Get today's strategy signals for ALL sessions (OPEN and CLOSE)
+                exit_signals = []
+                
+                for session in ['OPEN', 'CLOSE']:
+                    try:
+                        strategy_signals = check_todays_signals(session)
+                        if not strategy_signals:
+                            continue
+                            
+                        for signal in strategy_signals:
+                            ticker = signal.get('ticker', '')
+                            action = signal.get('action', '')
+                            strategy = signal.get('strategy', '')
+                            
+                            if ticker in current_tickers:
+                                current_direction = position_directions[ticker]
+                                
+                                # Check for exit conditions based on STRATEGY SIGNALS ONLY
+                                should_exit = False
+                                exit_reason = ""
+                                
+                                # LONG position exits
+                                if current_direction == "LONG":
+                                    if action == "SELL" and strategy in ["LONG", "SHORT"]:
+                                        should_exit = True
+                                        exit_reason = f"STRATEGY SIGNAL: {strategy} {action} ({session})"
+                                
+                                # SHORT position exits  
+                                elif current_direction == "SHORT":
+                                    if action == "BUY" and strategy in ["LONG", "SHORT"]:
+                                        should_exit = True
+                                        exit_reason = f"STRATEGY SIGNAL: {strategy} {action} ({session})"
+                                
+                                if should_exit:
+                                    exit_action = "SELL" if current_direction == "LONG" else "COVER"
+                                    
+                                    exit_signals.append({
+                                        'ticker': ticker,
+                                        'action': exit_action,
+                                        'reason': exit_reason,
+                                        'signal_type': 'STRATEGY_EXIT',
+                                        'trade_on': 'IMMEDIATE',
+                                        'session': session,
+                                        'original_signal': signal
+                                    })
+                                    
+                                    self.logger.info(f"STRATEGY EXIT: {ticker} {exit_action} - {exit_reason}")
+                                    
+                    except Exception as e:
+                        self.logger.error(f"ERROR checking {session} signals: {e}")
+                
+                if not exit_signals:
+                    self.logger.info("NO STRATEGY EXIT SIGNALS - POSITIONS MAINTAINED")
+                
+                return exit_signals
+                
+            finally:
+                if trader.ib:
+                    trader.ib.disconnect()
+                    
+        except Exception as e:
+            self.logger.error(f"ERROR checking portfolio exits: {e}")
+            return []
+
+    async def get_todays_signals(self, session_type: str) -> List:
         """Get today's trading signals for the specified session type"""
+        all_signals = []
+        
+        # 1. Check for exit signals from existing positions - STRATEGY SIGNALS ONLY
+        self.logger.info(f"CHECKING EXISTING PORTFOLIO FOR STRATEGY EXIT SIGNALS...")
+        exit_signals = await self.check_portfolio_exits()
+        
+        if exit_signals:
+            self.logger.info(f"FOUND {len(exit_signals)} STRATEGY EXIT SIGNALS FROM PORTFOLIO")
+            all_signals.extend(exit_signals)
+        else:
+            self.logger.info("NO STRATEGY EXIT SIGNALS - POSITIONS MAINTAINED")
+        
+        # 2. Get regular entry signals
         if self.dry_run:
             # Simulate signals for dry run
             fake_signals = [
@@ -227,21 +372,32 @@ class ProductionAutoTrader:
                 {'ticker': 'GOOGL', 'action': 'SELL', 'strategy': 'LONG'}
             ] if session_type == 'OPEN' else []
             
-            self.logger.info(f"DRY RUN: Simulated {len(fake_signals)} {session_type} signals")
-            return fake_signals
+            self.logger.info(f"DRY RUN: Simulated {len(fake_signals)} {session_type} entry signals")
+            all_signals.extend(fake_signals)
+        else:
+            self.logger.info(f"CHECKING FOR {session_type} ENTRY SIGNALS...")
+            
+            try:
+                # Import and use the signal checker
+                from check_todays_signals import check_todays_signals
+                entry_signals = check_todays_signals(session_type)
+                if entry_signals:
+                    self.logger.info(f"FOUND {len(entry_signals)} {session_type} entry signals")
+                    all_signals.extend(entry_signals)
+                else:
+                    self.logger.info(f"NO {session_type} entry signals found")
+            
+            except Exception as e:
+                self.logger.error(f"ERROR checking entry signals: {e}")
         
-        self.logger.info(f"CHECKING FOR {session_type} SIGNALS...")
+        # 3. Summary
+        total_signals = len(all_signals)
+        strategy_exit_count = len([s for s in all_signals if s.get('signal_type') == 'STRATEGY_EXIT'])
+        entry_count = total_signals - strategy_exit_count
         
-        try:
-            # Import and use the signal checker
-            from check_todays_signals import check_todays_signals
-            signals = check_todays_signals(session_type)
-            self.logger.info(f"FOUND {len(signals)} {session_type} signals")
-            return signals or []
+        self.logger.info(f"SIGNAL SUMMARY: {total_signals} total ({strategy_exit_count} strategy exits, {entry_count} entries)")
         
-        except Exception as e:
-            self.logger.error(f"ERROR checking signals: {e}")
-            return []
+        return all_signals
 
     async def execute_trading_session(self, session_type: str, signals: List) -> bool:
         """Execute a complete trading session"""
@@ -429,10 +585,10 @@ class ProductionAutoTrader:
                         
                         self.logger.info("STARTING OPEN TRADING SESSION")
                         
-                        # Run backtest first
-                        if self.run_comprehensive_backtest() and self.running:
+                        # Run backtest first (guard against duplicate runs)
+                        if self.run_backtest_if_needed('OPEN') and self.running:
                             # Get signals and execute
-                            signals = self.get_todays_signals('OPEN')
+                            signals = await self.get_todays_signals('OPEN')
                             if self.running:
                                 success = await self.execute_trading_session('OPEN', signals)
                                 self.sessions_completed['open'] = True
@@ -451,10 +607,10 @@ class ProductionAutoTrader:
                         
                         self.logger.info("STARTING CLOSE TRADING SESSION")
                         
-                        # Run backtest first
-                        if self.run_comprehensive_backtest() and self.running:
+                        # Run backtest first (guard against duplicate runs)
+                        if self.run_backtest_if_needed('CLOSE') and self.running:
                             # Get signals and execute
-                            signals = self.get_todays_signals('CLOSE')
+                            signals = await self.get_todays_signals('CLOSE')
                             if self.running:
                                 success = await self.execute_trading_session('CLOSE', signals)
                                 self.sessions_completed['close'] = True
@@ -473,8 +629,8 @@ class ProductionAutoTrader:
                     elif not self.sessions_completed['close'] and self.running:
                         await self.wait_for_time(self.close_trade_time, 'CLOSE')
                     else:
-                        # Both sessions done for today
-                        if self.running:
+                        # Only after CLOSE session is completed, log waiting for next trading day
+                        if self.sessions_completed['close'] and self.running:
                             self.logger.info("ALL TRADING SESSIONS COMPLETED FOR TODAY")
                             self.logger.info("WAITING FOR NEXT TRADING DAY...")
                             # Sleep in small chunks to be responsive to stop signals
@@ -542,9 +698,9 @@ Examples:
     print()
     print("This script runs continuously until CTRL+C")
     print("It will automatically execute trades at:")
-    print("• 5 minutes after market open for OPEN trades")
-    print("• 5 minutes before market close for CLOSE trades")
-    print("• Skips weekends and major holidays")
+    print("- 5 minutes after market open for OPEN trades")
+    print("- 5 minutes before market close for CLOSE trades")
+    print("- Skips weekends and major holidays")
     
     # Safety confirmations
     if args.live_trading and not args.dry_run:

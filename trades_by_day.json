@@ -4,61 +4,61 @@
       "symbol": "AAPL",
       "side": "SHORT",
       "qty": 4,
-      "price": 206.67
+      "price": 207.82
     },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
       "qty": 6,
-      "price": 175.74
+      "price": 175.84
     },
     {
       "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
-      "price": 496.47
+      "price": 492.05
     },
     {
       "symbol": "META",
       "side": "SHORT",
       "qty": 1,
-      "price": 736.88
+      "price": 719.22
     },
     {
       "symbol": "AMD",
       "side": "SHORT",
       "qty": 7,
-      "price": 138.77
+      "price": 136.11
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 3,
-      "price": 298.46
+      "price": 300.71
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 36,
-      "price": 27.31
+      "qty": 34,
+      "price": 28.69
     },
     {
       "symbol": "AMZN",
       "side": "SHORT",
       "qty": 4,
-      "price": 219.5
+      "price": 220.46
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 44,
-      "price": 22.33
+      "qty": 43,
+      "price": 22.85
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
       "qty": 33,
-      "price": 30.12
+      "price": 29.79
     }
   ],
   "2025-07-02": [
@@ -66,61 +66,61 @@
       "symbol": "AAPL",
       "side": "SHORT",
       "qty": 4,
-      "price": 208.91
+      "price": 212.44
     },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
       "qty": 6,
-      "price": 175.54
+      "price": 178.64
     },
     {
       "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
-      "price": 489.99
+      "price": 491.09
     },
     {
       "symbol": "META",
       "side": "SHORT",
       "qty": 1,
-      "price": 715.33
+      "price": 713.57
     },
     {
       "symbol": "AMD",
       "side": "SHORT",
       "qty": 7,
-      "price": 135.53
+      "price": 138.52
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 3,
-      "price": 312.63
+      "price": 315.65
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 34,
-      "price": 28.83
+      "qty": 33,
+      "price": 30.28
     },
     {
       "symbol": "AMZN",
       "side": "SHORT",
       "qty": 4,
-      "price": 219.73
+      "price": 219.92
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 44,
-      "price": 22.53
+      "qty": 45,
+      "price": 21.88
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
       "qty": 32,
-      "price": 30.42
+      "price": 31.04
     }
   ],
   "2025-07-03": [
@@ -128,61 +128,61 @@
       "symbol": "AAPL",
       "side": "SHORT",
       "qty": 4,
-      "price": 212.15
+      "price": 213.55
     },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
       "qty": 6,
-      "price": 178.5
+      "price": 179.53
     },
     {
       "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
-      "price": 493.81
+      "price": 498.84
     },
     {
       "symbol": "META",
       "side": "SHORT",
       "qty": 1,
-      "price": 726.61
+      "price": 719.01
     },
     {
       "symbol": "AMD",
       "side": "SHORT",
       "qty": 7,
-      "price": 139.11
+      "price": 137.91
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 3,
-      "price": 317.99
+      "price": 315.35
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
       "qty": 32,
-      "price": 30.54
+      "price": 30.49
     },
     {
       "symbol": "AMZN",
       "side": "SHORT",
       "qty": 4,
-      "price": 221.82
+      "price": 223.41
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 45,
-      "price": 22.15
+      "qty": 44,
+      "price": 22.49
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
       "qty": 32,
-      "price": 30.96
+      "price": 30.91
     }
   ],
   "2025-07-04": [],

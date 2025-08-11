@@ -1,0 +1,17 @@
+{
+  "positions": {
+    "AAPL": -4,
+    "MSFT": -2,
+    "QBTS": -4,
+    "BRRR": -33,
+    "INTC": 11,
+    "NVDA": -9,
+    "META": -5,
+    "AMD": -28,
+    "NFLX": -5,
+    "GOOGL": -5,
+    "QUBT": -210
+  },
+  "last_updated": "2025-08-11T23:56:55.341730",
+  "total_capital": 50000
+}

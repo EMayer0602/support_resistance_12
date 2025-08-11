@@ -18,7 +18,8 @@ from tickers_config import tickers
 from backtesting_core import run_full_backtest, berechne_best_p_tw_long, berechne_best_p_tw_short
 from trade_execution import get_backtest_price
 from simulation_utils import generate_backtest_date_range, simulate_trades_compound_extended, compute_equity_curve
-from config import COMMISSION_RATE, MIN_COMMISSION, trade_years
+from config import DEFAULT_COMMISSION_RATE, MIN_COMMISSION, trade_years
+COMMISSION_RATE = DEFAULT_COMMISSION_RATE  # Use the config value
 from signal_utils import (
     calculate_support_resistance,
     assign_long_signals_extended,

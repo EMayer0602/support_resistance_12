@@ -52,25 +52,40 @@ def print_trade_summary(trades, portfolio_snapshot):
 def main():
     if len(sys.argv) < 2:
         print("⚠️ Bitte gib einen Modus an: testdate, tradedate, listdays, fullbacktest")
+        print("Beispiele:")
+        print("  python runner.py testdate 2025-07-15")
+        print("  python runner.py tradedate 2025-07-15")
+        print("  python runner.py listdays")
+        print("  python runner.py fullbacktest")
         return
 
     mode = sys.argv[1].lower()
-    ib = IB()
-    ib.connect("127.0.0.1", 7497, clientId=1)
+    
+    # Validate arguments based on mode
+    if mode in ["testdate", "tradedate"] and len(sys.argv) < 3:
+        print(f"⚠️ Der Modus '{mode}' benötigt ein Datum als zweiten Parameter.")
+        print(f"Beispiel: python runner.py {mode} 2025-07-15")
+        return
+    
+    # Only connect to IB for tradedate and fullbacktest modes
+    ib = None
+    if mode in ["tradedate", "fullbacktest"]:
+        ib = IB()
+        try:
+            ib.connect("127.0.0.1", 7497, clientId=1)
+        except Exception as e:
+            print(f"⚠️ Fehler bei IB-Verbindung: {e}")
+            print("Für 'testdate' und 'listdays' ist keine IB-Verbindung erforderlich.")
+            return
     
     if mode == "testdate":
         date_str = sys.argv[2]
         trades, portfolio = load_trades_for_day(date_str)
         if not trades:
             print(f"\n📅 {date_str}: Keine Trades an diesem Tag.")
+            print("💡 Tipp: Führe zuerst 'python runner.py fullbacktest' aus, um Trades zu generieren.")
             return
         print_trade_summary(trades, portfolio)
-        # Example: get live prices using conID (if you want to show live info)
-        # for t in trades:
-        #     cfg = tickers[t['symbol']]
-        #     contract = Contract(conId=cfg["conID"], exchange="SMART", currency="USD")
-        #     # ticker = ib.reqMktData(contract, '', False, False)
-        #     # print(f"{t['symbol']}: {ticker.marketPrice()}")
 
     elif mode == "tradedate":
         tradedate = sys.argv[2]
@@ -107,7 +122,7 @@ def main():
         missing_days = {symbol: 0 for symbol in tickers}
         skip_tickers = set()
         backtest_trades = {}
-        for date_str in generate_backtest_date_range("2025-07-01", "2025-07-18"):
+        for date_str in generate_backtest_date_range("2025-07-01", "2025-08-10"):
             trades = []
             portfolio = {s: 0 for s in tickers}
             for symbol, cfg in tickers.items():
@@ -158,7 +173,8 @@ def main():
     else:
         print(f"⚠️ Unbekannter Modus: {mode}")
 
-    ib.disconnect()
+    if ib is not None:
+        ib.disconnect()
 
 if __name__ == "__main__":
     main()

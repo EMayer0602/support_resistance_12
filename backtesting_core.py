@@ -18,19 +18,11 @@ from signal_utils import (
 from simulation_utils import debug_equity_alignment
 from simulation_utils import simulate_trades_compound_extended, compute_equity_curve
 from stats_tools import stats
-from plot_utils import plot_combined_chart_and_equity
 from config import ORDER_ROUND_FACTOR, COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end
 COMMISSION_RATE = 0.0018
 MIN_COMMISSION = 1.0
-
-import os
-import pandas as pd
 from pandas.errors import EmptyDataError
-
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers
-
+from ib_insync import util
 # backtesting_utils.py
 
 def get_backtesting_slice(df, begin_pct=0, end_pct=20):
@@ -146,10 +138,6 @@ def trade_trading_for_today(ib, date_str=None):
     print(f"\n📆 trade_trading_for_today() für {ds}")
     test_trading_for_date(ib, ds)
 
-import os
-import pandas as pd
-from ib_insync import util
-
 
 def update_historical_data_csv(ib, contract, fn):
     """
@@ -258,7 +246,6 @@ def berechne_best_p_tw_long(df, config, begin=0, end=20, verbose=True, ticker=""
     best = df_result.iloc[0]
     return int(best["past_window"]), int(best["trade_window"])
 
-
 def berechne_best_p_tw_short(df, config, begin=0, end=20, verbose=True, ticker=""):
     df_opt = get_backtesting_slice(df, begin, end)
     results = []
@@ -302,37 +289,6 @@ def get_last_price(df: pd.DataFrame, cfg: dict, ticker: str) -> float | None:
         print(f"⚠️ Ungültiger Preiswert: '{val}' für {ticker}")
         return None
 
-
-from ib_insync import Stock
-
-from plot_utils import plot_combined_chart_and_equity
-from tickers_config import tickers
-from signal_utils import (
-    calculate_support_resistance,
-    assign_long_signals_extended,
-    assign_short_signals_extended,
-    update_level_close_long,
-    update_level_close_short,
-    assign_long_signals,
-    assign_short_signals,
-    compute_trend
-)
-from simulation_utils import debug_equity_alignment
-from simulation_utils import simulate_trades_compound_extended, compute_equity_curve
-from stats_tools import stats
-from plot_utils import plot_combined_chart_and_equity
-from config import ORDER_ROUND_FACTOR, COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end
-COMMISSION_RATE = 0.0018
-MIN_COMMISSION = 1.0
-
-import os
-import pandas as pd
-from pandas.errors import EmptyDataError
-
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers
-
 # backtesting_utils.py
 
 def get_backtesting_slice(df, begin_pct=0, end_pct=20):
@@ -343,8 +299,6 @@ def get_backtesting_slice(df, begin_pct=0, end_pct=20):
     start = int(n * begin_pct / 100)
     end   = int(n * end_pct   / 100)
     return df.iloc[start:end]
-
-from ib_insync import util
 
 def update_historical_data_csv(ib, contract, fn):
     """
@@ -652,13 +606,6 @@ def run_full_backtest(ib):
         ext_long.to_csv(f"extended_long_{ticker}.csv", index=False)
         ext_short.to_csv(f"extended_short_{ticker}.csv", index=False)
 
-from tickers_config import tickers  # falls nicht schon oben importiert
-
-import os
-import pandas as pd
-from pandas.errors import EmptyDataError
-from tickers_config import tickers  # falls nicht schon oben importiert
-
 def test_trading_for_date(ib, date_str, report_dir="reports"):
     import pandas as pd
     from pandas.errors import EmptyDataError
@@ -779,10 +726,6 @@ def trade_trading_for_today(ib, date_str=None):
     print(f"\n📆 trade_trading_for_today() für {ds}")
     test_trading_for_date(ib, ds)
 
-import pandas as pd
-import os
-from tickers_config import tickers
-
 def extract_extended_trades_with_price(
     tickers, start_date, end_date, current_prices=None
 ):
@@ -866,11 +809,6 @@ def extract_extended_trades_with_price(
     print(f"\n📆 TRADE FOR {ds}")
     test_trading_for_date(ib, ds)
 
-import pandas as pd
-import os
-from datetime import datetime
-from tickers_config import tickers
-
 def fill_level_close_and_trade(symbol, current_prices=None):
     """
     Fill Level Close and Level trade columns for the extended signal files for a given symbol.
@@ -919,11 +857,6 @@ def fill_level_close_and_trade(symbol, current_prices=None):
         # Save file
         df.to_csv(ext_fn, index=False)
         print(f"✅ Updated {ext_fn}")
-
-# Example usage:
-# current_prices = {'AAPL': 220.17, 'QUBT': 19.51}
-# for symbol in tickers:
-#     fill_level_close_and_trade(symbol, current_prices=current_prices)
 
 
 

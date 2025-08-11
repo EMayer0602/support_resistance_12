@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 from scipy.signal import argrelextrema
 def compute_trend(df, window=20):
@@ -117,17 +118,39 @@ def assign_short_signals(support, resistance, data, trade_window, interval="1d")
     return df
 
 def assign_long_signals_extended(support, resistance, data, trade_window, interval="1d"):
-    df = assign_long_signals(support, resistance, data, trade_window, interval).copy()
-    df["Long Action"] = df["Long"]
-    df.rename(columns={"Date": "Date high/low", "Level": "Level high/low", "Type": "Supp/Resist"}, inplace=True)
-    df["Long Date detected"] = df["Date high/low"].apply(lambda d: get_trade_day_offset(d, trade_window, data))
-    df["Level Close"] = np.nan
-    df["Long Trade Day"] = df["Long Date detected"].apply(
-        lambda dt: dt.replace(hour=15, minute=50, second=0, microsecond=0) if pd.notna(dt) else pd.NaT
-    )
-    df["Level trade"] = np.nan
-    return df[["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
-               "Long Date detected", "Level Close", "Long Trade Day", "Level trade"]]
+    # Ensure we get a proper DataFrame from assign_long_signals
+    try:
+        base_signals = assign_long_signals(support, resistance, data, trade_window, interval)
+        
+        # Check if the result is a DataFrame
+        if not isinstance(base_signals, pd.DataFrame):
+            print(f"Warning: assign_long_signals returned {type(base_signals)} instead of DataFrame")
+            # Return empty DataFrame with expected columns
+            return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
+                                       "Long Date detected", "Level Close", "Long Trade Day", "Level trade"])
+        
+        if base_signals.empty:
+            # Return empty DataFrame with expected columns
+            return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
+                                       "Long Date detected", "Level Close", "Long Trade Day", "Level trade"])
+        
+        df = base_signals.copy()
+        df["Long Action"] = df["Long"]
+        df.rename(columns={"Date": "Date high/low", "Level": "Level high/low", "Type": "Supp/Resist"}, inplace=True)
+        df["Long Date detected"] = df["Date high/low"].apply(lambda d: get_trade_day_offset(d, trade_window, data))
+        df["Level Close"] = np.nan
+        df["Long Trade Day"] = df["Long Date detected"].apply(
+            lambda dt: dt.replace(hour=15, minute=50, second=0, microsecond=0) if pd.notna(dt) else pd.NaT
+        )
+        df["Level trade"] = np.nan
+        return df[["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
+                   "Long Date detected", "Level Close", "Long Trade Day", "Level trade"]]
+        
+    except Exception as e:
+        print(f"Error in assign_long_signals_extended: {e}")
+        # Return empty DataFrame with expected columns
+        return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Long Action",
+                                   "Long Date detected", "Level Close", "Long Trade Day", "Level trade"])
 
 import pandas as pd
 from tickers_config import tickers
@@ -215,14 +238,36 @@ if __name__ == "__main__":
     list_all_trades_by_date()
 
 def assign_short_signals_extended(support, resistance, data, trade_window, interval="1d"):
-    df = assign_short_signals(support, resistance, data, trade_window, interval).copy()
-    df["Short Action"] = df["Short"]
-    df.rename(columns={"Date": "Date high/low", "Level": "Level high/low", "Type": "Supp/Resist"}, inplace=True)
-    df["Short Date detected"] = df["Date high/low"].apply(lambda d: get_trade_day_offset(d, trade_window, data))
-    df["Level Close"] = np.nan
-    df["Short Trade Day"] = df["Short Date detected"].apply(
-        lambda dt: dt.replace(hour=15, minute=50, second=0, microsecond=0) if pd.notna(dt) else pd.NaT
-    )
-    df["Level trade"] = np.nan
-    return df[["Date high/low", "Level high/low", "Supp/Resist", "Short Action",
-               "Short Date detected", "Level Close", "Short Trade Day", "Level trade"]]
+    # Ensure we get a proper DataFrame from assign_short_signals
+    try:
+        base_signals = assign_short_signals(support, resistance, data, trade_window, interval)
+        
+        # Check if the result is a DataFrame
+        if not isinstance(base_signals, pd.DataFrame):
+            print(f"Warning: assign_short_signals returned {type(base_signals)} instead of DataFrame")
+            # Return empty DataFrame with expected columns
+            return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Short Action",
+                                       "Short Date detected", "Level Close", "Short Trade Day", "Level trade"])
+        
+        if base_signals.empty:
+            # Return empty DataFrame with expected columns
+            return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Short Action",
+                                       "Short Date detected", "Level Close", "Short Trade Day", "Level trade"])
+        
+        df = base_signals.copy()
+        df["Short Action"] = df["Short"]
+        df.rename(columns={"Date": "Date high/low", "Level": "Level high/low", "Type": "Supp/Resist"}, inplace=True)
+        df["Short Date detected"] = df["Date high/low"].apply(lambda d: get_trade_day_offset(d, trade_window, data))
+        df["Level Close"] = np.nan
+        df["Short Trade Day"] = df["Short Date detected"].apply(
+            lambda dt: dt.replace(hour=15, minute=50, second=0, microsecond=0) if pd.notna(dt) else pd.NaT
+        )
+        df["Level trade"] = np.nan
+        return df[["Date high/low", "Level high/low", "Supp/Resist", "Short Action",
+                   "Short Date detected", "Level Close", "Short Trade Day", "Level trade"]]
+        
+    except Exception as e:
+        print(f"Error in assign_short_signals_extended: {e}")
+        # Return empty DataFrame with expected columns
+        return pd.DataFrame(columns=["Date high/low", "Level high/low", "Supp/Resist", "Short Action",
+                                   "Short Date detected", "Level Close", "Short Trade Day", "Level trade"])

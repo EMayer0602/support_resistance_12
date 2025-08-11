@@ -6,6 +6,23 @@ A comprehensive automated trading system for support/resistance strategies with 
 
 ### 🎯 **Automated Trading (Recommended)**
 Start the production auto trader that runs continuously:
+
+**Windows Compatible Version (Recommended):**
+```bash
+# Test mode without executing trades (recommended first)
+python production_trader_win.py --dry-run --test-mode
+
+# Paper trading (safe - recommended for production)
+python production_trader_win.py
+
+# Test what would happen without executing
+python production_trader_win.py --dry-run
+
+# LIVE trading (requires confirmation)
+python production_trader_win.py --live-trading
+```
+
+**Full-Featured Version (requires UTF-8 terminal):**
 ```bash
 # Paper trading (safe - recommended for first runs)
 python production_auto_trader.py
@@ -23,7 +40,11 @@ python production_auto_trader.py --live-trading
 ### 📊 **Manual Analysis**
 1. **Run Full Backtest**
 ```bash
+# Complete system backtest (all tickers, optimization)
 python complete_comprehensive_backtest.py
+
+# Interactive single ticker backtest with full analysis
+python runner.py fullbacktest
 ```
 
 2. **View Results**
@@ -131,7 +152,10 @@ python production_auto_trader.py --live-trading
 # Full system backtest (all tickers, optimization)
 python complete_comprehensive_backtest.py
 
-# Single ticker interactive backtest
+# Interactive single ticker backtest with full analysis
+python runner.py fullbacktest
+
+# Single ticker interactive backtest (basic)
 python runner.py
 
 # View comprehensive summary
@@ -273,14 +297,14 @@ python data_sync.py
 python complete_comprehensive_backtest.py
 python show_summary.py
 
-# 2. Test automated trading (dry run)
-python production_auto_trader.py --dry-run --test-mode
+# 2. Test automated trading (dry run) - Windows Compatible
+python production_trader_win.py --dry-run --test-mode
 
-# 3. Start paper trading automation
-python production_auto_trader.py
+# 3. Start paper trading automation - Windows Compatible
+python production_trader_win.py
 
-# 4. Monitor logs and performance
-tail -f logs/auto_trader_*.log
+# 4. Monitor logs and performance (Windows)
+Get-Content logs\auto_trader_*.log -Tail 20 -Wait
 ```
 
 ### **📊 Manual Analysis & Trading**
@@ -288,6 +312,7 @@ tail -f logs/auto_trader_*.log
 # 1. Initial setup & backtest
 python data_sync.py                          # Update data
 python complete_comprehensive_backtest.py   # Run full backtest
+python runner.py fullbacktest               # Interactive single ticker analysis
 python show_summary.py                      # View results
 
 # 2. Generate paper trading lists
@@ -340,17 +365,18 @@ python test_config.py
 3. **📊 Run Initial Backtest**
    ```bash
    python complete_comprehensive_backtest.py
+   python runner.py fullbacktest
    python show_summary.py
    ```
 
-4. **🧪 Test Automated Trading**
+4. **🧪 Test Automated Trading (Windows Compatible)**
    ```bash
-   python production_auto_trader.py --dry-run --test-mode
+   python production_trader_win.py --dry-run --test-mode
    ```
 
-5. **🎯 Start Paper Trading**
+5. **🎯 Start Paper Trading (Windows Compatible)**
    ```bash
-   python production_auto_trader.py
+   python production_trader_win.py
    ```
 
 6. **📈 Monitor & Optimize**

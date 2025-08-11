@@ -1,41 +1,71 @@
 # 📊 Support & Resistance Trading Strategy System
 
-A comprehensive backtesting and paper trading system for support/resistance trading strategies with Interactive Brokers integration.
+A comprehensive automated trading system for support/resistance strategies with full backtesting, paper trading, and Interactive Brokers integration.
 
 ## 🚀 **QUICK START**
 
-### 1. **Run Full Backtest**
+### 🎯 **Automated Trading (Recommended)**
+Start the production auto trader that runs continuously:
+```bash
+# Paper trading (safe - recommended for first runs)
+python production_auto_trader.py
+
+# Test mode without executing trades
+python production_auto_trader.py --dry-run
+
+# Quick test with accelerated timing
+python production_auto_trader.py --test-mode
+
+# LIVE trading (requires confirmation)
+python production_auto_trader.py --live-trading
+```
+
+### 📊 **Manual Analysis**
+1. **Run Full Backtest**
 ```bash
 python complete_comprehensive_backtest.py
 ```
 
-### 2. **View Results**
+2. **View Results**
 ```bash
 python show_summary.py
 ```
 
-### 3. **Generate Paper Trading List**
+3. **Generate Paper Trading List**
 ```bash
 python single_trades.py 2025-08-01 2025-08-15 --csv
 ```
 
 ## 🎯 **KEY FEATURES**
 
+- ✅ **Automated Trading** - Start anytime, runs continuously until stopped
+- ✅ **Smart Timing** - Waits for market open/close, executes once per session
 - ✅ **Comprehensive Backtesting** - 2+ years of data with parameter optimization
 - ✅ **Multiple Strategies** - Long and short support/resistance trading
 - ✅ **Paper Trading Lists** - Single trades ready for execution
 - ✅ **Interactive Charts** - HTML charts with signals and levels
 - ✅ **Performance Analytics** - Detailed statistics and trade analysis
-- ✅ **Interactive Brokers** - Ready for live trading integration
+- ✅ **Interactive Brokers** - Full live and paper trading integration
 - ✅ **Flexible Configuration** - Per-ticker strategy and timing settings
+- ✅ **Safety First** - Paper trading default, dry-run mode, confirmations
 
 ## 📁 **CORE FILES**
+
+### **🤖 Automated Trading**
+- `production_auto_trader.py` - **Production automated trading system**
+- `auto_daily_trader.py` - Full-featured daily automation
+- `simple_auto_trader.py` - Lightweight auto trader for testing
 
 ### **🔧 Main Execution**
 - `complete_comprehensive_backtest.py` - **Full system backtest with optimization**
 - `runner.py` - Single ticker backtesting (proven reliable)
 - `single_trades.py` - **Generate paper trading lists**
 - `show_summary.py` - Display comprehensive results
+
+### **📋 Manual Trading**
+- `manual_trading.py` - Manual trade execution with IB
+- `portfolio_manager.py` - Position and order management
+- `check_todays_signals.py` - Check current trading signals
 
 ### **⚙️ Core Logic**
 - `backtesting_core.py` - Core backtesting functions
@@ -44,8 +74,8 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 - `stats_tools.py` - Performance statistics
 
 ### **📊 Configuration & Data**
-- `tickers_config.py` - **Trading configuration (strategies, timing)**
-- `config.py` - System parameters
+- `config.py` - **System parameters and timing settings**
+- `tickers_config.py` - **Per-ticker trading configuration**
 - `*_data.csv` - Historical price data
 - `complete_comprehensive_backtest_results.json` - Full results
 
@@ -53,7 +83,46 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 - `comprehensive_trade_summary.py` - Detailed trade analysis
 - `paper_trading_list.py` - Interactive paper trading tool
 - `plot_utils.py` / `plotly_utils.py` - Chart generation
-- `MultiTradingIB25_ID_E.py` - Interactive Brokers integration
+- `test_config.py` - Validate configuration integration
+
+## 🤖 **AUTOMATED TRADING SYSTEM**
+
+### **🚀 Production Auto Trader**
+The `production_auto_trader.py` is a fully automated trading system that:
+
+- **Can start anytime** - Automatically waits for next trading session
+- **Morning Session**: Waits for 9:35 AM ET, runs backtest, executes OPEN trades
+- **Evening Session**: Waits for 3:55 PM ET, runs backtest, executes CLOSE trades
+- **Runs continuously** until stopped with CTRL+C
+- **Skips weekends** and major holidays automatically
+- **Paper trading by default** - Safe for testing and learning
+
+### **📋 Auto Trading Options**
+```bash
+# Start paper trading (recommended)
+python production_auto_trader.py
+
+# Test without executing trades
+python production_auto_trader.py --dry-run
+
+# Quick test with accelerated timing
+python production_auto_trader.py --test-mode --dry-run
+
+# Enable detailed logging
+python production_auto_trader.py --verbose
+
+# LIVE trading (requires confirmation)
+python production_auto_trader.py --live-trading
+```
+
+### **🛡️ Safety Features**
+- ✅ **Paper trading default** - No real money at risk
+- ✅ **Dry run mode** - Test everything without executing
+- ✅ **Confirmation prompts** for live trading
+- ✅ **Fresh backtests** before each session
+- ✅ **One-time execution** per session (no duplicate trades)
+- ✅ **Comprehensive logging** with daily log files
+- ✅ **Graceful shutdown** on CTRL+C
 
 ## 🎮 **USAGE COMMANDS**
 
@@ -90,6 +159,18 @@ python paper_trading_list.py
 python quick_paper_trading.py
 ```
 
+### **🤖 Manual Trading**
+```bash
+# Execute manual trades with IB
+python manual_trading.py
+
+# Check today's signals
+python check_todays_signals.py
+
+# Test configuration integration
+python test_config.py
+```
+
 ### **🔄 Data Management**
 ```bash
 # Update price data
@@ -101,19 +182,36 @@ python signal_alert_today.py
 
 ## ⚙️ **CONFIGURATION**
 
-Edit `tickers_config.py` to configure trading:
+The system uses two main configuration files:
 
+### **📊 `config.py` - System Settings**
 ```python
-TICKERS_CONFIG = {
+INITIAL_CAPITAL = 50000           # Total trading capital
+MARKET_OPEN_TIME = "09:30"        # NY market open
+MARKET_CLOSE_TIME = "16:00"       # NY market close
+IB_PAPER_PORT = 7497              # Paper trading port
+IB_LIVE_PORT = 7496               # Live trading port
+# ... and more timing/execution parameters
+```
+
+### **🎯 `tickers_config.py` - Per-Ticker Settings**
+```python
+tickers = {
     'AAPL': {
-        'strategies': ['LONG', 'SHORT'],  # Enable strategies
-        'trade_on': 'OPEN',              # OPEN or CLOSE
+        'strategies': ['LONG', 'SHORT'],  # Enable both strategies
+        'trade_on': 'OPEN',              # Trade at market open
+        'capital': 5000,                 # Dedicated capital
+        'conID': 265598,                 # IB contract ID
+        'rounding': 0.01,                # Price rounding
     },
     'GOOGL': {
         'strategies': ['LONG'],          # Long only
-        'trade_on': 'CLOSE',
+        'trade_on': 'CLOSE',            # Trade at market close
+        'capital': 8000,
+        'conID': 208813720,
+        'rounding': 0.01,
     },
-    # Add more tickers...
+    # ... add more tickers as needed
 }
 ```
 
@@ -168,37 +266,120 @@ pip install pandas numpy matplotlib yfinance scipy plotly ib_insync markdown2
 
 ## 📈 **TYPICAL WORKFLOW**
 
-### **1. Initial Setup & Backtest**
+### **🎯 Automated Trading (Recommended)**
 ```bash
+# 1. Update data and test the system
+python data_sync.py
+python complete_comprehensive_backtest.py
+python show_summary.py
+
+# 2. Test automated trading (dry run)
+python production_auto_trader.py --dry-run --test-mode
+
+# 3. Start paper trading automation
+python production_auto_trader.py
+
+# 4. Monitor logs and performance
+tail -f logs/auto_trader_*.log
+```
+
+### **📊 Manual Analysis & Trading**
+```bash
+# 1. Initial setup & backtest
 python data_sync.py                          # Update data
 python complete_comprehensive_backtest.py   # Run full backtest
 python show_summary.py                      # View results
+
+# 2. Generate paper trading lists
+python single_trades.py 2025-08-01 2025-08-15 --csv
+
+# 3. Manual execution (optional)
+python check_todays_signals.py             # Check signals
+python manual_trading.py                   # Execute trades
 ```
 
-### **2. Paper Trading**
+## 🗂️ **LOG FILES & MONITORING**
+
+### **📁 Automated Trading Logs**
+- `logs/auto_trader_YYYYMMDD.log` - Daily operation logs
+- `logs/sessions_YYYYMMDD.json` - Session results and statistics
+- `logs/` directory created automatically
+
+### **📊 Monitoring Commands**
 ```bash
-python single_trades.py 2025-08-01 2025-08-15 --csv  # Generate trade list
-# Import CSV into paper trading platform
+# View real-time logs
+Get-Content logs\auto_trader_*.log -Tail 20 -Wait
+
+# Check session results
+python -c "import json; print(json.dumps(json.load(open('logs/sessions_$(Get-Date -Format "yyyyMMdd").json')), indent=2))"
+
+# Validate configuration
+python test_config.py
 ```
 
-### **3. Live Trading** (Optional)
-```bash
-python signal_alert_today.py               # Check today's signals
-python MultiTradingIB25_ID_E.py           # Execute via IB
-```
-
-## 📚 **DOCUMENTATION**
+## 📚 **DOCUMENTATION & HELP**
 
 - **`HELP.md`** - Comprehensive help guide with all commands
-- **`README.md`** - This overview file
+- **`README.md`** - This overview file  
+- **`test_config.py`** - Validate system configuration
 - **Inline Comments** - Detailed code documentation
 - **Error Messages** - Descriptive error handling
 
+## 🚀 **GETTING STARTED CHECKLIST**
+
+1. **📦 Install Requirements**
+   ```bash
+   pip install pandas numpy matplotlib yfinance scipy plotly ib_insync markdown2
+   ```
+
+2. **⚙️ Configure System**
+   - Edit `config.py` for capital and timing settings
+   - Edit `tickers_config.py` for ticker-specific settings
+   - Run `python test_config.py` to validate
+
+3. **📊 Run Initial Backtest**
+   ```bash
+   python complete_comprehensive_backtest.py
+   python show_summary.py
+   ```
+
+4. **🧪 Test Automated Trading**
+   ```bash
+   python production_auto_trader.py --dry-run --test-mode
+   ```
+
+5. **🎯 Start Paper Trading**
+   ```bash
+   python production_auto_trader.py
+   ```
+
+6. **📈 Monitor & Optimize**
+   - Check logs in `logs/` directory
+   - Review session results
+   - Adjust configuration as needed
+
+---
+**💡 Pro Tip**: Always start with `--dry-run` to understand what the system will do before executing real trades!
+
 ## 🚨 **IMPORTANT NOTES**
 
-### **Before Trading**
-- ✅ Backtest thoroughly with recent data
-- ✅ Start with paper trading to validate signals
+### **🛡️ Trading Safety**
+- ✅ **Default to paper trading** - Real money requires explicit confirmation
+- ✅ **Start with dry runs** to understand the system
+- ✅ **Test thoroughly** with recent data before live trading
+- ✅ **Monitor continuously** - Check logs regularly
+- ✅ **Use CTRL+C** to stop automated trading gracefully
+
+### **⚙️ Interactive Brokers Setup**
+- Paper Trading Account: Port 7497 (default)
+- Live Trading Account: Port 7496 (requires --live-trading flag)
+- TWS or IB Gateway must be running
+- Contract IDs configured in `tickers_config.py`
+
+### **📊 Data Requirements**
+- Historical data updated via `data_sync.py`
+- Minimum 1+ years of data for reliable backtesting
+- Fresh backtests run automatically before each trading session
 - ✅ Use proper risk management and position sizing
 - ✅ Monitor support/resistance level confirmations
 

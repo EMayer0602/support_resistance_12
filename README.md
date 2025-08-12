@@ -120,6 +120,25 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 
 ## AUTOMATED TRADING SYSTEM
 
+### Which Script To Run For OPEN & CLOSE Paper Trading
+Use `production_trader_win.py` for continuous paper (or live) trading that handles both the OPEN and CLOSE sessions automatically. Typical sequence:
+1. (Optional but recommended) Update data: `python data_sync.py`
+2. Run a full backtest once to warm up: `python complete_comprehensive_backtest.py`
+3. Start the continuous paper trader: `python production_trader_win.py`
+
+Behavior:
+- Before each session (OPEN or CLOSE) it ensures a recent successful full backtest exists; if stale or missing it runs `complete_comprehensive_backtest.py` (with retries per config) before executing orders.
+- OPEN session: waits for configured open + delay (plus grace) then executes all qualifying OPEN entry signals plus any strategy-based exits.
+- CLOSE session: revalidates / refreshes backtest if needed, then executes CLOSE signals plus exits.
+- Disconnects from IB between sessions, reconnects ahead of next session (with heartbeat & auto-reconnect logic).
+- Paper trading is default; for live trading add `--live-trading` (will prompt for confirmation).
+
+Alternatives:
+- `production_auto_trader.py` is a cross-platform variant (use only if you need non-Windows terminal features).
+- Manual one-off execution: run full backtest, then `check_todays_signals.py`, then `manual_trading.py` at the desired session time.
+
+If you only want to simulate without sending orders, add `--dry-run` (optionally `--test-mode` to accelerate timing windows for QA).
+
 ### Production Auto Trader
 The `production_auto_trader.py` (cross-platform) and `production_trader_win.py` (Windows-focused) are fully automated trading systems that:
 

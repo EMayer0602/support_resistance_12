@@ -100,9 +100,12 @@ def plotly_combined_chart_and_equity(
     fig.update_layout(
         title=f"{ticker} – Candlestick mit Signalen & Equity",
         xaxis_rangeslider_visible=False,
-        legend=dict(orientation="h", y=-0.1),
+        legend=dict(orientation="h", y=-0.1, font=dict(color="white")),
         margin=dict(l=50, r=50, t=50, b=50),
-        template="plotly_white"
+        template="plotly_white",
+        paper_bgcolor="midnightblue",
+        plot_bgcolor="midnightblue",
+        font=dict(color="white")
     )
 
     fig.update_xaxes(

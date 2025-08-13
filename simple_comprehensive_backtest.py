@@ -19,7 +19,7 @@ from tickers_config import tickers
 from backtesting_core import run_full_backtest
 from trade_execution import get_backtest_price
 from simulation_utils import generate_backtest_date_range
-from config import backtesting_begin, backtesting_end, trade_years
+from config import trade_years
 from plot_utils import plot_combined_chart_and_equity
 
 def main():
@@ -52,10 +52,26 @@ def main():
         # Step 2: Generate backtest trades for a specific date range
         print(f"\n🎯 Step 2: Generating backtest trades...")
         
-        # Use the same date range as the fullbacktest in runner.py
-        start_date = "2025-07-01"
-        end_date = "2025-08-10"
-        print(f"Date range: {start_date} to {end_date}")
+        # Build recent trade_years dynamic date range
+        # Determine min start based on longest available series
+        all_dates = []
+        for symbol in tickers:
+            fn = f"{symbol}_data.csv"
+            if os.path.exists(fn):
+                try:
+                    df_tmp = pd.read_csv(fn, parse_dates=[0])
+                    df_tmp.set_index(df_tmp.columns[0], inplace=True)
+                    all_dates.extend(df_tmp.index.tolist())
+                except Exception:
+                    pass
+        if not all_dates:
+            print("❌ No price data available after download step.")
+            return
+        max_date = max(all_dates)
+        min_allowed = max_date - pd.Timedelta(days=int(trade_years * 365)) if trade_years else min(all_dates)
+        start_date = min_allowed.strftime('%Y-%m-%d')
+        end_date = max_date.strftime('%Y-%m-%d')
+        print(f"Date range (trade_years subset): {start_date} to {end_date}")
         
         max_missing_days = 1
         missing_days = {symbol: 0 for symbol in tickers}

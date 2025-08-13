@@ -33,16 +33,30 @@ class ManualTrader:
         self.portfolio_manager = PortfolioManager()
 
     def connect_ib(self):
-        try:
-            port = IB_PAPER_PORT if self.paper_trading else IB_LIVE_PORT
-            self.ib.connect(IB_HOST, port, clientId=IB_CLIENT_ID)
-            print(f"Connected to IB {'Paper' if self.paper_trading else 'Live'} Trading")
-            print(f"Host: {IB_HOST}:{port}, Client ID: {IB_CLIENT_ID}")
-            self.sync_portfolio_with_ib()
-            return True
-        except Exception as e:
-            print(f"ERROR: Failed to connect to IB: {e}")
-            return False
+        port = IB_PAPER_PORT if self.paper_trading else IB_LIVE_PORT
+        attempts = 0
+        while attempts < IB_MAX_CONNECT_RETRIES:
+            attempts += 1
+            try:
+                self.ib.connect(IB_HOST, port, clientId=IB_CLIENT_ID)
+                if self.ib.isConnected():
+                    print(f"Connected to IB {'Paper' if self.paper_trading else 'Live'} Trading (attempt {attempts})")
+                    print(f"Host: {IB_HOST}:{port}, Client ID: {IB_CLIENT_ID}")
+                    try:
+                        sv = self.ib.client.serverVersion()
+                        ct = self.ib.twsConnectionTime()
+                        print(f"IB Server Version: {sv}  | Connection Time: {ct}")
+                    except Exception:
+                        pass
+                    self.sync_portfolio_with_ib()
+                    return True
+            except Exception as e:
+                print(f"WARN: IB connect attempt {attempts} failed: {e}")
+            # Backoff
+            if attempts < IB_MAX_CONNECT_RETRIES:
+                self.ib.sleep(IB_RETRY_BACKOFF_SEC * attempts)
+        print(f"ERROR: Failed to connect to IB after {IB_MAX_CONNECT_RETRIES} attempts")
+        return False
 
     def sync_portfolio_with_ib(self):
         try:
@@ -145,7 +159,28 @@ class ManualTrader:
                 ib_order = LimitOrder(action, shares, limit_price)
             else:
                 ib_order = MarketOrder(action, shares)
-            trade = self.ib.placeOrder(contract, ib_order)
+            # Place order with simple retry on transient API timeouts
+            trade = None
+            for attempt in range(1, 3+1):
+                try:
+                    trade = self.ib.placeOrder(contract, ib_order)
+                    break
+                except Exception as oe:
+                    print(f"WARN: placeOrder attempt {attempt} failed: {oe}")
+                    if IB_RECONNECT_ON_TIMEOUT and ('Timeout' in str(oe) or 'disconnected' in str(oe).lower()):
+                        try:
+                            if self.ib.isConnected():
+                                self.ib.disconnect()
+                            print("Attempting IB reconnect after timeout...")
+                            if not self.connect_ib():
+                                print("Reconnect failed; aborting order")
+                                return False
+                        except Exception as re:
+                            print(f"Reconnect logic error: {re}")
+                    self.ib.sleep(1.5 * attempt)
+            if trade is None:
+                print("ERROR: All order placement attempts failed")
+                return False
             print(f"ORDER PLACED: {action} {shares:,} {ticker} @ {('%.2f' % limit_price) if limit_price else 'MKT'}")
             print(f"Order ID: {trade.order.orderId if hasattr(trade, 'order') else 'N/A'}")
             self.portfolio_manager.update_position(ticker, shares, action)
@@ -209,6 +244,7 @@ def main():
     
     print("MANUAL PAPER TRADING EXECUTION")
     print("="*50)
+    print(f"Mode: {'EXECUTION' if args.execute else 'DRY-RUN'}  | Trade-On Filter: {args.trade_on or 'ANY'}  | Force Window: {args.force}")
     
     # Check trading time
     trader = ManualTrader(paper_trading=True)
@@ -237,17 +273,24 @@ def main():
         # Show current portfolio
         trader.portfolio_manager.print_portfolio_summary()
 
-        # Enrich signals with prices for new positions
-        print("\nFetching real-time prices for signals...")
-        new_signals = []
+        # Enrich signals with prices for actions that need execution pricing
+        print("\nFetching real-time prices for signals (any missing price)...")
+        enriched = []
         for s in signals:
             s2 = dict(s)
-            if s2.get('price') is None and s2.get('action') in ('BUY','SHORT'):
+            need_price = s2.get('price') is None and s2.get('action') in ('BUY','SHORT','SELL','COVER')
+            # We only require price for opening or sizing legs; SELL with no long position will open a new short leg via combo logic
+            if need_price:
                 p = trader.get_realtime_price(s2['ticker'])
                 if p is not None:
                     s2['price'] = p
-            new_signals.append(s2)
-        signals = new_signals
+            enriched.append(s2)
+        signals = enriched
+
+        # Debug summary of signals prior to order construction
+        print("\nSIGNAL SUMMARY (post-enrichment):")
+        for s in signals:
+            print(f"  {s['ticker']}: {s['action']} strategy={s['strategy']} price={'{:.2f}'.format(s['price']) if s.get('price') else 'N/A'} trade_on={s.get('trade_on')}")
 
         # Fallback: ensure we have COVER signals for any open shorts if previous day's cover missed
         try:
@@ -293,8 +336,8 @@ def main():
             print(f"No orders to execute")
             return
 
-        print(f"\nORDERS TO EXECUTE:")
-        print("="*40)
+        print(f"\nORDERS TO {'EXECUTE' if args.execute else 'SIMULATE'}:")
+        print("="*50)
 
         # Show all orders first
         for i, order in enumerate(orders, 1):
@@ -321,7 +364,10 @@ def main():
 
         print(f"\nEXECUTION SUMMARY:")
         print(f"Successful: {successful}/{len(orders)}")
-        print(f"{'Orders executed!' if args.execute else 'Dry run completed'}")
+        if not args.execute:
+            print("NOTE: DRY-RUN mode was active. To transmit orders use --execute (and optionally --yes).")
+        else:
+            print("Orders executed (paper)" if trader.paper_trading else "Orders executed (LIVE)")
 
     finally:
         if trader.ib:

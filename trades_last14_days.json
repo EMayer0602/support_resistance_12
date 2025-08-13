@@ -1,0 +1,328 @@
+{
+  "2025-07-24": [
+    {
+      "symbol": "QBTS",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 19.76,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 305.3,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 305.3,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 34.01,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 34.01,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-07-25": [
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 316.06,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-07-28": [],
+  "2025-07-29": [],
+  "2025-07-30": [],
+  "2025-07-31": [
+    {
+      "symbol": "GOOGL",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 192.86,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "GOOGL",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 192.86,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 176.31,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 176.31,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "QUBT",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 14.84,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-01": [
+    {
+      "symbol": "AMZN",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 214.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 214.75,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-04": [
+    {
+      "symbol": "AAPL",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 203.35,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AAPL",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 203.35,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "GOOGL",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 195.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "GOOGL",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 195.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "QBTS",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 17.18,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 309.26,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "INTC",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 19.5,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "INTC",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 19.5,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 32.44,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 32.44,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-05": [
+    {
+      "symbol": "MSFT",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 527.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MSFT",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 527.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "META",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 763.46,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 213.75,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 213.75,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-06": [
+    {
+      "symbol": "QBTS",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 17.58,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "NFLX",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 1178.48,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "QUBT",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 16.17,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-07": [
+    {
+      "symbol": "AMD",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 172.4,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMD",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 172.4,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-08": [
+    {
+      "symbol": "MSFT",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 522.04,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MSFT",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 522.04,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 222.69,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 222.69,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-11": [
+    {
+      "symbol": "NVDA",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 182.06,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "QBTS",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 17.37,
+      "trade_on": "CLOSE"
+    }
+  ],
+  "2025-08-12": [
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "source": "LONG",
+      "price": 336.9,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "source": "SHORT",
+      "price": 336.9,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "BUY",
+      "source": "LONG",
+      "price": 25.68,
+      "trade_on": "CLOSE"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "COVER",
+      "source": "SHORT",
+      "price": 25.68,
+      "trade_on": "CLOSE"
+    }
+  ]
+}

@@ -78,7 +78,8 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             print(f"   OK Best Long Parameters: p={p_long}, tw={tw_long}")
             
             # Calculate support/resistance
-            sup_long, res_long = calculate_support_resistance(df, p_long, tw_long)
+            price_col = "Open" if ticker_config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup_long, res_long = calculate_support_resistance(df, p_long, tw_long, price_col=price_col)
             
             # Generate extended signals
             ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
@@ -115,11 +116,13 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
                 "initial_capital": initial_capital,
                 "equity_curve": equity_curve_long,
                 "trades": trades_long,
+                "support_series": sup_long,
+                "resistance_series": res_long,
                 "extended_signals_data": ext_long.to_dict('records') if not ext_long.empty else []
             }
-            
-            # Print trade statistics
-            stats(trades_long, f"{ticker_name} Long")
+
+            # Print trade statistics with capital & equity curve for accurate drawdown
+            stats(trades_long, f"{ticker_name} Long", initial_capital=initial_capital, final_capital=cap_long, equity_curve=equity_curve_long)
         
         # Process Short strategy if enabled
         if ticker_config.get("short", False):
@@ -131,7 +134,8 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             print(f"   OK Best Short Parameters: p={p_short}, tw={tw_short}")
             
             # Calculate support/resistance
-            sup_short, res_short = calculate_support_resistance(df, p_short, tw_short)
+            price_col = "Open" if ticker_config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup_short, res_short = calculate_support_resistance(df, p_short, tw_short, price_col=price_col)
             
             # Generate extended signals
             ext_short = assign_short_signals_extended(sup_short, res_short, df, tw_short, "1d")
@@ -168,23 +172,82 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
                 "initial_capital": initial_capital,
                 "equity_curve": equity_curve_short,
                 "trades": trades_short,
+                "support_series": sup_short,
+                "resistance_series": res_short,
                 "extended_signals_data": ext_short.to_dict('records') if not ext_short.empty else []
             }
-            
-            # Print trade statistics
-            stats(trades_short, f"{ticker_name} Short")
+
+            # Print trade statistics with capital & equity curve
+            stats(trades_short, f"{ticker_name} Short", initial_capital=initial_capital, final_capital=cap_short, equity_curve=equity_curve_short)
         
-        # Generate combined chart
+        # Generate combined chart (align to current plot_utils signature)
         try:
+            # Prepare inputs for plotting function
+            ext_long_df  = pd.DataFrame(results.get("long", {}).get("extended_signals_data", [])) if results.get("long") else pd.DataFrame()
+            ext_short_df = pd.DataFrame(results.get("short", {}).get("extended_signals_data", [])) if results.get("short") else pd.DataFrame()
+            # Support / Resistance series reused from last calculation scope if available
+            # They were named sup_long/res_long or sup_short/res_short in branches; reconstruct approximate series
+            # Fallback: empty series if not present
+            # Choose support/resistance preference: long if exists else short
+            if results.get("long") and isinstance(results["long"].get("support_series"), pd.Series):
+                support_series = results["long"].get("support_series")
+                resistance_series = results["long"].get("resistance_series")
+            elif results.get("short"):
+                support_series = results["short"].get("support_series", pd.Series(dtype=float))
+                resistance_series = results["short"].get("resistance_series", pd.Series(dtype=float))
+            else:
+                support_series = pd.Series(dtype=float)
+                resistance_series = pd.Series(dtype=float)
+            # Trend line
+            from signal_utils import compute_trend
+            trend_series = compute_trend(df, 20) if not df.empty else pd.Series(dtype=float)
+            # Equity curves (lists) -> convert to pandas Series indexed to df for plotting
+            equity_long_list  = results.get("long", {}).get("equity_curve", []) or []
+            equity_short_list = results.get("short", {}).get("equity_curve", []) or []
+            # Build aligned index for equity (use df index tail of appropriate length)
+            def list_to_series(lst):
+                if not lst: return pd.Series(dtype=float)
+                return pd.Series(lst, index=df.index[-len(lst):])
+            equity_long_series  = list_to_series(equity_long_list)
+            equity_short_series = list_to_series(equity_short_list)
+            if not equity_long_series.empty and not equity_short_series.empty and len(equity_long_series)==len(equity_short_series):
+                equity_combined_series = equity_long_series + equity_short_series
+            else:
+                equity_combined_series = equity_long_series if not equity_long_series.empty else equity_short_series
+            # Buy & Hold baseline (use long initial capital if available)
+            if not df.empty:
+                init_cap_plot = results.get("long", {}).get("initial_capital") or results.get("short", {}).get("initial_capital") or 1000
+                first_close = df["Close"].iloc[0]
+                buyhold_series = pd.Series([init_cap_plot * (c/first_close) for c in df["Close"]], index=df.index)
+            else:
+                buyhold_series = pd.Series(dtype=float)
             plot_combined_chart_and_equity(
-                df, 
-                results.get("long", {}).get("trades", []),
-                results.get("short", {}).get("trades", []),
+                df,
+                ext_long_df,
+                ext_short_df,
+                support_series,
+                resistance_series,
+                trend_series,
+                equity_long_series,
+                equity_short_series,
+                equity_combined_series,
+                buyhold_series,
                 ticker_name
             )
             print(f"   Chart saved to {ticker_name}_chart.html")
         except Exception as e:
             print(f"   WARN Chart generation failed: {e}")
+
+        # Print consolidated capital & drawdown summary
+        try:
+            long_stats  = stats(results.get("long", {}).get("trades", []), f"{ticker_name} Long", initial_capital=results.get("long", {}).get("initial_capital"), final_capital=results.get("long", {}).get("final_capital"), equity_curve=results.get("long", {}).get("equity_curve")) if results.get("long") else {}
+            short_stats = stats(results.get("short", {}).get("trades", []), f"{ticker_name} Short", initial_capital=results.get("short", {}).get("initial_capital"), final_capital=results.get("short", {}).get("final_capital"), equity_curve=results.get("short", {}).get("equity_curve")) if results.get("short") else {}
+            def fmt(s):
+                if not s: return "-/-/-"
+                return f"Init {s.get('initial_capital',0):.2f} Final {s.get('final_capital',0):.2f} MaxDD {s.get('max_drawdown_pct',0):.2f}%"
+            print(f"   SUMMARY {ticker_name}: LONG[{fmt(long_stats)}] SHORT[{fmt(short_stats)}]")
+        except Exception as _e:
+            print(f"   WARN Could not compute summary line: {_e}")
         
         return results
         

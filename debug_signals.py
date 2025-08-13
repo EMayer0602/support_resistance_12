@@ -4,7 +4,12 @@ Debug script to test signal generation
 """
 import pandas as pd
 import numpy as np
-from signal_utils import calculate_support_resistance, assign_long_signals_extended, assign_short_signals_extended
+from signal_utils import (
+    calculate_support_resistance,
+    assign_long_signals_extended,
+    assign_short_signals_extended,
+)
+from tickers_config import tickers
 
 # Load some test data
 try:
@@ -18,11 +23,15 @@ try:
     print(f"First few rows:")
     print(df.head())
     
+    # Use the ticker inferred from filename (before first underscore)
+    symbol = 'AAPL'
+    cfg = tickers.get(symbol, {})
     # Test with small parameters
     p, tw = 5, 5
-    
+
     print(f"\nTesting calculate_support_resistance with p={p}, tw={tw}")
-    support, resistance = calculate_support_resistance(df, p, tw)
+    price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+    support, resistance = calculate_support_resistance(df, p, tw, price_col=price_col)
     
     print(f"Support type: {type(support)}")
     print(f"Resistance type: {type(resistance)}")
@@ -46,14 +55,14 @@ try:
         signals_long = assign_long_signals_extended(support, resistance, df, tw, interval="1D")
         print(f"Long signals type: {type(signals_long)}")
         print(f"Long signals length: {len(signals_long) if hasattr(signals_long, '__len__') else 'No length'}")
-        
+
         if isinstance(signals_long, pd.DataFrame):
             print("Long signals is DataFrame - Good!")
             print(f"Columns: {list(signals_long.columns)}")
             print(f"Head:\n{signals_long.head()}")
         else:
             print(f"Long signals is NOT DataFrame: {signals_long}")
-            
+
     except Exception as e:
         print(f"Error in assign_long_signals_extended: {e}")
         import traceback

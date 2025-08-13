@@ -64,10 +64,22 @@ def plot_combined_chart_and_equity(
 
     # Filter Support/Resistance/Trend auf df-Bereich
     def _filt(s):
-        if not isinstance(s, pd.Series): return pd.Series(dtype=float, index=df.index)
-        mask = s.index.to_series().between(df.index.min(), df.index.max())
-        mask &= s.between(df["Low"].min(), df["High"].max())
-        return s[mask]
+        if not isinstance(s, pd.Series) or s.empty:
+            return pd.Series(dtype=float, index=df.index)
+        # Ensure datetime index
+        if not isinstance(s.index, pd.DatetimeIndex):
+            try:
+                converted_index = pd.to_datetime(s.index, errors="coerce")
+                s = pd.Series(s.values, index=converted_index)
+                s = s[~s.index.isna()]
+            except Exception:
+                return pd.Series(dtype=float, index=df.index)
+        try:
+            date_mask = (s.index >= df.index.min()) & (s.index <= df.index.max())
+            price_mask = (s >= df["Low"].min()) & (s <= df["High"].max())
+            return s[date_mask & price_mask]
+        except Exception:
+            return pd.Series(dtype=float, index=df.index)
 
     supp_filt  = _filt(supp)
     res_filt   = _filt(res)
@@ -99,40 +111,48 @@ def plot_combined_chart_and_equity(
             y = df.loc[idx, "Close"] + off * (2 if sym in ["triangle-up","triangle-down"] else 1) * (1 if col!="red" else -1)
             fig.add_trace(go.Scatter(
                 x=idx, y=y, mode="markers",
-                marker=dict(symbol=sym, color=col, size=9),
+                marker=dict(symbol=sym, color=col, size=10),
                 name={"triangle-up":"Buy","triangle-down":"Sell","x":"Short","circle":"Cover"}[sym]
             ), row=1, col=1)
 
     # Supp/Res/Trend
     if not supp_filt.empty:
         fig.add_trace(go.Scatter(x=supp_filt.index, y=supp_filt.values,
-                                 mode="markers", marker=dict(symbol="circle-open",color="limegreen",size=7),
+                                 mode="markers", marker=dict(symbol="circle-open",color="limegreen",size=10),
                                  name="Support"), row=1, col=1)
     if not res_filt.empty:
         fig.add_trace(go.Scatter(x=res_filt.index, y=res_filt.values,
-                                 mode="markers", marker=dict(symbol="x",color="firebrick",size=7),
+                                 mode="markers", marker=dict(symbol="x",color="firebrick",size=10),
                                  name="Resistance"), row=1, col=1)
     if not trend_filt.empty:
         fig.add_trace(go.Scatter(x=trend_filt.index, y=trend_filt.values,
-                                 mode="lines", line=dict(color="black",width=2), name="Trend"),
+                                 mode="lines", line=dict(color="#006400",width=2), name="Trend"),
                       row=1, col=1)
 
     # Equity-Kurven
-    for series, name in [
-        (equity_long,    "Long Equity"),
-        (equity_short,   "Short Equity"),
-        (equity_combined,"Combined Equity"),
-        (buyhold,        "Buy & Hold")
-    ]:
-        fig.add_trace(go.Scatter(x=df.index, y=series, mode="lines", name=name),
+    equity_map = [
+        (equity_long,    "Long Equity",   "green"),
+        (equity_short,   "Short Equity",  "orange"),
+        (equity_combined,"Combined Equity","red"),  # changed to red per request
+        (buyhold,        "Buy & Hold",    "gray")
+    ]
+    for series, name, color in equity_map:
+        fig.add_trace(go.Scatter(x=df.index, y=series, mode="lines", name=name,
+                                 line=dict(color=color)),
                       row=2, col=1)
 
     # Layout & Range
     base_height = 800
     fig.update_layout(
         height=int(base_height * 1.2), margin=dict(t=50, b=30),
-        xaxis=dict(rangeslider=dict(visible=False), showgrid=True),
-        xaxis2=dict(matches="x", rangeslider=dict(visible=False), showgrid=True)
+        xaxis=dict(rangeslider=dict(visible=False), showgrid=True, gridcolor="#444444"),
+        xaxis2=dict(matches="x", rangeslider=dict(visible=False), showgrid=True, gridcolor="#444444"),
+        yaxis=dict(showgrid=True, gridcolor="#444444"),
+        yaxis2=dict(showgrid=True, gridcolor="#444444"),
+        paper_bgcolor="#222222",
+        plot_bgcolor="#222222",
+        font=dict(color="white"),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="white"))
     )
     start, end = df.index.min(), df.index.max()
     fig.update_xaxes(range=[start,end], row=1, col=1)
@@ -185,8 +205,13 @@ def plot_trades_with_equity(df, trades, equity_curve, ticker="TICKER"):
         title=f"{ticker} – Trade Entries/Exits + Equity",
         xaxis_title="Date",
         yaxis_title="Price / Equity",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        height=600
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="white")),
+        height=600,
+        paper_bgcolor="#222222",
+        plot_bgcolor="#222222",
+        font=dict(color="white"),
+        xaxis=dict(showgrid=True, gridcolor="gray"),
+        yaxis=dict(showgrid=True, gridcolor="gray")
     )
 #    plot_combined_chart_and_equity(
 #        df, ext_long, ext_short,
@@ -202,8 +227,7 @@ def plot_trades_with_equity(df, trades, equity_curve, ticker="TICKER"):
 #        ticker
 #     )
 
-    # Debug: Marker-Zählung
-    print(f"🔧 PLOT: Buy={len(buy_idx)}, Sell={len(sell_idx)}, Short={len(short_idx)}, Cover={len(cover_idx)}")
+    # Debug: Marker counts not available in this simplified plot function (removed stale variables)
 
     # Zeige im Browser
 #    fig.show()

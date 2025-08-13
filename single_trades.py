@@ -8,7 +8,9 @@ Example: python single_trades.py 2025-07-01 2025-08-01 long
 import json
 import sys
 import argparse
+import os
 from datetime import datetime
+import pandas as pd
 from tickers_config import tickers
 
 def load_trade_data():
@@ -20,90 +22,181 @@ def load_trade_data():
         print("❌ Results file not found. Please run the comprehensive backtest first.")
         return None
 
+def _parse_date_flexible(val: str) -> datetime:
+    """Try multiple date formats (with or without time)"""
+    if not val:
+        return None
+    formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
+    for fmt in formats:
+        try:
+            return datetime.strptime(val, fmt)
+        except ValueError:
+            continue
+    # Fallback: pandas parser
+    try:
+        return pd.to_datetime(val).to_pydatetime()
+    except Exception:
+        return None
+
 def extract_single_trades(data, start_date, end_date, strategy_filter=None):
-    """Extract individual trade entries for paper trading execution"""
-    
+    """Extract individual trade entries (JSON structure or fallback CSV)"""
     single_trades = []
-    
+
+    # Map possible key variants: 'long' or 'long_strategy'
+    key_variants = {
+        'long': ['long', 'long_strategy'],
+        'short': ['short', 'short_strategy']
+    }
+
     for ticker, ticker_data in data.items():
-        # Get ticker config
         ticker_config = tickers.get(ticker, {})
         trade_on = ticker_config.get('trade_on', 'close').upper()
-        
+
         strategies = ['long', 'short']
         if strategy_filter:
             strategies = [strategy_filter]
-        
+
         for strategy in strategies:
-            if strategy not in ticker_data or not isinstance(ticker_data[strategy], dict):
+            # Find existing key variant
+            strat_dict = None
+            for k in key_variants[strategy]:
+                if k in ticker_data and isinstance(ticker_data[k], dict):
+                    strat_dict = ticker_data[k]
+                    break
+            if not strat_dict:
                 continue
-            
-            strategy_data = ticker_data[strategy]
-            trades = strategy_data.get('trades', [])
-            
-            if not trades:
-                continue
-            
-            # Get strategy parameters
-            params = strategy_data.get('parameters', {})
+
+            trades = strat_dict.get('trades', [])
+            params = strat_dict.get('parameters', {})
             p_param = params.get('p', 'N/A')
             tw_param = params.get('tw', 'N/A')
-            
-            for trade in trades:
-                # Handle different trade formats (long vs short)
-                if 'buy_date' in trade:
-                    # Long trades - Entry (BUY)
-                    entry_date = datetime.strptime(trade['buy_date'], '%Y-%m-%d %H:%M:%S')
-                    exit_date = datetime.strptime(trade['sell_date'], '%Y-%m-%d %H:%M:%S')
-                    entry_price = trade['buy_price']
-                    exit_price = trade['sell_price']
-                    entry_action = 'BUY'
-                    exit_action = 'SELL'
+
+            for tr in trades:
+                is_long = 'buy_date' in tr
+                if is_long:
+                    entry_date = _parse_date_flexible(tr.get('buy_date'))
+                    exit_date = _parse_date_flexible(tr.get('sell_date'))
+                    entry_price = tr.get('buy_price')
+                    exit_price = tr.get('sell_price')
+                    entry_action, exit_action = 'BUY', 'SELL'
                 else:
-                    # Short trades - Entry (SHORT)
-                    entry_date = datetime.strptime(trade['short_date'], '%Y-%m-%d %H:%M:%S')
-                    exit_date = datetime.strptime(trade['cover_date'], '%Y-%m-%d %H:%M:%S')
-                    entry_price = trade['short_price']
-                    exit_price = trade['cover_price']
-                    entry_action = 'SHORT'
-                    exit_action = 'COVER'
-                
-                # Apply date filter for entry
-                if start_date <= entry_date <= end_date:
-                    # Entry trade
-                    single_trade = {
+                    entry_date = _parse_date_flexible(tr.get('short_date'))
+                    exit_date = _parse_date_flexible(tr.get('cover_date'))
+                    entry_price = tr.get('short_price')
+                    exit_price = tr.get('cover_price')
+                    entry_action, exit_action = 'SHORT', 'COVER'
+
+                # Entry
+                if entry_date and start_date <= entry_date <= end_date:
+                    single_trades.append({
                         'ticker': ticker,
                         'strategy': strategy.upper(),
                         'trade_date': entry_date.strftime('%Y-%m-%d'),
                         'action': entry_action,
-                        'order_type': 'LIMIT',  # Default to LIMIT for better fills
+                        'order_type': 'LIMIT',
                         'price': entry_price,
-                        'shares': trade['shares'],
+                        'shares': tr.get('shares'),
                         'trade_on': trade_on,
                         'signal_type': 'ENTRY',
                         'p_param': p_param,
                         'tw_param': tw_param
-                    }
-                    single_trades.append(single_trade)
-                
-                # Apply date filter for exit
-                if start_date <= exit_date <= end_date:
-                    # Exit trade
-                    single_trade = {
+                    })
+                # Exit
+                if exit_date and start_date <= exit_date <= end_date:
+                    single_trades.append({
                         'ticker': ticker,
                         'strategy': strategy.upper(),
                         'trade_date': exit_date.strftime('%Y-%m-%d'),
                         'action': exit_action,
-                        'order_type': 'LIMIT',  # Default to LIMIT for better fills
+                        'order_type': 'LIMIT',
                         'price': exit_price,
-                        'shares': trade['shares'],
+                        'shares': tr.get('shares'),
                         'trade_on': trade_on,
                         'signal_type': 'EXIT',
                         'p_param': p_param,
                         'tw_param': tw_param
-                    }
-                    single_trades.append(single_trade)
-    
+                    })
+
+    # Fallback: if JSON produced no trades, read per-ticker CSVs
+    if not single_trades:
+        for ticker, cfg in tickers.items():
+            if strategy_filter in (None, 'long'):
+                long_csv = f'trades_long_{ticker}.csv'
+                if pd.errors.EmptyDataError:
+                    pass
+                if os.path.exists(long_csv):
+                    try:
+                        df_l = pd.read_csv(long_csv)
+                    except Exception:
+                        df_l = None
+                    if df_l is not None and not df_l.empty:
+                        for _, row in df_l.iterrows():
+                            entry_date = _parse_date_flexible(str(row.get('buy_date')))
+                            exit_date = _parse_date_flexible(str(row.get('sell_date')))
+                            if entry_date and start_date <= entry_date <= end_date:
+                                single_trades.append({
+                                    'ticker': ticker,
+                                    'strategy': 'LONG',
+                                    'trade_date': entry_date.strftime('%Y-%m-%d'),
+                                    'action': 'BUY',
+                                    'order_type': 'LIMIT',
+                                    'price': row.get('buy_price'),
+                                    'shares': row.get('shares'),
+                                    'trade_on': cfg.get('trade_on','OPEN').upper(),
+                                    'signal_type': 'ENTRY',
+                                    'p_param': 'NA','tw_param': 'NA'
+                                })
+                            if exit_date and start_date <= exit_date <= end_date:
+                                single_trades.append({
+                                    'ticker': ticker,
+                                    'strategy': 'LONG',
+                                    'trade_date': exit_date.strftime('%Y-%m-%d'),
+                                    'action': 'SELL',
+                                    'order_type': 'LIMIT',
+                                    'price': row.get('sell_price'),
+                                    'shares': row.get('shares'),
+                                    'trade_on': cfg.get('trade_on','OPEN').upper(),
+                                    'signal_type': 'EXIT',
+                                    'p_param': 'NA','tw_param': 'NA'
+                                })
+            if strategy_filter in (None, 'short'):
+                short_csv = f'trades_short_{ticker}.csv'
+                if os.path.exists(short_csv):
+                    try:
+                        df_s = pd.read_csv(short_csv)
+                    except Exception:
+                        df_s = None
+                    if df_s is not None and not df_s.empty:
+                        for _, row in df_s.iterrows():
+                            entry_date = _parse_date_flexible(str(row.get('short_date')))
+                            exit_date = _parse_date_flexible(str(row.get('cover_date')))
+                            if entry_date and start_date <= entry_date <= end_date:
+                                single_trades.append({
+                                    'ticker': ticker,
+                                    'strategy': 'SHORT',
+                                    'trade_date': entry_date.strftime('%Y-%m-%d'),
+                                    'action': 'SHORT',
+                                    'order_type': 'LIMIT',
+                                    'price': row.get('short_price'),
+                                    'shares': row.get('shares'),
+                                    'trade_on': cfg.get('trade_on','OPEN').upper(),
+                                    'signal_type': 'ENTRY',
+                                    'p_param': 'NA','tw_param': 'NA'
+                                })
+                            if exit_date and start_date <= exit_date <= end_date:
+                                single_trades.append({
+                                    'ticker': ticker,
+                                    'strategy': 'SHORT',
+                                    'trade_date': exit_date.strftime('%Y-%m-%d'),
+                                    'action': 'COVER',
+                                    'order_type': 'LIMIT',
+                                    'price': row.get('cover_price'),
+                                    'shares': row.get('shares'),
+                                    'trade_on': cfg.get('trade_on','OPEN').upper(),
+                                    'signal_type': 'EXIT',
+                                    'p_param': 'NA','tw_param': 'NA'
+                                })
+
     return single_trades
 
 def print_single_trades(trades, start_date_str, end_date_str, strategy_filter=None):

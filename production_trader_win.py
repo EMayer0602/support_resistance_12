@@ -84,9 +84,18 @@ def setup_logging(verbose=False):
     
     return logging.getLogger(__name__)
 
+try:
+    # Python 3.9+
+    from zoneinfo import ZoneInfo
+except ImportError:  # Fallback (older Python) - use naive times
+    ZoneInfo = None
+
+# Default market timezone (override by adding MARKET_TIMEZONE in config.py if desired)
+MARKET_TIMEZONE = globals().get('MARKET_TIMEZONE', 'America/New_York')
+
 class ProductionAutoTrader:
-    def __init__(self, paper_trading=True, dry_run=False, test_mode=False, verbose=False):
-        """Initialize the production auto trader"""
+    def __init__(self, paper_trading: bool = True, dry_run: bool = False, test_mode: bool = False, verbose: bool = False):
+        """Initialize the production auto trader."""
         # Mode flags
         self.paper_trading = paper_trading
         self.dry_run = dry_run
@@ -94,31 +103,36 @@ class ProductionAutoTrader:
         self.verbose = verbose
         self.running = True
 
-        # Track last backtest timestamp to avoid duplicate runs
+        # Backtest tracking
         self._last_backtest_run = None
         self._min_backtest_interval_min = 10  # minutes
 
-        # Setup logging
+        # Logging
         self.logger = setup_logging(verbose)
 
-        # Calculate trading times
+        # Trading times
         self.calculate_trading_times()
 
-        # Session tracking
+        # Session tracking state
         self.sessions_completed = {
             'date': None,
             'open': False,
             'close': False
         }
 
-        # Setup signal handlers
+        # Signal handlers
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
+        # Startup logging
         self.logger.info("PRODUCTION AUTO TRADER INITIALIZED")
         self.logger.info(f"MODE: {'Paper' if paper_trading else 'LIVE'} Trading")
         self.logger.info(f"DRY RUN: {'ON' if dry_run else 'OFF'}")
         self.logger.info(f"TEST MODE: {'ON' if test_mode else 'OFF'}")
+
+        # Heartbeat state
+        self._last_ib_heartbeat = None
+        self._ib_trader_ref = None  # store a ManualTrader instance when connected
 
     def signal_handler(self, signum, frame):
         """Handle shutdown signals gracefully"""
@@ -130,11 +144,23 @@ class ProductionAutoTrader:
             self.logger.info("FORCE EXIT...")
             sys.exit(0)
 
+    def get_market_now(self) -> datetime:
+        """Return current market timezone-aware datetime (Eastern)"""
+        if self.test_mode:
+            return datetime.now()
+        if ZoneInfo is not None:
+            try:
+                return datetime.now(ZoneInfo(MARKET_TIMEZONE))
+            except Exception:
+                return datetime.utcnow()
+        # Fallback to naive local time
+        return datetime.now()
+
     def calculate_trading_times(self):
         """Calculate trading times based on config and mode"""
         if self.test_mode:
             # For testing: use current time + small intervals
-            now = datetime.now()
+            now = self.get_market_now()
             self.open_trade_time = (now + timedelta(minutes=1)).time()
             self.close_trade_time = (now + timedelta(minutes=3)).time()
             self.market_close = (now + timedelta(minutes=5)).time()
@@ -184,18 +210,17 @@ class ProductionAutoTrader:
         return check_date.date() not in holidays_2025
 
     def reset_daily_sessions(self, date):
-        """Reset session tracking for a new day. If started after open_trade_time, skip open session."""
-        now = datetime.now()
-        # Determine if we are past the open_trade_time for today
-        skip_open = now.time() > self.open_trade_time
+        """Reset session tracking for a new day. Always allow OPEN session unless already executed earlier today."""
+        now = self.get_market_now()
+        # Do not pre-skip open; allow it to run immediately if start is after scheduled time
         self.sessions_completed = {
             'date': date,
-            'open': skip_open,
+            'open': False,
             'close': False
         }
         self.logger.info(f"NEW TRADING DAY: {date.strftime('%Y-%m-%d (%A)')}")
-        if skip_open:
-            self.logger.info(f"SKIPPING OPEN SESSION (already past open_trade_time: {self.open_trade_time.strftime('%H:%M')})")
+        if now.time() > self.open_trade_time:
+            self.logger.info(f"NOTE: Current time is past scheduled OPEN trade time ({self.open_trade_time.strftime('%H:%M')}). OPEN session will run now if not yet executed.")
 
     def run_comprehensive_backtest(self) -> bool:
         """Run the comprehensive backtest to get fresh signals"""
@@ -215,6 +240,13 @@ class ProductionAutoTrader:
                 self.logger.info("COMPREHENSIVE BACKTEST COMPLETED SUCCESSFULLY")
                 if self.verbose:
                     self.logger.debug(f"Backtest output: {result.stdout[:200]}...")
+                # After successful backtest, refresh rolling 14-day trade summary
+                try:
+                    import generate_last14_trades
+                    generate_last14_trades.build_last14()
+                    self.logger.info("UPDATED trades_last14_days.json (rolling 14 trading days)")
+                except Exception as gen_err:
+                    self.logger.warning(f"Could not update rolling 14-day trades file: {gen_err}")
                 return True
             else:
                 self.logger.error(f"BACKTEST FAILED with code {result.returncode}")
@@ -243,7 +275,23 @@ class ProductionAutoTrader:
                 )
                 return True
 
-        ok = self.run_comprehensive_backtest()
+        # First attempt + optional retries
+        attempts = 0
+        ok = False
+        max_attempts = 1 + globals().get('BACKTEST_MAX_RETRIES', 0)
+        retry_delay = globals().get('BACKTEST_RETRY_DELAY_SEC', 30)
+        while attempts < max_attempts and not ok:
+            attempts += 1
+            if attempts > 1:
+                self.logger.info(f"RETRYING BACKTEST (attempt {attempts}/{max_attempts}) after failure...")
+            ok = self.run_comprehensive_backtest()
+            if not ok and attempts < max_attempts:
+                self.logger.info(f"WAITING {retry_delay}s BEFORE BACKTEST RETRY")
+                import time as _t
+                for _ in range(retry_delay):
+                    if not self.running:
+                        break
+                    _t.sleep(1)
         if ok:
             self._last_backtest_run = now
         return ok
@@ -418,17 +466,18 @@ class ProductionAutoTrader:
         try:
             # Import and use manual trader
             from manual_trading import ManualTrader
-            
+
             trader = ManualTrader(paper_trading=self.paper_trading)
+            self._ib_trader_ref = trader  # keep reference for heartbeat checks
             
             # Connect to IB
-            if not await trader.connect_ib():
+            if not trader.connect_ib():
                 self.logger.error(f"FAILED TO CONNECT to IB for {session_type} session")
                 return False
             
             try:
                 # Sync portfolio positions
-                await trader.sync_portfolio_with_ib()
+                trader.sync_portfolio_with_ib()
                 
                 # Create and execute combined orders
                 orders = trader.portfolio_manager.create_combined_orders(signals)
@@ -441,7 +490,7 @@ class ProductionAutoTrader:
                 for i, order in enumerate(orders, 1):
                     self.logger.info(f"EXECUTING ORDER {i}/{len(orders)}: {order['ticker']} {order['action']} {order['shares']} shares")
                     
-                    if await trader.place_order(order, execute=True):
+                    if trader.place_order(order, execute=True):
                         successful_orders += 1
                     
                     # Brief pause between orders
@@ -460,6 +509,7 @@ class ProductionAutoTrader:
                 if trader.ib:
                     trader.ib.disconnect()
                     self.logger.info("DISCONNECTED FROM IB")
+                    self._ib_trader_ref = None
         
         except Exception as e:
             self.logger.error(f"ERROR IN {session_type} SESSION EXECUTION: {e}")
@@ -499,7 +549,7 @@ class ProductionAutoTrader:
     async def wait_for_time(self, target_time: time, session_name: str):
         """Wait until the specified time with periodic updates"""
         while self.running:
-            now = datetime.now()
+            now = self.get_market_now()
             current_time = now.time()
             
             # Check if we've reached the target time
@@ -513,7 +563,14 @@ class ProductionAutoTrader:
             
             # Calculate wait time
             today = now.date()
-            target_datetime = datetime.combine(today, target_time)
+            # Build target datetime in market timezone if possible
+            if ZoneInfo is not None:
+                try:
+                    target_datetime = datetime.combine(today, target_time, tzinfo=ZoneInfo(MARKET_TIMEZONE))
+                except Exception:
+                    target_datetime = datetime.combine(today, target_time)
+            else:
+                target_datetime = datetime.combine(today, target_time)
             
             # If target time has passed today, it must be for tomorrow
             if target_datetime <= now:
@@ -556,7 +613,7 @@ class ProductionAutoTrader:
         try:
             while self.running:
                 try:
-                    now = datetime.now()
+                    now = self.get_market_now()
                     today = now.date()
                     current_time = now.time()
                     
@@ -579,68 +636,126 @@ class ProductionAutoTrader:
                             await asyncio.sleep(60)  # 1 minute chunks
                         continue
                     
-                    # Handle OPEN trading session
-                    if (not self.sessions_completed['open'] and 
-                        current_time >= self.open_trade_time and self.running):
-                        
-                        self.logger.info("STARTING OPEN TRADING SESSION")
-                        
-                        # Run backtest first (guard against duplicate runs)
-                        if self.run_backtest_if_needed('OPEN') and self.running:
-                            # Get signals and execute
-                            signals = await self.get_todays_signals('OPEN')
-                            if self.running:
-                                success = await self.execute_trading_session('OPEN', signals)
-                                self.sessions_completed['open'] = True
-                                
-                                if success:
-                                    self.logger.info("OPEN SESSION COMPLETED SUCCESSFULLY")
-                                else:
-                                    self.logger.warning("OPEN SESSION HAD ISSUES")
+                    # Determine if OPEN session is still within grace window
+                    if not self.sessions_completed['open'] and current_time >= self.open_trade_time:
+                        # Build scheduled datetime respecting timezone of 'now'
+                        if now.tzinfo is not None:
+                            scheduled_dt = datetime.combine(now.date(), self.open_trade_time, tzinfo=now.tzinfo)
                         else:
-                            self.logger.error("SKIPPING OPEN SESSION due to backtest failure")
-                            self.sessions_completed['open'] = True  # Mark as done to avoid retry
-                    
-                    # Handle CLOSE trading session
-                    elif (not self.sessions_completed['close'] and 
-                          current_time >= self.close_trade_time and self.running):
-                        
+                            scheduled_dt = datetime.combine(now.date(), self.open_trade_time)
+                        elapsed_min = max(0.0, (now - scheduled_dt).total_seconds() / 60.0)
+                        grace_minutes = globals().get('OPEN_SESSION_GRACE_MIN', 0)
+                        within_grace = elapsed_min <= grace_minutes and current_time < self.close_trade_time
+                        # If we're past the CLOSE trade time OR grace expired, mark skipped
+                        if (current_time >= self.close_trade_time) or (not within_grace):
+                            if current_time >= self.close_trade_time:
+                                self.logger.warning("OPEN SESSION WINDOW MISSED (past close trade time) - SKIPPING OPEN")
+                            else:
+                                self.logger.warning(f"OPEN SESSION GRACE EXPIRED ({elapsed_min:.1f} min > {grace_minutes} min) - SKIPPING OPEN")
+                            self.sessions_completed['open'] = True
+
+                    # Handle CLOSE trading session FIRST (so we never skip it)
+                    # CLOSE session grace handling
+                    close_grace_min = globals().get('CLOSE_SESSION_GRACE_MIN', 0)
+                    allow_close = False
+                    if (not self.sessions_completed['close'] and current_time >= self.close_trade_time and self.running):
+                        if current_time <= self.market_close:
+                            allow_close = True
+                        else:
+                            # minutes past close
+                            try:
+                                past_minutes = (datetime.combine(today, current_time) - datetime.combine(today, self.market_close)).total_seconds()/60.0
+                            except Exception:
+                                past_minutes = 999
+                            if past_minutes <= close_grace_min:
+                                allow_close = True
+                            else:
+                                self.logger.warning(f"CLOSE SESSION GRACE EXPIRED ({past_minutes:.1f} min > {close_grace_min} min) - SKIPPING CLOSE")
+                                self.sessions_completed['close'] = True
+
+                    if allow_close:
+
                         self.logger.info("STARTING CLOSE TRADING SESSION")
-                        
-                        # Run backtest first (guard against duplicate runs)
+
                         if self.run_backtest_if_needed('CLOSE') and self.running:
-                            # Get signals and execute
                             signals = await self.get_todays_signals('CLOSE')
                             if self.running:
                                 success = await self.execute_trading_session('CLOSE', signals)
                                 self.sessions_completed['close'] = True
-                                
                                 if success:
                                     self.logger.info("CLOSE SESSION COMPLETED SUCCESSFULLY")
                                 else:
                                     self.logger.warning("CLOSE SESSION HAD ISSUES")
                         else:
                             self.logger.error("SKIPPING CLOSE SESSION due to backtest failure")
-                            self.sessions_completed['close'] = True  # Mark as done to avoid retry
-                    
-                    # Wait for next session
-                    elif not self.sessions_completed['open'] and self.running:
+                            self.sessions_completed['close'] = True
+
+                    # Handle OPEN trading session (only if still pending and within window)
+                    if (not self.sessions_completed['open'] and 
+                        current_time >= self.open_trade_time and 
+                        current_time < self.close_trade_time and self.running):
+
+                        self.logger.info("STARTING OPEN TRADING SESSION")
+
+                        if self.run_backtest_if_needed('OPEN') and self.running:
+                            signals = await self.get_todays_signals('OPEN')
+                            if self.running:
+                                success = await self.execute_trading_session('OPEN', signals)
+                                self.sessions_completed['open'] = True
+                                if success:
+                                    self.logger.info("OPEN SESSION COMPLETED SUCCESSFULLY")
+                                else:
+                                    self.logger.warning("OPEN SESSION HAD ISSUES")
+                        else:
+                            self.logger.error("SKIPPING OPEN SESSION due to backtest failure")
+                            self.sessions_completed['open'] = True
+
+                    # Waiting logic
+                    if (not self.sessions_completed['open'] and current_time < self.open_trade_time and self.running):
                         await self.wait_for_time(self.open_trade_time, 'OPEN')
-                    elif not self.sessions_completed['close'] and self.running:
+                    elif (self.sessions_completed['open'] and 
+                          not self.sessions_completed['close'] and 
+                          current_time < self.close_trade_time and self.running):
                         await self.wait_for_time(self.close_trade_time, 'CLOSE')
-                    else:
-                        # Only after CLOSE session is completed, log waiting for next trading day
-                        if self.sessions_completed['close'] and self.running:
-                            self.logger.info("ALL TRADING SESSIONS COMPLETED FOR TODAY")
-                            self.logger.info("WAITING FOR NEXT TRADING DAY...")
-                            # Sleep in small chunks to be responsive to stop signals
-                            for _ in range(60):  # 60 minutes total
-                                if not self.running:
-                                    break
-                                await asyncio.sleep(60)  # 1 minute chunks
+                    elif (not self.sessions_completed['close'] and current_time > self.market_close and self.running):
+                        # If still within grace we handled earlier; here means grace either zero or already expired
+                        if globals().get('CLOSE_SESSION_GRACE_MIN', 0) == 0:
+                            self.logger.warning("CLOSE SESSION WINDOW MISSED (after market close) - SKIPPING CLOSE")
+                            self.sessions_completed['close'] = True
+                    elif self.sessions_completed['open'] and self.sessions_completed['close'] and self.running:
+                        self.logger.info("ALL TRADING SESSIONS COMPLETED FOR TODAY")
+                        self.logger.info("WAITING FOR NEXT TRADING DAY...")
+                        for _ in range(60):
+                            if not self.running:
+                                break
+                            await asyncio.sleep(60)
                     
-                    # Small delay to prevent tight loops
+                    # Heartbeat / small delay
                     if self.running:
+                        # Perform lightweight heartbeat every IB_HEARTBEAT_SEC seconds if connected
+                        if self._ib_trader_ref and getattr(self._ib_trader_ref, 'ib', None) and self._ib_trader_ref.ib.isConnected():
+                            now_ts = datetime.utcnow().timestamp()
+                            if (self._last_ib_heartbeat is None or 
+                                now_ts - self._last_ib_heartbeat > globals().get('IB_HEARTBEAT_SEC', 30)):
+                                try:
+                                    # Ping by requesting current time
+                                    ct = self._ib_trader_ref.ib.reqCurrentTime()
+                                    self._last_ib_heartbeat = now_ts
+                                    if self.verbose:
+                                        self.logger.debug(f"IB HEARTBEAT OK: {ct}")
+                                except Exception as hb_err:
+                                    self.logger.warning(f"IB HEARTBEAT FAILED: {hb_err}")
+                                    if globals().get('IB_RECONNECT_ON_TIMEOUT', True):
+                                        try:
+                                            self.logger.info("Attempting IB reconnect after heartbeat failure...")
+                                            self._ib_trader_ref.ib.disconnect()
+                                            # Reconnect using manual trader logic
+                                            if not self._ib_trader_ref.connect_ib():
+                                                self.logger.error("IB RECONNECT FAILED")
+                                            else:
+                                                self.logger.info("IB RECONNECTED SUCCESSFULLY")
+                                        except Exception as rec_err:
+                                            self.logger.error(f"IB RECONNECT ERROR: {rec_err}")
                         await asyncio.sleep(1)
                 
                 except Exception as e:

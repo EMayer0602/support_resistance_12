@@ -75,6 +75,61 @@ def compute_equity_curve(df, trades, start_capital, long=True):
 
     return equity  # ← exakt gleich lang wie df.index
 
+def compute_equity_curve_execution(df, trades, start_capital, trade_on="open", long=True):
+    """Equity curve variant that snapshots value at actual execution price on entry/exit days.
+
+    For other days it falls back to Close (end-of-day). This produces a slightly different curve
+    than the pure close-marked equity when trade_on == 'open'.
+    """
+    trade_on = (trade_on or "close").lower()
+    equity = []
+    cap = start_capital
+    pos = 0
+    entry_price = 0
+    shares = 0
+    t_idx = 0
+    for date in df.index:
+        # Pending trade?
+        if t_idx < len(trades):
+            entry_key = "buy_date" if long else "short_date"
+            if pd.Timestamp(trades[t_idx].get(entry_key)) == date:
+                pos = trades[t_idx]["shares"]
+                entry_price = trades[t_idx]["buy_price" if long else "short_price"]
+                shares = pos
+
+        # Exit on this date?
+        exiting = False
+        if t_idx < len(trades):
+            exit_key = "sell_date" if long else "cover_date"
+            if pd.Timestamp(trades[t_idx].get(exit_key)) == date:
+                exiting = True
+
+        # Determine mark price
+        if pos > 0:
+            if exiting:
+                mark_price = trades[t_idx]["sell_price" if long else "cover_price"]
+            elif pd.Timestamp(trades[t_idx].get("buy_date" if long else "short_date")) == date:
+                # Entry day: use execution price directly
+                mark_price = entry_price
+            else:
+                # In-position normal day -> use Close fallback
+                mark_price = df.loc[date, "Close"]
+            delta = (mark_price - entry_price) if long else (entry_price - mark_price)
+            value = cap + shares * delta
+        else:
+            value = cap
+
+        equity.append(value)
+
+        if exiting:
+            cap = trades[t_idx]["pnl"] + (cap if pos == 0 else cap)  # capital already reflected in pnl accumulation outside this function
+            pos = 0
+            entry_price = 0
+            shares = 0
+            t_idx += 1
+
+    return equity
+
 def debug_equity_alignment(df, equity_curve):
     '''
     Prüft, ob die Equity-Kurve exakt die gleiche Länge und Zeitachse wie df.index hat.
@@ -118,6 +173,7 @@ def simulate_trades_compound_extended(
     position_active = False
     entry_price = entry_date = prev_cap = shares = None
 
+    price_col_used = "Open" if config.get("trade_on", "close").lower() == "open" else "Close"
     for _, row in extended_df.iterrows():
         action = row.get(action_col)
         exec_date = row.get(sort_col)
@@ -137,7 +193,6 @@ def simulate_trades_compound_extended(
             entry_date = exec_date
             prev_cap = capital
             position_active = True
-
         elif action in ["sell", "cover"] and position_active:
             profit = (price - entry_price) * shares if direction == "long" else (entry_price - price) * shares
             turnover = shares * (entry_price + price)
@@ -150,7 +205,9 @@ def simulate_trades_compound_extended(
                 ("sell_price" if direction == "long" else "cover_price"): round(price, 2),
                 "shares": shares,
                 "fee": round(fee, 2),
-                "pnl": round(capital - prev_cap, 3)
+                "pnl": round(capital - prev_cap, 3),
+                "entry_price_col": price_col_used,
+                "exit_price_col": price_col_used
             })
             position_active = False
 
@@ -166,7 +223,9 @@ def simulate_trades_compound_extended(
             ("sell_price" if direction == "long" else "cover_price"): round(artificial_close_price, 2),
             "shares": shares,
             "fee": round(fee, 2),
-            "pnl": round(capital - prev_cap, 3)
+            "pnl": round(capital - prev_cap, 3),
+            "entry_price_col": price_col_used,
+            "exit_price_col": price_col_used
         })
 
     return capital, trades

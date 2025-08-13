@@ -24,8 +24,44 @@ backtesting_begin  = 0
 backtesting_end    = 100
 
 from ib_insync import IB, Stock
-import pandas as pd
-import os
+from datetime import datetime
+
+# ------------------------------------------------------------
+# Helper functions added to resolve missing references
+# ------------------------------------------------------------
+def is_ny_trading_time() -> bool:
+    """Return True if current time is within regular NYSE session (09:30-16:00 ET)."""
+    try:
+        now_et = pd.Timestamp.now(tz="America/New_York")
+    except Exception:
+        now_et = pd.Timestamp.utcnow()
+    open_time = now_et.replace(hour=9, minute=30, second=0, microsecond=0)
+    close_time = now_et.replace(hour=16, minute=0, second=0, microsecond=0)
+    return open_time <= now_et <= close_time
+
+
+def construct_today_from_minute_data(df_minute: pd.DataFrame, today: pd.Timestamp) -> pd.Series:
+    """Aggregate minute data for 'today' into a daily OHLCV row."""
+    if df_minute is None or df_minute.empty:
+        return pd.Series({"Open": None, "High": None, "Low": None, "Close": None, "Volume": 0})
+
+    idx = df_minute.index
+    # Normalize timezone for comparison
+    if hasattr(idx, 'tz') and idx.tz is not None:
+        dates = idx.tz_convert('UTC').tz_localize(None).date
+    else:
+        dates = idx.date
+    mask = dates == today.date()
+    day_df = df_minute.loc[mask]
+    if day_df.empty:
+        return pd.Series({"Open": None, "High": None, "Low": None, "Close": None, "Volume": 0})
+    return pd.Series({
+        "Open": day_df.iloc[0]["Open"],
+        "High": day_df["High"].max(),
+        "Low": day_df["Low"].min(),
+        "Close": day_df.iloc[-1]["Close"],
+        "Volume": day_df["Volume"].sum(),
+    })
 
 def update_historical_data_minute(ib, contract, fn, duration="1 D", bar_size="1 min", what_to_show="TRADES"):
     """
@@ -107,48 +143,52 @@ def run_full_backtest(ib, report_dir):
         artificial_close_date  = df.index[-1]
 
         # Long optimieren + simulieren
-        p_long, tw_long = berechne_best_p_tw_long(df, cfg, backtesting_begin, backtesting_end)
-        sup_long, res_long = calculate_support_resistance(df, p_long, tw_long)
-        ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
-        ext_long = update_level_close_long(ext_long, df)
-        p_long, tw_long = berechne_best_p_tw_long(df, cfg)
-        sup_long, res_long = calculate_support_resistance(df, p_long, tw_long)
-        ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
-        ext_long = update_level_close_long(ext_long, df)
-        cap_long, trades_long = simulate_trades_compound_extended(
-            ext_long, df, cfg,
-            commission_rate=COMMISSION_RATE,
-            min_commission=MIN_COMMISSION,
-            round_factor=cfg.get("order_round_factor", ORDER_ROUND_FACTOR),
-            artificial_close_price=close_price,
-            artificial_close_date=close_date,
-            direction="long"
-        )
+    p_long, tw_long = berechne_best_p_tw_long(df, cfg, backtesting_begin, backtesting_end)
+    price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+    sup_long, res_long = calculate_support_resistance(df, p_long, tw_long, price_col=price_col)
+    ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
+    ext_long = update_level_close_long(ext_long, df)
+    # Re-opt with full range
+    p_long, tw_long = berechne_best_p_tw_long(df, cfg)
+    price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+    sup_long, res_long = calculate_support_resistance(df, p_long, tw_long, price_col=price_col)
+    ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
+    ext_long = update_level_close_long(ext_long, df)
+    cap_long, trades_long = simulate_trades_compound_extended(
+        ext_long, df, cfg,
+        commission_rate=COMMISSION_RATE,
+        min_commission=MIN_COMMISSION,
+        round_factor=cfg.get("order_round_factor", ORDER_ROUND_FACTOR),
+        artificial_close_price=artificial_close_price,
+        artificial_close_date=artificial_close_date,
+        direction="long"
+    )
 
         # Short optimieren + simulieren
-        p_short, tw_short = berechne_best_p_tw_short(df, cfg, backtesting_begin, backtesting_end)
-        sup_short, res_short = calculate_support_resistance(df, p_short, tw_short)
-        ext_short = assign_short_signals_extended(sup_short, res_short, df, tw_short, "1d")
-        ext_short = update_level_close_short(ext_short, df)
-        cap_short, trades_short = simulate_trades_compound_extended(
-            ext_short, df, cfg,
-            commission_rate=COMMISSION_RATE,
-            min_commission=MIN_COMMISSION,
-            round_factor=cfg.get("order_round_factor", ORDER_ROUND_FACTOR),
-            artificial_close_price=close_price,
-            artificial_close_date=close_date,
-            direction="short"
-        )
+    p_short, tw_short = berechne_best_p_tw_short(df, cfg, backtesting_begin, backtesting_end)
+    price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+    sup_short, res_short = calculate_support_resistance(df, p_short, tw_short, price_col=price_col)
+    ext_short = assign_short_signals_extended(sup_short, res_short, df, tw_short, "1d")
+    ext_short = update_level_close_short(ext_short, df)
+    cap_short, trades_short = simulate_trades_compound_extended(
+        ext_short, df, cfg,
+        commission_rate=COMMISSION_RATE,
+        min_commission=MIN_COMMISSION,
+        round_factor=cfg.get("order_round_factor", ORDER_ROUND_FACTOR),
+        artificial_close_price=artificial_close_price,
+        artificial_close_date=artificial_close_date,
+        direction="short"
+    )
 
         # CSV export
-        pd.DataFrame(trades_long ).to_csv(f"{report_dir}/trades_long_{ticker}.csv",  index=False)
-        pd.DataFrame(trades_short).to_csv(f"{report_dir}/trades_short_{ticker}.csv", index=False)
-        print(f"{ticker}: Trades gespeichert.")
+    pd.DataFrame(trades_long ).to_csv(f"{report_dir}/trades_long_{ticker}.csv",  index=False)
+    pd.DataFrame(trades_short).to_csv(f"{report_dir}/trades_short_{ticker}.csv", index=False)
+    print(f"{ticker}: Trades gespeichert.")
 
         # Ausgabe
-        matched_long  = match_trades(trades_long,  side="long")
-        matched_short = match_trades(trades_short, side="short")
-        print_matched_long_trades(matched_long,  ticker)
-        print_matched_short_trades(matched_short, ticker)
+    matched_long  = match_trades(trades_long,  side="long")
+    matched_short = match_trades(trades_short, side="short")
+    print_matched_long_trades(matched_long,  ticker)
+    print_matched_short_trades(matched_short, ticker)
 
     print("\nBacktest abgeschlossen.")

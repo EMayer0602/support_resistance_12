@@ -18,8 +18,11 @@ from signal_utils import (
     assign_long_signals,
     assign_short_signals,
     update_level_close_long,
-    update_level_close_short
+    update_level_close_short,
+    compute_trend
 )
+from backtest_range import restrict_df_for_backtest
+
 from simulation_utils import simulate_trades_compound_extended, compute_equity_curve
 from plot_utils import plot_combined_chart_and_equity
 from stats_tools import stats
@@ -97,30 +100,23 @@ class BacktestOptimizer:
     
     def __init__(self):
         self.results = {}
-        
+    
     def create_backtest_subset(self, df, begin_pct=None, end_pct=None):
+        """Return percentage slice (df_bt) used ONLY for parameter optimization.
+
+        The full recent trade_years slice should be used for final simulation elsewhere.
         """
-        Create df_bt subset based on percentage range from config.py
-        
-        Args:
-            df: Full DataFrame
-            begin_pct: Start percentage (from config if None)
-            end_pct: End percentage (from config if None)
-        """
-        if begin_pct is None:
-            begin_pct = backtesting_begin
-        if end_pct is None:
-            end_pct = backtesting_end
-            
+        begin_pct = backtesting_begin if begin_pct is None else begin_pct
+        end_pct = backtesting_end if end_pct is None else end_pct
+        if df is None or df.empty:
+            print("⚠️ Empty DataFrame passed to create_backtest_subset")
+            return df
         n = len(df)
         start_idx = int(n * begin_pct / 100)
         end_idx = int(n * end_pct / 100)
-        
         df_bt = df.iloc[start_idx:end_idx].copy()
-        
-        print(f"📈 Created backtest subset: {len(df_bt)} bars ({begin_pct}% - {end_pct}%)")
-        print(f"   Period: {df_bt.index[0].date()} to {df_bt.index[-1].date()}")
-        
+        print(f"📈 Created df_bt optimization subset: {len(df_bt)} bars ({begin_pct}% - {end_pct}%)")
+        print(f"   df_bt period: {df_bt.index[0].date()} to {df_bt.index[-1].date()}")
         return df_bt
         
     def optimize_parameters(self, df_bt, symbol, ticker_config, p_range=range(5, 51, 5), tw_range=range(5, 31, 5)):
@@ -144,7 +140,8 @@ class BacktestOptimizer:
             for tw in tw_range:
                 try:
                     # Calculate support/resistance
-                    support, resistance = calculate_support_resistance(df_bt, p, tw)
+                    price_col = "Open" if ticker_config.get("trade_on", "Close").lower() == "open" else "Close"
+                    support, resistance = calculate_support_resistance(df_bt, p, tw, price_col=price_col)
                     
                     # Debug: Check what types we get from calculate_support_resistance
                     if not isinstance(support, pd.Series) or not isinstance(resistance, pd.Series):
@@ -297,93 +294,89 @@ class BacktestOptimizer:
             return pd.DataFrame(), pd.DataFrame()
             
     def run_full_backtest(self, df_bt, symbol, ticker_config, optimal_p, optimal_tw):
-        """
-        Run full backtest with optimal parameters and generate all outputs
-        
-        Args:
-            df_bt: Backtest DataFrame subset
-            symbol: Stock symbol  
-            ticker_config: Configuration for this ticker
-            optimal_p: Optimal past_window parameter
-            optimal_tw: Optimal trade_window parameter
-        """
+        """Run full backtest with optimal parameters and generate outputs."""
         print(f"\n🚀 Running full backtest for {symbol} with p={optimal_p}, tw={optimal_tw}")
-        
-        # Calculate support/resistance with optimal parameters
-        support, resistance = calculate_support_resistance(df_bt, optimal_p, optimal_tw)
-        
+
+        # Support / Resistance using correct price column
+        price_col = "Open" if ticker_config.get("trade_on", "Close").lower() == "open" else "Close"
+        support, resistance = calculate_support_resistance(df_bt, optimal_p, optimal_tw, price_col=price_col)
+
         results = {}
-        
-        # Long signals and backtest
+
+        # LONG
         if ticker_config.get("long", False):
             print("   📈 Processing LONG signals...")
             signals_long = assign_long_signals_extended(support, resistance, df_bt, optimal_tw, interval="1D")
             signals_long = update_level_close_long(signals_long, df_bt)
-            
-            trades_long, equity_long = self._backtest_signals(
-                signals_long, df_bt, symbol, ticker_config, "long"
-            )
-            
-            # Save extended trades
+            trades_long, equity_long = self._backtest_signals(signals_long, df_bt, symbol, ticker_config, "long")
             trades_long.to_csv(f"extended_long_{symbol}.csv", index=False)
-            
-            # Generate matched trades (simplified version)
             matched_trades_long = self._create_matched_trades(trades_long, "long")
             matched_trades_long.to_csv(f"trades_long_{symbol}.csv", index=False)
-            
-            # Calculate statistics
-            long_stats = stats(equity_long) if not equity_long.empty else {}
-            
-            results["long"] = {
-                "signals": signals_long,
-                "trades": trades_long,
-                "matched_trades": matched_trades_long,
-                "equity": equity_long,
-                "stats": long_stats
-            }
-            
-        # Short signals and backtest  
+            equity_list = equity_long['Equity'].tolist() if not equity_long.empty and 'Equity' in equity_long else []
+            trades_list = trades_long.to_dict('records') if not trades_long.empty else []
+            final_cap_long = equity_list[-1] if equity_list else ticker_config.get('initialCapitalLong')
+            long_stats = stats(trades_list, f"{symbol} Long", initial_capital=ticker_config.get('initialCapitalLong'), final_capital=final_cap_long, equity_curve=equity_list) if trades_list else {}
+            if long_stats:
+                print(f"   🔢 LONG Metrics: Init={long_stats.get('initial_capital'):.2f} Final={long_stats.get('final_capital'):.2f} MaxDD={long_stats.get('max_drawdown_pct'):.2f}%")
+            results["long"] = {"signals": signals_long, "trades": trades_long, "matched_trades": matched_trades_long, "equity": equity_long, "stats": long_stats}
+
+        # SHORT
         if ticker_config.get("short", False):
             print("   📉 Processing SHORT signals...")
             signals_short = assign_short_signals_extended(support, resistance, df_bt, optimal_tw, interval="1D")
             signals_short = update_level_close_short(signals_short, df_bt)
-            
-            trades_short, equity_short = self._backtest_signals(
-                signals_short, df_bt, symbol, ticker_config, "short"
-            )
-            
-            # Save extended trades
+            trades_short, equity_short = self._backtest_signals(signals_short, df_bt, symbol, ticker_config, "short")
             trades_short.to_csv(f"extended_short_{symbol}.csv", index=False)
-            
-            # Generate matched trades
             matched_trades_short = self._create_matched_trades(trades_short, "short")
             matched_trades_short.to_csv(f"trades_short_{symbol}.csv", index=False)
-            
-            # Calculate statistics
-            short_stats = stats(equity_short) if not equity_short.empty else {}
-            
-            results["short"] = {
-                "signals": signals_short,
-                "trades": trades_short,
-                "matched_trades": matched_trades_short,
-                "equity": equity_short,  
-                "stats": short_stats
-            }
-            
-        # Generate combined chart and equity curve
+            equity_list_s = equity_short['Equity'].tolist() if not equity_short.empty and 'Equity' in equity_short else []
+            trades_list_s = trades_short.to_dict('records') if not trades_short.empty else []
+            final_cap_short = equity_list_s[-1] if equity_list_s else ticker_config.get('initialCapitalShort')
+            short_stats = stats(trades_list_s, f"{symbol} Short", initial_capital=ticker_config.get('initialCapitalShort'), final_capital=final_cap_short, equity_curve=equity_list_s) if trades_list_s else {}
+            if short_stats:
+                print(f"   🔢 SHORT Metrics: Init={short_stats.get('initial_capital'):.2f} Final={short_stats.get('final_capital'):.2f} MaxDD={short_stats.get('max_drawdown_pct'):.2f}%")
+            results["short"] = {"signals": signals_short, "trades": trades_short, "matched_trades": matched_trades_short, "equity": equity_short, "stats": short_stats}
+
+        # Chart (align with current plot_utils signature)
         try:
+            ext_long_df  = results.get("long", {}).get("signals", pd.DataFrame())
+            ext_short_df = results.get("short", {}).get("signals", pd.DataFrame())
+            eq_long_df   = results.get("long", {}).get("equity", pd.DataFrame())
+            eq_short_df  = results.get("short", {}).get("equity", pd.DataFrame())
+
+            # Extract equity series (or empty list) expected by plotter
+            equity_long_series  = eq_long_df["Equity"].tolist() if not eq_long_df.empty and "Equity" in eq_long_df else []
+            equity_short_series = eq_short_df["Equity"].tolist() if not eq_short_df.empty and "Equity" in eq_short_df else []
+            # Combined equity (element-wise sum, fallback to long if short empty)
+            if equity_long_series and equity_short_series and len(equity_long_series)==len(equity_short_series):
+                equity_combined = [l + s for l, s in zip(equity_long_series, equity_short_series)]
+            else:
+                equity_combined = equity_long_series or equity_short_series
+            # Buy & Hold baseline on Close
+            if not df_bt.empty:
+                initial_cap = ticker_config.get("initialCapitalLong", 1000)
+                first_close = df_bt["Close"].iloc[0]
+                buyhold = [initial_cap * (c / first_close) for c in df_bt["Close"]]
+            else:
+                buyhold = []
+            trend_series = compute_trend(df_bt, 20)
             plot_combined_chart_and_equity(
-                df_bt, support, resistance,
-                results.get("long", {}).get("signals", pd.DataFrame()),
-                results.get("short", {}).get("signals", pd.DataFrame()),
-                results.get("long", {}).get("equity", pd.DataFrame()),
-                results.get("short", {}).get("equity", pd.DataFrame()),
-                symbol, optimal_p, optimal_tw
+                df_bt,
+                ext_long_df,
+                ext_short_df,
+                support,
+                resistance,
+                trend_series,
+                equity_long_series,
+                equity_short_series,
+                equity_combined,
+                buyhold,
+                symbol
             )
             print(f"   📊 Chart saved as {symbol}_chart.html")
         except Exception as e:
             print(f"   ⚠️ Chart generation error: {e}")
-            
+
         return results
         
     def _create_matched_trades(self, extended_trades, direction):

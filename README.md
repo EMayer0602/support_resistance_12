@@ -78,6 +78,7 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 - ✅ **Paper Trading Lists** - Single trades ready for execution
 - ✅ **Interactive Charts** - HTML charts with signals and levels
 - ✅ **Performance Analytics** - Detailed statistics and trade analysis
+- ✅ **Dual Equity Curves** - Standard Close-marked and Execution (entry/exit price) variants
 - ✅ **Interactive Brokers** - Full live and paper trading integration
 - ✅ **Flexible Configuration** - Per-ticker strategy and timing settings
 - ✅ **Safety First** - Paper trading default, dry-run mode, confirmations
@@ -116,6 +117,7 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 - `comprehensive_trade_summary.py` - Detailed trade analysis
 - `paper_trading_list.py` - Interactive paper trading tool
 - `plot_utils.py` / `plotly_utils.py` - Chart generation
+- `verify_price_column_usage.py` - Asserts price column (Open/Close) mapping correctness
 - `test_config.py` - Validate configuration integration
 
 ## AUTOMATED TRADING SYSTEM
@@ -350,6 +352,23 @@ tickers = {
 4. **Risk Management**: Automatic stop losses and profit targets
 
 ### Trading Strategies
+### Equity Curves (Two Variants)
+The system now produces two conceptual equity representations:
+1. Close-Marked Equity (default): Marks open positions each day using the session Close. Provides a smooth, comparable baseline across tickers.
+2. Execution Equity (optional): Uses actual execution price on entry and exit days (Open if trade_on=Open) and Close on intervening days, highlighting intraday gap effects.
+
+When trade_on == Open, execution equity can differ notably from close equity if large opening gaps occur; use it to assess slippage/gap sensitivity.
+
+### Price Column Verification
+Run the quick audit script to confirm all tickers use the intended price column for both level detection and execution:
+```bash
+python verify_price_column_usage.py
+```
+Outputs [OK]/[FAIL] lines per ticker plus sampled comparisons.
+
+### Trade Audit Metadata
+Each simulated trade now stores `entry_price_col` and `exit_price_col` ("Open" or "Close") so downstream analytics or compliance reviews can confirm execution basis.
+
 - **LONG**: Buy at support levels, sell at resistance
 - **SHORT**: Short at resistance levels, cover at support
 - **Execution**: Market OPEN or CLOSE based on configuration

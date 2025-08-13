@@ -35,7 +35,7 @@ def plotly_combined_chart_and_equity(
     fig.add_trace(
         go.Scatter(
             x=trend.index, y=trend.values,
-            mode="lines", line=dict(color="blue", width=2),
+            mode="lines", line=dict(color="#006400", width=2),  # dark green trend
             name="Trend (MA)"
         ),
         row=1, col=1
@@ -45,7 +45,7 @@ def plotly_combined_chart_and_equity(
     fig.add_trace(
         go.Scatter(
             x=support.index, y=support.values,
-            mode="markers", marker=dict(symbol="circle", color="green", size=8),
+            mode="markers", marker=dict(symbol="circle", color="green", size=10),
             name="Support"
         ),
         row=1, col=1
@@ -53,7 +53,7 @@ def plotly_combined_chart_and_equity(
     fig.add_trace(
         go.Scatter(
             x=resistance.index, y=resistance.values,
-            mode="markers", marker=dict(symbol="x", color="red", size=8),
+            mode="markers", marker=dict(symbol="x", color="red", size=10),
             name="Resistance"
         ),
         row=1, col=1
@@ -67,7 +67,7 @@ def plotly_combined_chart_and_equity(
             go.Scatter(
                 x=buys["Long Date"], 
                 y=df.loc[buys["Long Date"],"Close"],
-                mode="markers", marker=dict(symbol="triangle-up", color="blue", size=12),
+                mode="markers", marker=dict(symbol="triangle-up", color="blue", size=10),
                 name="Buy"
             ), row=1, col=1
         )
@@ -76,7 +76,7 @@ def plotly_combined_chart_and_equity(
             go.Scatter(
                 x=sells["Long Date"], 
                 y=df.loc[sells["Long Date"],"Close"],
-                mode="markers", marker=dict(symbol="triangle-down", color="orange", size=12),
+                mode="markers", marker=dict(symbol="triangle-down", color="orange", size=10),
                 name="Sell"
             ), row=1, col=1
         )
@@ -103,15 +103,16 @@ def plotly_combined_chart_and_equity(
         legend=dict(orientation="h", y=-0.1, font=dict(color="white")),
         margin=dict(l=50, r=50, t=50, b=50),
         template="plotly_white",
-        paper_bgcolor="midnightblue",
-        plot_bgcolor="midnightblue",
+    paper_bgcolor="#222222",
+    plot_bgcolor="#222222",
         font=dict(color="white")
     )
 
     fig.update_xaxes(
-        showspikes=True, spikecolor="grey", spikesnap="cursor", spikemode="across"
+        showspikes=True, spikecolor="grey", spikesnap="cursor", spikemode="across",
+        showgrid=True, gridcolor="#444444"
     )
-    fig.update_yaxes(title_text="Price", row=1, col=1)
-    fig.update_yaxes(title_text="Kapital (€)", row=2, col=1)
+    fig.update_yaxes(title_text="Price", row=1, col=1, showgrid=True, gridcolor="#444444")
+    fig.update_yaxes(title_text="Kapital (€)", row=2, col=1, showgrid=True, gridcolor="#444444")
 
     fig.show()

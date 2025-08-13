@@ -54,9 +54,17 @@ def update_level_close_short(extended_df, market_df):
     extended_df["Level Close"] = closes
     return extended_df
 
-def calculate_support_resistance(df, past_window, trade_window):
+def calculate_support_resistance(df, past_window, trade_window, price_col="Close"):
+    """Calculate support & resistance using the specified price column.
+
+    price_col: which column to use ("Open" or "Close"). Falls back to Close if missing.
+    past_window, trade_window: integers controlling extrema detection horizon.
+    """
+    if price_col not in df.columns:
+        # Fallback gracefully
+        price_col = "Close"
     total_window = int(past_window + trade_window)
-    prices = df["Close"].values
+    prices = df[price_col].values
 
     local_min_idx = argrelextrema(prices, np.less, order=total_window)[0]
     support = pd.Series(prices[local_min_idx], index=df.index[local_min_idx])
@@ -65,13 +73,13 @@ def calculate_support_resistance(df, past_window, trade_window):
     resistance = pd.Series(prices[local_max_idx], index=df.index[local_max_idx])
 
     # Globale Werte ergänzen
-    absolute_low_date = df["Close"].idxmin()
-    absolute_low = df["Close"].min()
+    absolute_low_date = df[price_col].idxmin()
+    absolute_low = df[price_col].min()
     if absolute_low_date not in support.index:
         support = pd.concat([support, pd.Series([absolute_low], index=[absolute_low_date])])
 
-    absolute_high_date = df["Close"].idxmax()
-    absolute_high = df["Close"].max()
+    absolute_high_date = df[price_col].idxmax()
+    absolute_high = df[price_col].max()
     if absolute_high_date not in resistance.index:
         resistance = pd.concat([resistance, pd.Series([absolute_high], index=[absolute_high_date])])
 
@@ -130,7 +138,7 @@ def assign_short_signals(support, resistance, data, trade_window, interval="1d")
 
     return df
 
-def assign_long_signals_extended(support, resistance, data, trade_window, interval="1d"):
+def assign_long_signals_extended(support, resistance, data, trade_window, interval="1d", price_col="Close"):
     # Ensure we get a proper DataFrame from assign_long_signals
     try:
         base_signals = assign_long_signals(support, resistance, data, trade_window, interval)
@@ -250,7 +258,7 @@ def list_all_trades_by_date():
 if __name__ == "__main__":
     list_all_trades_by_date()
 
-def assign_short_signals_extended(support, resistance, data, trade_window, interval="1d"):
+def assign_short_signals_extended(support, resistance, data, trade_window, interval="1d", price_col="Close"):
     # Ensure we get a proper DataFrame from assign_short_signals
     try:
         base_signals = assign_short_signals(support, resistance, data, trade_window, interval)

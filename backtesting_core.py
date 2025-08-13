@@ -19,7 +19,7 @@ from signal_utils import (
 from simulation_utils import debug_equity_alignment
 from simulation_utils import simulate_trades_compound_extended, compute_equity_curve
 from stats_tools import stats
-from config import ORDER_ROUND_FACTOR, DEFAULT_COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end
+from config import ORDER_ROUND_FACTOR, DEFAULT_COMMISSION_RATE, MIN_COMMISSION, ORDER_SIZE, backtesting_begin, backtesting_end, trade_years
 COMMISSION_RATE = DEFAULT_COMMISSION_RATE  # Use the config value
 from pandas.errors import EmptyDataError
 from ib_insync import util
@@ -215,13 +215,31 @@ def get_trade_day_offset(base_date, trade_window, df):
         return pd.NaT
     return future_dates[trade_window - 1]
 
-def berechne_best_p_tw_long(df, config, begin=0, end=20, verbose=True, ticker=""):
-    df_opt = get_backtesting_slice(df, begin, end)
+def berechne_best_p_tw_long(df, config, begin=None, end=None, verbose=True, ticker=""):
+    """Optimize long parameters within configured recent period AND backtesting percentage window.
+
+    begin/end default to config backtesting_begin/backtesting_end if not supplied.
+    """
+    if begin is None:
+        begin = backtesting_begin
+    if end is None:
+        end = backtesting_end
+    # Restrict to recent trade_years period if configured, then slice percent window
+    if trade_years and trade_years > 0 and not df.empty:
+        try:
+            cutoff = df.index.max() - pd.Timedelta(days=int(trade_years * 365))
+            df_recent = df[df.index >= cutoff]
+        except Exception:
+            df_recent = df
+    else:
+        df_recent = df
+    df_opt = get_backtesting_slice(df_recent, begin, end)
     results = []
 
     for p in range(3, 10):
         for tw in range(1, 6):
-            sup, res = calculate_support_resistance(df_opt, p, tw)
+            price_col = "Open" if config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup, res = calculate_support_resistance(df_opt, p, tw, price_col=price_col)
             ext_df = assign_long_signals_extended(sup, res, df_opt, tw, "1d")
             ext_df = update_level_close_long(ext_df, df_opt)
 
@@ -246,13 +264,26 @@ def berechne_best_p_tw_long(df, config, begin=0, end=20, verbose=True, ticker=""
     best = df_result.iloc[0]
     return int(best["past_window"]), int(best["trade_window"])
 
-def berechne_best_p_tw_short(df, config, begin=0, end=20, verbose=True, ticker=""):
-    df_opt = get_backtesting_slice(df, begin, end)
+def berechne_best_p_tw_short(df, config, begin=None, end=None, verbose=True, ticker=""):
+    if begin is None:
+        begin = backtesting_begin
+    if end is None:
+        end = backtesting_end
+    if trade_years and trade_years > 0 and not df.empty:
+        try:
+            cutoff = df.index.max() - pd.Timedelta(days=int(trade_years * 365))
+            df_recent = df[df.index >= cutoff]
+        except Exception:
+            df_recent = df
+    else:
+        df_recent = df
+    df_opt = get_backtesting_slice(df_recent, begin, end)
     results = []
 
     for p in range(3, 10):
         for tw in range(1, 4):
-            sup, res = calculate_support_resistance(df_opt, p, tw)
+            price_col = "Open" if config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup, res = calculate_support_resistance(df_opt, p, tw, price_col=price_col)
             ext_df = assign_short_signals_extended(sup, res, df_opt, tw, "1d")
             ext_df = update_level_close_short(ext_df, df_opt)
 
@@ -382,7 +413,8 @@ def berechne_best_p_tw_long(df, config, begin=0, end=20, verbose=True, ticker=""
 
     for p in range(3, 10):
         for tw in range(1, 6):
-            sup, res = calculate_support_resistance(df_opt, p, tw)
+            price_col = "Open" if config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup, res = calculate_support_resistance(df_opt, p, tw, price_col=price_col)
             ext_df = assign_long_signals_extended(sup, res, df_opt, tw, "1d")
             ext_df = update_level_close_long(ext_df, df_opt)
 
@@ -414,7 +446,8 @@ def berechne_best_p_tw_short(df, config, begin=0, end=20, verbose=True, ticker="
 
     for p in range(3, 10):
         for tw in range(1, 4):
-            sup, res = calculate_support_resistance(df_opt, p, tw)
+            price_col = "Open" if config.get("trade_on", "Close").lower() == "open" else "Close"
+            sup, res = calculate_support_resistance(df_opt, p, tw, price_col=price_col)
             ext_df = assign_short_signals_extended(sup, res, df_opt, tw, "1d")
             ext_df = update_level_close_short(ext_df, df_opt)
 
@@ -468,6 +501,14 @@ def run_full_backtest(ib):
 
         df.rename(columns={"open":"Open","high":"High","low":"Low","close":"Close"}, inplace=True)
         df.sort_index(inplace=True)
+        # Apply trade_years restriction ONLY (percentage slice reserved for optimization routines)
+        if trade_years and trade_years > 0 and not df.empty:
+            cutoff = df.index.max() - pd.Timedelta(days=int(trade_years * 365))
+            df_recent = df[df.index >= cutoff].copy()
+            df_bt = df_recent  # explicit alias for simulation backtest dataset
+            print(f"{ticker}: df_bt simulation slice created (trade_years={trade_years}) -> {df_bt.index[0].date()} to {df_bt.index[-1].date()} ({len(df_bt)} rows)")
+            print(f"{ticker}: NOTE optimization routines will internally apply percentage window {backtesting_begin}% - {backtesting_end}% on this df_bt")
+            df = df_bt
     # Price fetch & validation
         last_price = get_last_price(df, cfg, ticker)
         if last_price is None:
@@ -513,7 +554,8 @@ def run_full_backtest(ib):
         # 3) Long-Optimierung & Simulation
         if cfg.get("long", False):
             p_long, tw_long = berechne_best_p_tw_long(df, cfg, verbose=True, ticker=ticker)
-            sup_long, res_long = calculate_support_resistance(df, p_long, tw_long)
+            price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+            sup_long, res_long = calculate_support_resistance(df, p_long, tw_long, price_col=price_col)
 
             ext_long = assign_long_signals_extended(sup_long, res_long, df, tw_long, "1d")
             ext_long = update_level_close_long(ext_long, df)
@@ -545,7 +587,8 @@ def run_full_backtest(ib):
         # 4) Short-Optimierung & Simulation
         if cfg.get("short", False):
             p_short, tw_short = berechne_best_p_tw_short(df, cfg, verbose=True, ticker=ticker)
-            sup_short, res_short = calculate_support_resistance(df, p_short, tw_short)
+            price_col = "Open" if cfg.get("trade_on", "Close").lower() == "open" else "Close"
+            sup_short, res_short = calculate_support_resistance(df, p_short, tw_short, price_col=price_col)
 
             ext_short = assign_short_signals_extended(sup_short, res_short, df, tw_short, "1d")
             ext_short = update_level_close_short(ext_short, df)
@@ -576,12 +619,24 @@ def run_full_backtest(ib):
 
         # 5) Stats ausgeben
         print(f"{ticker} Final Capital: Long={cap_long:.2f}  Short={cap_short:.2f}")
-        stats(trades_long,  f"{ticker} Long")
-        stats(trades_short, f"{ticker} Short")
-
-        # 6) Equity-Kurven bauen & debug-print
+        # Build equity curves first so we can supply to stats
         eq_long  = compute_equity_curve(df, trades_long,  cfg["initialCapitalLong"],  long=True)
         eq_short = compute_equity_curve(df, trades_short, cfg["initialCapitalShort"], long=False)
+        stats(
+            trades_long,
+            f"{ticker} Long",
+            initial_capital=cfg.get("initialCapitalLong"),
+            final_capital=cap_long,
+            equity_curve=eq_long
+        )
+        stats(
+            trades_short,
+            f"{ticker} Short",
+            initial_capital=cfg.get("initialCapitalShort"),
+            final_capital=cap_short,
+            equity_curve=eq_short
+        )
+        # 6) Equity-Kurven bauen & debug-print (already built above)
         eq_combined = [l+s for l,s in zip(eq_long, eq_short)]
         buyhold     = [cfg["initialCapitalLong"] * (p/df["Close"].iloc[0]) for p in df["Close"]]
 

@@ -1,26 +1,76 @@
 import pandas as pd
 
-def stats(trades, name="Trades"):
+def _max_drawdown(equity_list):
+    if not equity_list:
+        return 0.0
+    peak = equity_list[0]
+    max_dd = 0.0
+    for v in equity_list:
+        if v > peak:
+            peak = v
+        dd = (peak - v) / peak if peak else 0.0
+        if dd > max_dd:
+            max_dd = dd
+    return round(max_dd * 100, 2)  # percentage
+
+def stats(trades, name="Trades", initial_capital=None, final_capital=None, equity_curve=None):
+    """Print trade statistics plus capital & max drawdown.
+
+    Parameters:
+        trades (list[dict]): matched trades
+        name (str): label
+        initial_capital (float|None): starting capital (optional)
+        final_capital (float|None): final capital (optional)
+        equity_curve (list|None): equity values over time for drawdown calc
+    """
     if not trades:
         print(f"{name}: No trades")
-        return
+        return {
+            "trades": 0,
+            "sum_pnl": 0.0,
+            "avg_pnl": 0.0,
+            "win_rate": 0.0,
+            "max_drawdown_pct": _max_drawdown(equity_curve or [])
+        }
 
-    pnl_sum = round(sum(t.get("pnl", 0.0) or 0.0 for t in trades), 2)
+    pnl_values = [t.get("pnl", 0.0) or 0.0 for t in trades]
+    pnl_sum = round(sum(pnl_values), 2)
     pnl_avg = round(pnl_sum / len(trades), 2)
-    pnl_max = round(max(t["pnl"] for t in trades), 2)
-    pnl_min = round(min(t["pnl"] for t in trades), 2)
-    winners = [t for t in trades if t["pnl"] > 0]
-    losers = [t for t in trades if t["pnl"] <= 0]
+    pnl_max = round(max(pnl_values), 2)
+    pnl_min = round(min(pnl_values), 2)
+    winners = [p for p in pnl_values if p > 0]
+    losers = [p for p in pnl_values if p <= 0]
     win_rate = round(len(winners) / len(trades) * 100, 1)
+    max_dd_pct = _max_drawdown(equity_curve or [])
 
     print(f"\n{name}:")
     print(f"  Trades: {len(trades)}")
+    if initial_capital is not None:
+        print(f"  Initial Capital: {initial_capital:.2f}")
+    if final_capital is not None:
+        print(f"  Final Capital:   {final_capital:.2f}")
+    if initial_capital is not None and final_capital is not None:
+        roi = (final_capital / initial_capital - 1) * 100 if initial_capital else 0
+        print(f"  Return:          {roi:.2f}%")
     print(f"  Sum PnL: {pnl_sum}")
     print(f"  Avg PnL: {pnl_avg}")
     print(f"  Max PnL: {pnl_max}")
     print(f"  Min PnL: {pnl_min}")
     print(f"  Winning Trades: {len(winners)} ({win_rate}%)")
-    print(f"  Losing Trades: {len(losers)} ({round(100 - win_rate, 1)}%)")
+    print(f"  Losing  Trades: {len(losers)} ({round(100 - win_rate, 1)}%)")
+    print(f"  Max Drawdown:   {max_dd_pct:.2f}%")
+
+    return {
+        "trades": len(trades),
+        "sum_pnl": pnl_sum,
+        "avg_pnl": pnl_avg,
+        "pnl_max": pnl_max,
+        "pnl_min": pnl_min,
+        "win_rate": win_rate,
+        "max_drawdown_pct": max_dd_pct,
+        "initial_capital": initial_capital,
+        "final_capital": final_capital
+    }
 
 
 def generate_trade_report(trades, side="long"):

@@ -74,9 +74,9 @@ def load_price_data(symbol: str) -> pd.DataFrame:
 
 # ---------- Signal Extraction ----------
 
-def build_signals(symbol: str, df: pd.DataFrame, p: int, tw: int):
-    # Use Close for SR detection
-    support, resistance = calculate_support_resistance(df, p, tw)
+def build_signals(symbol: str, df: pd.DataFrame, p: int, tw: int, cfg: dict):
+    price_col = "Open" if cfg.get("trade_on","Close").lower()=="open" else "Close"
+    support, resistance = calculate_support_resistance(df, p, tw, price_col=price_col)
     ext_long = assign_long_signals_extended(support, resistance, df, tw)
     ext_short = assign_short_signals_extended(support, resistance, df, tw)
     return ext_long, ext_short
@@ -135,7 +135,7 @@ def process_symbol(symbol: str):
     for p in P_RANGE:
         for tw in TW_RANGE:
             try:
-                el, es = build_signals(symbol, df, p, tw)
+                el, es = build_signals(symbol, df, p, tw, cfg)
                 if (not el.empty) or (not es.empty):
                     chosen_p, chosen_tw = p, tw
                     ext_long, ext_short = el, es

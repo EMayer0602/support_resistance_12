@@ -27,8 +27,22 @@ from signal_utils import (
     update_level_close_long,
     update_level_close_short
 )
+from backtest_range import restrict_df_for_backtest
+
 from stats_tools import stats
 from plot_utils import plot_combined_chart_and_equity
+
+def _calc_max_dd(equity):
+    peak = None
+    max_dd = 0.0
+    for v in equity:
+        if peak is None or v > peak:
+            peak = v
+        if peak and v < peak:
+            dd = (peak - v) / peak
+            if dd > max_dd:
+                max_dd = dd
+    return round(max_dd * 100, 2)
 
 def process_ticker_backtest(ib, ticker_name, ticker_config):
     """Process a complete backtest for one ticker"""
@@ -41,26 +55,27 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
         return None
     
     try:
-        df_full = pd.read_csv(filename, parse_dates=['date'], index_col='date')
-        df_full = df_full.dropna()
-        
+        df_full = pd.read_csv(filename, parse_dates=['date'], index_col='date').dropna()
         if df_full.empty:
             print(f"❌ No data for {ticker_name}")
             return None
-            
-        # Generate backtest date range
         start_date, end_date = generate_backtest_date_range(df_full)
-        df_bt = df_full[start_date:end_date].copy()
-        
-        if df_bt.empty:
-            print(f"❌ No backtest data for {ticker_name}")
+        df_recent = df_full[start_date:end_date].copy()
+        if trade_years and trade_years > 0 and not df_recent.empty:
+            cutoff = df_recent.index.max() - pd.Timedelta(days=int(trade_years * 365))
+            df_recent = df_recent[df_recent.index >= cutoff]
+        if df_recent.empty:
+            print(f"❌ No backtest data for {ticker_name} after trade_years restriction")
             return None
-            
-        print(f"   Data: {df_bt.index[0].date()} to {df_bt.index[-1].date()} ({len(df_bt)} days)")
-        
-        # Calculate support/resistance
-        df_bt = calculate_support_resistance(df_bt, p=3)
-        
+        print(f"   ✅ Using simulation data slice (trade_years={trade_years}): {df_recent.index[0].date()} -> {df_recent.index[-1].date()} ({len(df_recent)} rows)")
+        # Assign df_bt alias for clarity in later calls (this is the simulation dataset; optimization functions will internally apply percentage slice)
+        df_bt = df_recent
+        print(f"   🔎 df_bt (simulation set) ready: start={df_bt.index[0].date()} end={df_bt.index[-1].date()} rows={len(df_bt)}")
+        price_col = "Open" if ticker_config.get("trade_on", "Close").lower() == "open" else "Close"
+        try:
+            support, resistance = calculate_support_resistance(df_bt, p=3, trade_window=5, price_col=price_col)
+        except Exception as e:
+            print(f"   Warning: initial SR calc failed for {ticker_name}: {e}")
         results = {
             'data_info': {
                 'start_date': df_bt.index[0].strftime('%Y-%m-%d'),
@@ -75,7 +90,8 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             best_p_long, best_tw_long, _ = berechne_best_p_tw_long(df_bt, ib, ticker_name)
             
             # Generate extended signals with optimized parameters
-            df_bt_long = calculate_support_resistance(df_bt.copy(), p=best_p_long)
+            price_col = "Open" if ticker_config.get("trade_on","Close").lower()=="open" else "Close"
+            df_bt_long = calculate_support_resistance(df_bt.copy(), p=best_p_long, trade_window=best_tw_long, price_col=price_col)[0]
             df_bt_long = assign_long_signals_extended(df_bt_long, tw=best_tw_long)
             df_bt_long = update_level_close_long(df_bt_long)
             
@@ -90,13 +106,19 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             matched_trades = len(results_long['trades'])
             final_capital = results_long['final_capital']
             
+            # Equity & max drawdown
+            trades_list = results_long['trades']
+            equity_curve = compute_equity_curve(df_bt, trades_list, initial_capital, long=True) if trades_list else []
+            max_dd = _calc_max_dd(equity_curve)
             results['long'] = {
                 'parameters': {'p': best_p_long, 'tw': best_tw_long},
                 'extended_signals': int(extended_signals),
                 'matched_trades': matched_trades,
                 'initial_capital': initial_capital,
-                'final_capital': final_capital
+                'final_capital': final_capital,
+                'max_drawdown_pct': max_dd
             }
+            print(f"   🔢 Long Stats: Init={initial_capital:.2f} Final={final_capital:.2f} MaxDD={max_dd:.2f}%")
             
         # Short strategy optimization and simulation  
         if ticker_config['short']:
@@ -104,7 +126,8 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             best_p_short, best_tw_short, _ = berechne_best_p_tw_short(df_bt, ib, ticker_name)
             
             # Generate extended signals with optimized parameters
-            df_bt_short = calculate_support_resistance(df_bt.copy(), p=best_p_short)
+            price_col = "Open" if ticker_config.get("trade_on","Close").lower()=="open" else "Close"
+            df_bt_short = calculate_support_resistance(df_bt.copy(), p=best_p_short, trade_window=best_tw_short, price_col=price_col)[0]
             df_bt_short = assign_short_signals_extended(df_bt_short, tw=best_tw_short)
             df_bt_short = update_level_close_short(df_bt_short)
             
@@ -119,13 +142,18 @@ def process_ticker_backtest(ib, ticker_name, ticker_config):
             matched_trades = len(results_short['trades'])
             final_capital = results_short['final_capital']
             
+            trades_list_s = results_short['trades']
+            equity_curve_s = compute_equity_curve(df_bt, trades_list_s, initial_capital, long=False) if trades_list_s else []
+            max_dd_s = _calc_max_dd(equity_curve_s)
             results['short'] = {
                 'parameters': {'p': best_p_short, 'tw': best_tw_short},
                 'extended_signals': int(extended_signals),
                 'matched_trades': matched_trades,
                 'initial_capital': initial_capital,
-                'final_capital': final_capital
+                'final_capital': final_capital,
+                'max_drawdown_pct': max_dd_s
             }
+            print(f"   🔢 Short Stats: Init={initial_capital:.2f} Final={final_capital:.2f} MaxDD={max_dd_s:.2f}%")
         
         print(f"   ✅ {ticker_name} completed")
         return results

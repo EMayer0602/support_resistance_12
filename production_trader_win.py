@@ -310,13 +310,14 @@ class ProductionAutoTrader:
             # Create trader instance for portfolio access
             trader = ManualTrader(paper_trading=self.paper_trading)
             
-            if not await trader.connect_ib():
+            # Use async connect to avoid 'event loop is already running'
+            if not await trader.connect_ib_async():
                 self.logger.error("CANNOT CONNECT TO IB FOR PORTFOLIO CHECK")
                 return []
             
             try:
                 # Sync portfolio
-                await trader.sync_portfolio_with_ib()
+                await trader.async_sync_portfolio_with_ib()
                 
                 # Get current positions
                 positions = trader.ib.positions()
@@ -471,16 +472,58 @@ class ProductionAutoTrader:
             self._ib_trader_ref = trader  # keep reference for heartbeat checks
             
             # Connect to IB
-            if not trader.connect_ib():
+            if not await trader.connect_ib_async():
                 self.logger.error(f"FAILED TO CONNECT to IB for {session_type} session")
                 return False
             
             try:
                 # Sync portfolio positions
-                trader.sync_portfolio_with_ib()
+                await trader.async_sync_portfolio_with_ib()
                 
-                # Create and execute combined orders
+                # Create base combined orders
                 orders = trader.portfolio_manager.create_combined_orders(signals)
+
+                # OPTIONAL MERGE: Collapse SELL+SHORT or BUY+COVER same-symbol sequences
+                # Build a lightweight planned list similar to trade_execution.preview_trades output
+                if orders:
+                    try:
+                        from trade_execution import merge_reversal_orders
+                        planned = []
+                        for o in orders:
+                            side = o.get('action')
+                            # Map action + context to canonical sides
+                            # action in {'BUY','SELL'}; determine if it's entry or exit using signal_type hints
+                            sig = o.get('signal') or {}
+                            raw_side = sig.get('raw_side') or side
+                            # If original signal differentiates SHORT vs SELL etc, prefer that
+                            side_canonical = raw_side.upper()
+                            if side_canonical not in ("BUY","SELL","SHORT","COVER"):
+                                # Fallback heuristic: BUY stays BUY, SELL could be SELL or SHORT/COVER
+                                side_canonical = side.upper()
+                            planned.append({
+                                'symbol': o['ticker'],
+                                'side': side_canonical,
+                                'qty': o['shares'],
+                                'price': o.get('limit_price') or o.get('ref_price') or 0
+                            })
+                        merged_plan = merge_reversal_orders(planned)
+                        # Reconstruct simplified merged orders: consolidate to BUY/SELL
+                        rebuilt_orders = []
+                        for m in merged_plan:
+                            action = 'BUY' if m['side'] == 'BUY' else 'SELL'
+                            rebuilt_orders.append({
+                                'ticker': m['symbol'],
+                                'action': action,
+                                'shares': m['qty'],
+                                'order_type': 'MKT',
+                                'signal': {'merged': m.get('merged', False), 'components': m.get('components')}
+                            })
+                        reduction = len(orders) - len(rebuilt_orders)
+                        if reduction > 0:
+                            self.logger.info(f"MERGE OPTIMIZATION: {len(orders)} -> {len(rebuilt_orders)} orders (reduced {reduction})")
+                        orders = rebuilt_orders
+                    except Exception as me:
+                        self.logger.warning(f"Order merge skipped due to error: {me}. Continuing with unmerged orders.")
                 
                 if not orders:
                     self.logger.info(f"NO EXECUTABLE ORDERS from {session_type} signals")
@@ -490,7 +533,10 @@ class ProductionAutoTrader:
                 for i, order in enumerate(orders, 1):
                     self.logger.info(f"EXECUTING ORDER {i}/{len(orders)}: {order['ticker']} {order['action']} {order['shares']} shares")
                     
-                    if trader.place_order(order, execute=True):
+                    # place_order is synchronous; run in thread to avoid blocking event loop
+                    loop = asyncio.get_running_loop()
+                    ok = await loop.run_in_executor(None, trader.place_order, order, True)
+                    if ok:
                         successful_orders += 1
                     
                     # Brief pause between orders
@@ -750,7 +796,7 @@ class ProductionAutoTrader:
                                             self.logger.info("Attempting IB reconnect after heartbeat failure...")
                                             self._ib_trader_ref.ib.disconnect()
                                             # Reconnect using manual trader logic
-                                            if not self._ib_trader_ref.connect_ib():
+                                            if not await self._ib_trader_ref.connect_ib_async():
                                                 self.logger.error("IB RECONNECT FAILED")
                                             else:
                                                 self.logger.info("IB RECONNECTED SUCCESSFULLY")

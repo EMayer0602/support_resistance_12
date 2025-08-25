@@ -21,9 +21,33 @@ trade_years = 1            # Backtest period in years (1 = 1 year)
 backtesting_begin = 25     # Start at 25% of data (skip early data)
 backtesting_end = 95       # End at 95% of data (reserve recent for validation)
 
-# 📈 SIGNAL PARAMETERS (ranges for optimization)
+# � DATA SLICE BEHAVIOR FLAGS
+# If True, ignore backtesting_begin/end and trade_years restrictions for simulation/equity generation
+USE_FULL_DATA = False
+# If True, apply percentage slice ONLY for parameter optimization; simulation/equity runs on full (recent) dataset
+SLICE_FOR_OPTIMIZATION_ONLY = True
+# If True, force any open positions to be flattened on the final available bar (ensures equity[-1] == final_capital)
+FORCE_FLAT_AT_END = True
+
+# Console verbosity for extended signals (prices will be auto-filled where possible)
+EXTENDED_VERBOSE = True
+
+# �📈 SIGNAL PARAMETERS (ranges for optimization)
 P_RANGE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]        # Support/resistance period parameters
 TW_RANGE = [1, 2, 3, 4, 5, 6]       # Time window parameters
+FORCE_TW = None  # Set to an integer (e.g., 1) to force trade window; None disables forcing
+
+# 🧪 OPTIMIZATION STABILITY / PARSIMONY
+# Minimum number of trades required for a (p, tw) candidate to be considered stable
+OPT_MIN_TRADES = 5
+# Percentage tolerance (e.g., 0.02 = 2%) within best final_cap to consider alternative candidates
+OPT_TOLERANCE_PCT = 0.02
+# If True, among candidates within tolerance pick the smallest tw (parsimony preference)
+OPT_PARSIMONY_TW = True
+# If True, and parsimony tie persists, pick the candidate with more trades (stability preference)
+OPT_PREFER_MORE_TRADES = True
+# Set >0 to penalize high trade_window (regularization): effective_score = final_cap - OPT_TW_PENALTY * tw
+OPT_TW_PENALTY = 0.0
 
 # 🎯 TRADING EXECUTION SETTINGS
 LIMIT_ORDER_OFFSET = 0.01  # Price offset for limit orders (1 cent)
@@ -35,8 +59,8 @@ USE_STRATEGY_EXITS_ONLY = False  # Use SL/TP; set True to ignore SL/TP and rely 
 # ⏰ TRADING TIMING (Eastern Time)
 MARKET_OPEN_TIME = "09:30"
 MARKET_CLOSE_TIME = "16:00"
-OPEN_TRADE_DELAY = 10      # Minutes after market open to trade
-CLOSE_TRADE_ADVANCE = 15   # Minutes before market close to trade
+OPEN_TRADE_DELAY = 5       # Minutes after market open to trade (was 10)
+CLOSE_TRADE_ADVANCE = 30   # Minutes before market close to trade (was 15)
 
 # 📊 IB CONNECTION SETTINGS
 IB_PAPER_PORT = 7497       # Paper trading port

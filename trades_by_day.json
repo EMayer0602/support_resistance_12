@@ -1,215 +1,50 @@
 {
-  "2024-08-13": [
-    {
-      "symbol": "NFLX",
-      "side": "BUY",
-      "qty": 2,
-      "price": 638.56,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "BUY",
-      "qty": 5,
-      "price": 170.23,
-      "source": "LONG"
-    }
-  ],
-  "2024-08-14": [
-    {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 4,
-      "price": 201.38,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 59,
-      "price": 16.68,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-15": [
-    {
-      "symbol": "GOOGL",
-      "side": "BUY",
-      "qty": 7,
-      "price": 163.17,
-      "source": "LONG"
-    }
-  ],
-  "2024-08-16": [
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 59,
-      "price": 16.91,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 59,
-      "price": 16.91,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "BUY",
-      "qty": 3330,
-      "price": 0.6,
-      "source": "LONG"
-    }
-  ],
-  "2024-08-19": [
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 529.28,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-20": [
+  "2024-08-27": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 11,
-      "price": 86.94,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SHORT",
-      "qty": 47,
-      "price": 20.99,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-21": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 7,
-      "price": 167.63,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "SHORT",
-      "qty": 7,
-      "price": 167.63,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "MSFT",
-      "side": "SHORT",
-      "qty": 2,
-      "price": 424.14,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-22": [
-    {
-      "symbol": "AMD",
-      "side": "SHORT",
-      "qty": 6,
-      "price": 151.7,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 5,
-      "price": 176.13,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SHORT",
-      "qty": 5,
-      "price": 176.13,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-23": [
-    {
-      "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 4,
-      "price": 220.32,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SHORT",
-      "qty": 4,
-      "price": 220.32,
-      "source": "SHORT"
-    }
-  ],
-  "2024-08-26": [
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 59,
-      "price": 17.95,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 54,
-      "price": 17.95,
+      "qty": 12,
+      "price": 78.98,
       "source": "SHORT"
     }
   ],
   "2024-08-28": [
     {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3330,
-      "price": 0.65,
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 4,
+      "price": 227.92,
       "source": "LONG"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SHORT",
+      "qty": 6,
+      "price": 146.36,
+      "source": "SHORT"
     }
   ],
   "2024-08-29": [
     {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 4,
+      "price": 206.28,
+      "source": "LONG"
+    },
+    {
       "symbol": "AMZN",
       "side": "BUY",
       "qty": 5,
       "price": 172.12,
       "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "COVER",
-      "qty": 5,
-      "price": 172.12,
-      "source": "SHORT"
     }
   ],
   "2024-08-30": [
     {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 5,
-      "price": 214.11,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 4,
-      "price": 214.11,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 3280,
+      "qty": 3040,
       "price": 0.66,
       "source": "LONG"
     }
@@ -223,18 +58,18 @@
       "source": "SHORT"
     },
     {
-      "symbol": "NFLX",
-      "side": "SELL",
+      "symbol": "MSFT",
+      "side": "SHORT",
       "qty": 2,
-      "price": 700.1,
-      "source": "LONG"
+      "price": 409.44,
+      "source": "SHORT"
     },
     {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 5,
-      "price": 176.25,
-      "source": "LONG"
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 511.76,
+      "source": "SHORT"
     },
     {
       "symbol": "AMZN",
@@ -242,18 +77,55 @@
       "qty": 5,
       "price": 176.25,
       "source": "SHORT"
+    },
+    {
+      "symbol": "INTC",
+      "side": "SHORT",
+      "qty": 49,
+      "price": 20.1,
+      "source": "SHORT"
     }
   ],
   "2024-09-05": [
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 13,
+      "price": 73.44,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 11,
+      "qty": 12,
       "price": 73.44,
       "source": "SHORT"
     }
   ],
+  "2024-09-06": [
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 4,
+      "price": 210.73,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 4,
+      "price": 210.73,
+      "source": "SHORT"
+    }
+  ],
   "2024-09-09": [
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 16,
+      "price": 106.47,
+      "source": "LONG"
+    },
     {
       "symbol": "MSFT",
       "side": "BUY",
@@ -266,6 +138,20 @@
       "side": "COVER",
       "qty": 2,
       "price": 405.72,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 1,
+      "price": 504.79,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 504.79,
       "source": "SHORT"
     },
     {
@@ -274,13 +160,6 @@
       "qty": 7,
       "price": 138.15,
       "source": "LONG"
-    },
-    {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 6,
-      "price": 138.15,
-      "source": "SHORT"
     },
     {
       "symbol": "AMZN",
@@ -306,22 +185,8 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 47,
+      "qty": 49,
       "price": 19.07,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 65,
-      "price": 16.2,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 54,
-      "price": 16.2,
       "source": "SHORT"
     }
   ],
@@ -329,37 +194,9 @@
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 8,
-      "price": 150.01,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "COVER",
       "qty": 7,
       "price": 150.01,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 16,
-      "price": 107.81,
       "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 1,
-      "price": 504.79,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 504.79,
-      "source": "SHORT"
     },
     {
       "symbol": "QBTS",
@@ -374,31 +211,31 @@
       "qty": 2,
       "price": 676.87,
       "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 61,
+      "price": 16.14,
+      "source": "LONG"
     }
   ],
   "2024-09-12": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 16,
+      "qty": 15,
       "price": 69.68,
       "source": "SHORT"
     }
   ],
-  "2024-09-16": [
+  "2024-09-13": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 16,
-      "price": 116.79,
-      "source": "LONG"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1068,
-      "price": 0.98,
-      "source": "LONG"
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 186.49,
+      "source": "SHORT"
     }
   ],
   "2024-09-18": [
@@ -422,33 +259,24 @@
       "symbol": "NVDA",
       "side": "BUY",
       "qty": 16,
-      "price": 117.35,
+      "price": 117.87,
+      "source": "LONG"
+    },
+    {
+      "symbol": "NFLX",
+      "side": "SELL",
+      "qty": 2,
+      "price": 704.49,
       "source": "LONG"
     }
   ],
   "2024-09-20": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 435.27,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 435.27,
       "source": "SHORT"
-    }
-  ],
-  "2024-09-23": [
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3280,
-      "price": 0.69,
-      "source": "LONG"
     }
   ],
   "2024-09-24": [
@@ -460,40 +288,24 @@
       "source": "LONG"
     }
   ],
-  "2024-09-25": [
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 5,
-      "price": 192.53,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SHORT",
-      "qty": 5,
-      "price": 192.53,
-      "source": "SHORT"
-    }
-  ],
   "2024-09-26": [
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 14,
+      "price": 63.93,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 16,
+      "qty": 15,
       "price": 63.93,
       "source": "SHORT"
     }
   ],
   "2024-09-27": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 16,
-      "price": 123.97,
-      "source": "LONG"
-    },
-    {
       "symbol": "AMD",
       "side": "SELL",
       "qty": 7,
@@ -508,58 +320,30 @@
       "source": "SHORT"
     },
     {
-      "symbol": "NFLX",
-      "side": "SELL",
-      "qty": 2,
-      "price": 708.36,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SELL",
-      "qty": 52,
-      "price": 23.91,
-      "source": "LONG"
-    },
-    {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 45,
+      "qty": 43,
       "price": 23.91,
       "source": "SHORT"
     }
   ],
   "2024-09-30": [
     {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1113,
-      "price": 0.98,
-      "source": "LONG"
-    },
-    {
       "symbol": "BRRR",
       "side": "SELL",
-      "qty": 65,
-      "price": 17.98,
+      "qty": 61,
+      "price": 18.11,
       "source": "LONG"
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
-      "qty": 59,
-      "price": 17.98,
+      "qty": 55,
+      "price": 18.11,
       "source": "SHORT"
     }
   ],
   "2024-10-01": [
-    {
-      "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 4,
-      "price": 229.52,
-      "source": "LONG"
-    },
     {
       "symbol": "AAPL",
       "side": "SHORT",
@@ -570,72 +354,42 @@
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 19,
+      "qty": 17,
       "price": 63.93,
       "source": "SHORT"
     },
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 3480,
+      "qty": 3220,
       "price": 0.65,
       "source": "LONG"
     }
   ],
   "2024-10-02": [
     {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 17,
+      "price": 118.85,
+      "source": "LONG"
+    },
+    {
       "symbol": "AMD",
       "side": "BUY",
       "qty": 7,
       "price": 159.78,
       "source": "LONG"
-    },
-    {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 6,
-      "price": 159.78,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 5,
-      "price": 249.02,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SHORT",
-      "qty": 4,
-      "price": 249.02,
-      "source": "SHORT"
-    }
-  ],
-  "2024-10-03": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 16,
-      "price": 120.88,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 67,
-      "price": 17.28,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 59,
-      "price": 17.28,
-      "source": "SHORT"
     }
   ],
   "2024-10-04": [
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 4,
+      "price": 250.08,
+      "source": "LONG"
+    },
     {
       "symbol": "INTC",
       "side": "BUY",
@@ -646,24 +400,31 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 45,
+      "qty": 43,
       "price": 22.59,
       "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 63,
+      "price": 17.48,
+      "source": "LONG"
     }
   ],
   "2024-10-07": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 8,
+      "side": "SHORT",
+      "qty": 7,
       "price": 164.39,
-      "source": "LONG"
+      "source": "SHORT"
     },
     {
-      "symbol": "GOOGL",
+      "symbol": "META",
       "side": "SHORT",
-      "qty": 8,
-      "price": 164.39,
+      "qty": 1,
+      "price": 584.78,
       "source": "SHORT"
     }
   ],
@@ -683,23 +444,9 @@
       "source": "SHORT"
     },
     {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 1,
-      "price": 592.89,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 592.89,
-      "source": "SHORT"
-    },
-    {
       "symbol": "AMZN",
       "side": "BUY",
-      "qty": 6,
+      "qty": 5,
       "price": 182.72,
       "source": "LONG"
     },
@@ -739,20 +486,27 @@
       "qty": 6,
       "price": 171.02,
       "source": "SHORT"
+    },
+    {
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 719.25,
+      "source": "LONG"
     }
   ],
   "2024-10-10": [
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 8,
+      "qty": 7,
       "price": 163.18,
       "source": "LONG"
     },
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 8,
+      "qty": 7,
       "price": 163.18,
       "source": "SHORT"
     }
@@ -767,24 +521,38 @@
     },
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 16,
+      "price": 58.29,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 19,
+      "qty": 17,
       "price": 58.29,
       "source": "SHORT"
     }
   ],
   "2024-10-14": [
     {
-      "symbol": "INTC",
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 55,
-      "price": 23.44,
+      "qty": 2,
+      "price": 725.0,
       "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 187.54,
+      "source": "SHORT"
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 48,
+      "qty": 46,
       "price": 23.44,
       "source": "SHORT"
     }
@@ -792,40 +560,26 @@
   "2024-10-15": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 418.74,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 418.74,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 4,
-      "price": 219.57,
       "source": "SHORT"
     }
   ],
   "2024-10-16": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 8,
-      "price": 166.74,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
       "qty": 7,
       "price": 166.74,
       "source": "SHORT"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 16,
+      "price": 135.72,
+      "source": "LONG"
     }
   ],
   "2024-10-17": [
@@ -846,7 +600,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 48,
+      "qty": 46,
       "price": 22.44,
       "source": "SHORT"
     }
@@ -854,52 +608,17 @@
   "2024-10-21": [
     {
       "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 4,
-      "price": 234.5,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AAPL",
       "side": "SHORT",
       "qty": 4,
       "price": 234.5,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 67,
-      "price": 19.2,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 57,
-      "price": 19.2,
       "source": "SHORT"
     }
   ],
   "2024-10-22": [
     {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1124,
-      "price": 1.2,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SELL",
-      "qty": 57,
-      "price": 22.4,
-      "source": "LONG"
-    },
-    {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 52,
+      "qty": 50,
       "price": 22.4,
       "source": "SHORT"
     }
@@ -929,6 +648,20 @@
       "source": "SHORT"
     },
     {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 1,
+      "price": 567.78,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 567.78,
+      "source": "SHORT"
+    },
+    {
       "symbol": "AMD",
       "side": "BUY",
       "qty": 8,
@@ -936,10 +669,17 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 5,
+      "price": 186.38,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
       "side": "COVER",
-      "qty": 6,
-      "price": 153.44,
+      "qty": 5,
+      "price": 186.38,
       "source": "SHORT"
     },
     {
@@ -952,82 +692,36 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 52,
+      "qty": 50,
       "price": 22.34,
       "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 66,
-      "price": 19.33,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 57,
-      "price": 19.33,
-      "source": "SHORT"
-    }
-  ],
-  "2024-10-25": [
-    {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 1,
-      "price": 573.25,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 573.25,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 4,
-      "price": 269.19,
-      "source": "LONG"
     }
   ],
   "2024-10-28": [
     {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 1120,
-      "price": 1.2,
-      "source": "LONG"
-    }
-  ],
-  "2024-10-29": [
-    {
-      "symbol": "NVDA",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 16,
-      "price": 140.26,
+      "qty": 4,
+      "price": 262.51,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
-      "qty": 4,
-      "price": 259.52,
+      "qty": 3,
+      "price": 262.51,
       "source": "SHORT"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 18,
-      "price": 55.22,
-      "source": "LONG"
     }
   ],
   "2024-10-30": [
     {
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 591.8,
+      "source": "SHORT"
+    },
+    {
       "symbol": "AMD",
       "side": "SELL",
       "qty": 8,
@@ -1037,56 +731,33 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 8,
+      "qty": 7,
       "price": 148.6,
       "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 24,
+      "qty": 22,
       "price": 54.72,
       "source": "SHORT"
     },
     {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 66,
-      "price": 20.34,
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 758.08,
       "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 54,
-      "price": 20.34,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3480,
-      "price": 1.21,
-      "source": "LONG"
-    }
-  ],
-  "2024-10-31": [
-    {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 1,
-      "price": 567.58,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 567.58,
-      "source": "SHORT"
     }
   ],
   "2024-11-01": [
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 17,
+      "price": 135.4,
+      "source": "LONG"
+    },
     {
       "symbol": "MSFT",
       "side": "BUY",
@@ -1100,22 +771,6 @@
       "qty": 2,
       "price": 410.37,
       "source": "SHORT"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 18,
-      "price": 54.63,
-      "source": "LONG"
-    }
-  ],
-  "2024-11-04": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 17,
-      "price": 137.25,
-      "source": "LONG"
     }
   ],
   "2024-11-05": [
@@ -1134,6 +789,20 @@
       "source": "SHORT"
     },
     {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 1,
+      "price": 572.43,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 572.43,
+      "source": "SHORT"
+    },
+    {
       "symbol": "AMD",
       "side": "BUY",
       "qty": 8,
@@ -1141,53 +810,25 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 8,
-      "price": 141.66,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
+      "symbol": "QBTS",
       "side": "BUY",
-      "qty": 69,
-      "price": 19.64,
+      "qty": 1233,
+      "price": 1.09,
       "source": "LONG"
     },
     {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 54,
-      "price": 19.64,
-      "source": "SHORT"
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 4,
+      "price": 251.44,
+      "source": "LONG"
     }
   ],
   "2024-11-06": [
     {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 1,
-      "price": 572.05,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 572.05,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 4,
-      "price": 288.53,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 3380,
+      "qty": 3130,
       "price": 1.24,
       "source": "LONG"
     }
@@ -1195,16 +836,16 @@
   "2024-11-08": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 422.54,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 422.54,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 589.34,
       "source": "SHORT"
     },
     {
@@ -1223,62 +864,34 @@
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 57,
-      "price": 26.2,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 45,
+      "qty": 43,
       "price": 26.2,
       "source": "SHORT"
     }
   ],
-  "2024-11-11": [
+  "2024-11-12": [
     {
-      "symbol": "META",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 1,
-      "price": 583.17,
+      "qty": 4,
+      "price": 328.49,
       "source": "LONG"
     },
     {
-      "symbol": "META",
+      "symbol": "TSLA",
       "side": "SHORT",
-      "qty": 1,
-      "price": 583.17,
+      "qty": 2,
+      "price": 328.49,
       "source": "SHORT"
     }
   ],
   "2024-11-13": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 8,
-      "price": 180.49,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
-      "qty": 7,
+      "qty": 6,
       "price": 180.49,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 4,
-      "price": 330.24,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SHORT",
-      "qty": 3,
-      "price": 330.24,
       "source": "SHORT"
     },
     {
@@ -1291,44 +904,51 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 45,
+      "qty": 43,
       "price": 24.92,
       "source": "SHORT"
     }
   ],
   "2024-11-14": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 17,
-      "price": 147.64,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 6,
-      "price": 211.48,
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 4,
+      "price": 225.11,
       "source": "LONG"
     },
     {
       "symbol": "AMZN",
       "side": "SHORT",
-      "qty": 5,
+      "qty": 4,
       "price": 211.48,
       "source": "SHORT"
     }
   ],
   "2024-11-15": [
     {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1120,
-      "price": 1.64,
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 4,
+      "price": 320.72,
       "source": "LONG"
     }
   ],
   "2024-11-18": [
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 2,
+      "price": 554.4,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 554.4,
+      "source": "SHORT"
+    },
     {
       "symbol": "AMD",
       "side": "BUY",
@@ -1337,16 +957,16 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 8,
-      "price": 138.93,
-      "source": "SHORT"
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 22,
+      "price": 39.51,
+      "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 24,
+      "qty": 22,
       "price": 39.51,
       "source": "SHORT"
     }
@@ -1356,48 +976,11 @@
       "symbol": "NVDA",
       "side": "BUY",
       "qty": 17,
-      "price": 141.32,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 1,
-      "price": 561.09,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 561.09,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 1229,
-      "price": 1.49,
-      "source": "LONG"
-    }
-  ],
-  "2024-11-20": [
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 26,
-      "price": 36.94,
+      "price": 147.01,
       "source": "LONG"
     }
   ],
   "2024-11-22": [
-    {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 17,
-      "price": 145.89,
-      "source": "LONG"
-    },
     {
       "symbol": "MSFT",
       "side": "BUY",
@@ -1424,8 +1007,22 @@
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 7,
+      "qty": 6,
       "price": 169.43,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 4,
+      "price": 338.59,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 2,
+      "price": 338.59,
       "source": "SHORT"
     },
     {
@@ -1438,62 +1035,48 @@
     {
       "symbol": "AMZN",
       "side": "COVER",
-      "qty": 5,
+      "qty": 4,
       "price": 201.45,
       "source": "SHORT"
     },
     {
       "symbol": "BRRR",
       "side": "SELL",
-      "qty": 69,
-      "price": 26.85,
+      "qty": 63,
+      "price": 27.55,
       "source": "LONG"
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
-      "qty": 42,
-      "price": 26.85,
+      "qty": 37,
+      "price": 27.55,
       "source": "SHORT"
     }
   ],
   "2024-11-26": [
     {
-      "symbol": "INTC",
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 60,
-      "price": 24.05,
+      "qty": 2,
+      "price": 867.49,
       "source": "LONG"
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 51,
+      "qty": 49,
       "price": 24.05,
       "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3380,
-      "price": 6.42,
-      "source": "LONG"
     }
   ],
   "2024-11-27": [
     {
-      "symbol": "BRRR",
+      "symbol": "NFLX",
       "side": "BUY",
-      "qty": 67,
-      "price": 27.37,
+      "qty": 2,
+      "price": 873.27,
       "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 42,
-      "price": 27.37,
-      "source": "SHORT"
     }
   ],
   "2024-11-29": [
@@ -1501,24 +1084,22 @@
       "symbol": "NVDA",
       "side": "BUY",
       "qty": 18,
-      "price": 136.74,
+      "price": 138.25,
       "source": "LONG"
-    }
-  ],
-  "2024-12-02": [
+    },
     {
       "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 3,
-      "price": 357.09,
-      "source": "SHORT"
+      "side": "BUY",
+      "qty": 4,
+      "price": 345.16,
+      "source": "LONG"
     }
   ],
   "2024-12-04": [
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 3480,
+      "qty": 3230,
       "price": 6.21,
       "source": "LONG"
     }
@@ -1539,56 +1120,38 @@
       "source": "SHORT"
     }
   ],
-  "2024-12-06": [
-    {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 18,
-      "price": 144.6,
-      "source": "LONG"
-    }
-  ],
-  "2024-12-09": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1229,
-      "price": 4.65,
-      "source": "LONG"
-    }
-  ],
   "2024-12-10": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 40,
+      "qty": 37,
       "price": 41.51,
       "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3480,
-      "price": 7.12,
-      "source": "LONG"
     }
   ],
   "2024-12-11": [
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 21,
+      "price": 42.86,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 40,
+      "qty": 37,
       "price": 42.86,
       "source": "SHORT"
     }
   ],
   "2024-12-12": [
     {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 26,
-      "price": 42.82,
-      "source": "LONG"
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 630.79,
+      "source": "SHORT"
     },
     {
       "symbol": "INTC",
@@ -1600,31 +1163,17 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 51,
+      "qty": 49,
       "price": 20.78,
       "source": "SHORT"
     }
   ],
   "2024-12-13": [
     {
-      "symbol": "META",
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 1,
-      "price": 620.35,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 620.35,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 1140,
-      "price": 5.0,
+      "qty": 2,
+      "price": 916.81,
       "source": "LONG"
     }
   ],
@@ -1632,7 +1181,7 @@
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 3480,
+      "qty": 3220,
       "price": 7.1,
       "source": "LONG"
     }
@@ -1640,24 +1189,10 @@
   "2024-12-17": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 8,
-      "price": 197.12,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
-      "qty": 7,
+      "qty": 6,
       "price": 197.12,
       "source": "SHORT"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 6,
-      "price": 231.15,
-      "source": "LONG"
     },
     {
       "symbol": "AMZN",
@@ -1668,35 +1203,14 @@
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 69,
-      "price": 20.44,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 68,
+      "qty": 65,
       "price": 20.44,
       "source": "SHORT"
     }
   ],
   "2024-12-18": [
     {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 20,
-      "price": 133.88,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 437.39,
-      "source": "LONG"
-    },
-    {
       "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
@@ -1704,34 +1218,27 @@
       "source": "SHORT"
     },
     {
-      "symbol": "BRRR",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 67,
-      "price": 28.46,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 38,
-      "price": 28.46,
-      "source": "SHORT"
-    }
-  ],
-  "2024-12-19": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1140,
-      "price": 6.37,
+      "qty": 4,
+      "price": 440.13,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
-      "qty": 2,
-      "price": 436.17,
+      "qty": 1,
+      "price": 440.13,
       "source": "SHORT"
+    }
+  ],
+  "2024-12-19": [
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 20,
+      "price": 130.68,
+      "source": "LONG"
     },
     {
       "symbol": "AMZN",
@@ -1759,7 +1266,7 @@
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 7,
+      "qty": 6,
       "price": 192.96,
       "source": "SHORT"
     },
@@ -1771,13 +1278,6 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 9,
-      "price": 119.21,
-      "source": "SHORT"
-    },
-    {
       "symbol": "INTC",
       "side": "BUY",
       "qty": 72,
@@ -1787,79 +1287,42 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 68,
+      "qty": 65,
       "price": 19.52,
       "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 3480,
-      "price": 14.47,
-      "source": "LONG"
     }
   ],
   "2024-12-23": [
     {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 28,
-      "price": 39.59,
-      "source": "LONG"
-    }
-  ],
-  "2024-12-24": [
-    {
       "symbol": "META",
       "side": "BUY",
-      "qty": 1,
-      "price": 607.75,
+      "qty": 2,
+      "price": 599.85,
       "source": "LONG"
     },
     {
       "symbol": "META",
       "side": "COVER",
       "qty": 1,
-      "price": 607.75,
+      "price": 599.85,
       "source": "SHORT"
     },
     {
-      "symbol": "BRRR",
+      "symbol": "TSLA",
       "side": "BUY",
-      "qty": 68,
-      "price": 27.98,
+      "qty": 4,
+      "price": 430.6,
       "source": "LONG"
     },
     {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 38,
-      "price": 27.98,
-      "source": "SHORT"
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 913.42,
+      "source": "LONG"
     }
   ],
   "2024-12-26": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 8,
-      "price": 197.1,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "SHORT",
-      "qty": 7,
-      "price": 197.1,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 20,
-      "price": 139.64,
-      "source": "LONG"
-    },
     {
       "symbol": "AMD",
       "side": "SELL",
@@ -1870,50 +1333,57 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 12,
+      "qty": 11,
       "price": 125.06,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 4,
+      "price": 454.13,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 454.13,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 4,
+      "price": 227.05,
       "source": "SHORT"
     }
   ],
   "2024-12-27": [
     {
       "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 4,
-      "price": 257.83,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AAPL",
       "side": "SHORT",
       "qty": 4,
       "price": 257.83,
       "source": "SHORT"
     },
     {
-      "symbol": "INTC",
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 72,
-      "price": 20.3,
+      "qty": 2,
+      "price": 916.01,
       "source": "LONG"
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 71,
+      "qty": 69,
       "price": 20.3,
       "source": "SHORT"
     }
   ],
   "2024-12-31": [
     {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 20,
-      "price": 137.97,
-      "source": "LONG"
-    },
-    {
       "symbol": "INTC",
       "side": "BUY",
       "qty": 72,
@@ -1923,24 +1393,38 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 71,
+      "qty": 69,
       "price": 20.05,
       "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 64,
+      "price": 27.07,
+      "source": "LONG"
     }
   ],
   "2025-01-02": [
     {
-      "symbol": "GOOGL",
+      "symbol": "NVDA",
       "side": "BUY",
-      "qty": 9,
-      "price": 190.63,
+      "qty": 20,
+      "price": 138.31,
       "source": "LONG"
     },
     {
-      "symbol": "GOOGL",
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 6,
+      "price": 220.22,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
       "side": "COVER",
-      "qty": 7,
-      "price": 190.63,
+      "qty": 4,
+      "price": 220.22,
       "source": "SHORT"
     }
   ],
@@ -1967,39 +1451,18 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 12,
-      "price": 125.37,
-      "source": "SHORT"
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 4,
+      "price": 410.44,
+      "source": "LONG"
     }
   ],
   "2025-01-06": [
     {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 3,
-      "price": 411.05,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 2,
-      "price": 411.05,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SELL",
-      "qty": 72,
-      "price": 19.87,
-      "source": "LONG"
-    },
-    {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 74,
+      "qty": 71,
       "price": 19.87,
       "source": "SHORT"
     }
@@ -2007,30 +1470,23 @@
   "2025-01-07": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 196.71,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
-      "qty": 7,
+      "qty": 6,
       "price": 196.71,
       "source": "SHORT"
     },
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 422.37,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 422.37,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 617.89,
       "source": "SHORT"
     },
     {
@@ -2049,59 +1505,17 @@
     },
     {
       "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 6,
-      "price": 222.11,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
       "side": "SHORT",
-      "qty": 5,
+      "qty": 4,
       "price": 222.11,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 68,
-      "price": 27.26,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 41,
-      "price": 27.26,
       "source": "SHORT"
     }
   ],
   "2025-01-08": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 20,
-      "price": 142.59,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 1,
-      "price": 610.72,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 610.72,
-      "source": "SHORT"
-    },
-    {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 37,
+      "qty": 35,
       "price": 43.17,
       "source": "SHORT"
     }
@@ -2115,20 +1529,6 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 11,
-      "price": 117.32,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 28,
-      "price": 35.15,
-      "source": "LONG"
-    },
-    {
       "symbol": "INTC",
       "side": "BUY",
       "qty": 75,
@@ -2138,23 +1538,16 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 74,
+      "qty": 71,
       "price": 19.2,
       "source": "SHORT"
     }
   ],
   "2025-01-14": [
     {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 21,
-      "price": 136.04,
-      "source": "LONG"
-    },
-    {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 1530,
+      "qty": 1209,
       "price": 4.73,
       "source": "LONG"
     },
@@ -2164,36 +1557,29 @@
       "qty": 2,
       "price": 844.52,
       "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 68,
-      "price": 27.3,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 41,
-      "price": 27.3,
-      "source": "SHORT"
     }
   ],
   "2025-01-15": [
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 9,
+      "qty": 8,
       "price": 196.98,
       "source": "LONG"
     },
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 7,
+      "qty": 6,
       "price": 196.98,
       "source": "SHORT"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 20,
+      "price": 136.24,
+      "source": "LONG"
     },
     {
       "symbol": "MSFT",
@@ -2207,6 +1593,20 @@
       "side": "COVER",
       "qty": 2,
       "price": 426.31,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 2,
+      "price": 617.12,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 617.12,
       "source": "SHORT"
     },
     {
@@ -2219,91 +1619,47 @@
     {
       "symbol": "AMZN",
       "side": "COVER",
-      "qty": 5,
+      "qty": 4,
       "price": 223.35,
       "source": "SHORT"
     },
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 5730,
+      "qty": 5310,
       "price": 8.76,
       "source": "LONG"
     }
   ],
   "2025-01-16": [
     {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 1,
-      "price": 611.3,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 611.3,
-      "source": "SHORT"
-    }
-  ],
-  "2025-01-17": [
-    {
       "symbol": "TSLA",
       "side": "SELL",
-      "qty": 3,
-      "price": 426.5,
+      "qty": 4,
+      "price": 413.82,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 2,
-      "price": 426.5,
+      "price": 413.82,
       "source": "SHORT"
+    }
+  ],
+  "2025-01-17": [
+    {
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 27,
+      "price": 34.06,
+      "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 37,
+      "qty": 35,
       "price": 34.06,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 5730,
-      "price": 10.12,
-      "source": "LONG"
-    }
-  ],
-  "2025-01-22": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1530,
-      "price": 6.25,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 26,
-      "price": 38.5,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 68,
-      "price": 29.53,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 37,
-      "price": 29.53,
       "source": "SHORT"
     }
   ],
@@ -2332,7 +1688,7 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 13,
+      "qty": 12,
       "price": 123.04,
       "source": "SHORT"
     },
@@ -2345,36 +1701,38 @@
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 75,
-      "price": 21.57,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 70,
+      "qty": 67,
       "price": 21.57,
       "source": "SHORT"
     }
   ],
   "2025-01-27": [
     {
-      "symbol": "NVDA",
+      "symbol": "BRRR",
       "side": "SELL",
-      "qty": 21,
-      "price": 124.8,
+      "qty": 64,
+      "price": 28.5,
+      "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "SHORT",
+      "qty": 36,
+      "price": 28.5,
+      "source": "SHORT"
+    }
+  ],
+  "2025-01-28": [
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 23,
+      "price": 128.99,
       "source": "LONG"
     }
   ],
   "2025-01-29": [
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 2,
-      "price": 442.33,
-      "source": "LONG"
-    },
     {
       "symbol": "MSFT",
       "side": "SHORT",
@@ -2390,17 +1748,17 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 13,
-      "price": 117.35,
+      "symbol": "MRNA",
+      "side": "SHORT",
+      "qty": 44,
+      "price": 40.72,
       "source": "SHORT"
     },
     {
-      "symbol": "MRNA",
+      "symbol": "AMZN",
       "side": "SHORT",
-      "qty": 48,
-      "price": 40.72,
+      "qty": 4,
+      "price": 237.07,
       "source": "SHORT"
     }
   ],
@@ -2408,28 +1766,28 @@
     {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 1690,
+      "qty": 1336,
       "price": 5.64,
       "source": "LONG"
     }
   ],
   "2025-01-31": [
     {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 26,
-      "price": 39.42,
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 6,
+      "price": 237.68,
       "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "COVER",
+      "qty": 4,
+      "price": 237.68,
+      "source": "SHORT"
     }
   ],
   "2025-02-03": [
-    {
-      "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 5,
-      "price": 230.0,
-      "source": "LONG"
-    },
     {
       "symbol": "AAPL",
       "side": "SHORT",
@@ -2438,27 +1796,18 @@
       "source": "SHORT"
     }
   ],
-  "2025-02-04": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 22,
-      "price": 116.97,
-      "source": "LONG"
-    }
-  ],
   "2025-02-05": [
     {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 193.3,
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 5,
+      "price": 228.53,
       "source": "LONG"
     },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
-      "qty": 7,
+      "qty": 6,
       "price": 193.3,
       "source": "SHORT"
     },
@@ -2472,16 +1821,9 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 15,
+      "qty": 14,
       "price": 112.01,
       "source": "SHORT"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 6,
-      "price": 236.17,
-      "source": "LONG"
     },
     {
       "symbol": "AMZN",
@@ -2489,15 +1831,6 @@
       "qty": 4,
       "price": 236.17,
       "source": "SHORT"
-    }
-  ],
-  "2025-02-06": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 1690,
-      "price": 5.99,
-      "source": "LONG"
     }
   ],
   "2025-02-10": [
@@ -2509,13 +1842,6 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 15,
-      "price": 110.48,
-      "source": "SHORT"
-    },
-    {
       "symbol": "INTC",
       "side": "BUY",
       "qty": 81,
@@ -2525,7 +1851,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 70,
+      "qty": 67,
       "price": 19.77,
       "source": "SHORT"
     }
@@ -2534,90 +1860,69 @@
     {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 1670,
+      "qty": 1320,
       "price": 6.04,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 5,
+      "price": 336.51,
       "source": "LONG"
     }
   ],
   "2025-02-13": [
     {
-      "symbol": "GOOGL",
+      "symbol": "MRNA",
       "side": "BUY",
-      "qty": 9,
-      "price": 187.88,
+      "qty": 34,
+      "price": 31.92,
       "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "COVER",
-      "qty": 7,
-      "price": 187.88,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 4,
-      "price": 355.94,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 2,
-      "price": 355.94,
-      "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 48,
+      "qty": 44,
       "price": 31.92,
       "source": "SHORT"
+    },
+    {
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 1026.63,
+      "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 67,
+      "price": 27.13,
+      "source": "LONG"
     }
   ],
   "2025-02-18": [
     {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 28,
-      "price": 35.75,
-      "source": "LONG"
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 716.37,
+      "source": "SHORT"
     }
   ],
   "2025-02-19": [
     {
-      "symbol": "NVDA",
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 22,
-      "price": 139.45,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 1,
-      "price": 703.77,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 703.77,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SELL",
-      "qty": 81,
-      "price": 25.72,
+      "qty": 2,
+      "price": 1035.18,
       "source": "LONG"
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 63,
+      "qty": 61,
       "price": 25.72,
       "source": "SHORT"
     }
@@ -2638,52 +1943,50 @@
       "source": "SHORT"
     },
     {
-      "symbol": "MRNA",
-      "side": "SHORT",
-      "qty": 70,
-      "price": 33.73,
-      "source": "SHORT"
-    }
-  ],
-  "2025-02-21": [
-    {
-      "symbol": "QBTS",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 1670,
-      "price": 7.25,
+      "qty": 5,
+      "price": 354.4,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 3,
-      "price": 337.8,
+      "price": 354.4,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "SHORT",
+      "qty": 65,
+      "price": 33.73,
       "source": "SHORT"
     }
   ],
   "2025-02-24": [
     {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 28,
-      "price": 33.9,
-      "source": "LONG"
-    }
-  ],
-  "2025-02-28": [
-    {
       "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 84,
-      "price": 23.81,
+      "side": "SELL",
+      "qty": 67,
+      "price": 26.97,
       "source": "LONG"
     },
     {
       "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 37,
-      "price": 23.81,
+      "side": "SHORT",
+      "qty": 40,
+      "price": 26.97,
       "source": "SHORT"
+    }
+  ],
+  "2025-03-03": [
+    {
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 983.0,
+      "source": "LONG"
     }
   ],
   "2025-03-04": [
@@ -2709,23 +2012,16 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 14,
-      "price": 100.75,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QBTS",
+      "symbol": "MRNA",
       "side": "BUY",
-      "qty": 2269,
-      "price": 5.32,
+      "qty": 38,
+      "price": 30.37,
       "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 70,
+      "qty": 65,
       "price": 30.37,
       "source": "SHORT"
     }
@@ -2733,13 +2029,6 @@
   "2025-03-06": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 396.89,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 3,
       "price": 396.89,
@@ -2755,57 +2044,20 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 19,
+      "qty": 18,
       "price": 98.85,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 2269,
-      "price": 5.23,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 28,
-      "price": 34.3,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 84,
-      "price": 25.19,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 52,
-      "price": 25.19,
-      "source": "SHORT"
-    }
-  ],
-  "2025-03-10": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 167.81,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "SHORT",
-      "qty": 8,
-      "price": 167.81,
       "source": "SHORT"
     }
   ],
   "2025-03-11": [
     {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 28,
+      "price": 108.76,
+      "source": "LONG"
+    },
+    {
       "symbol": "AMD",
       "side": "BUY",
       "qty": 13,
@@ -2813,69 +2065,41 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 19,
-      "price": 96.76,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 2198,
+      "qty": 1773,
       "price": 5.38,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 8,
+      "price": 230.58,
       "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 77,
+      "qty": 71,
       "price": 33.76,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 89,
-      "price": 23.48,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 52,
-      "price": 23.48,
       "source": "SHORT"
     }
   ],
   "2025-03-12": [
     {
-      "symbol": "NVDA",
+      "symbol": "MRNA",
       "side": "BUY",
-      "qty": 27,
-      "price": 114.12,
+      "qty": 36,
+      "price": 35.01,
       "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 3,
-      "price": 248.09,
-      "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 77,
+      "qty": 71,
       "price": 35.01,
       "source": "SHORT"
-    },
-    {
-      "symbol": "NFLX",
-      "side": "BUY",
-      "qty": 2,
-      "price": 915.07,
-      "source": "LONG"
     },
     {
       "symbol": "INTC",
@@ -2887,24 +2111,22 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 63,
+      "qty": 61,
       "price": 20.68,
       "source": "SHORT"
     },
     {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 76,
+      "price": 23.58,
+      "source": "LONG"
+    },
+    {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 11540,
+      "qty": 10690,
       "price": 5.01,
-      "source": "LONG"
-    }
-  ],
-  "2025-03-13": [
-    {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 28,
-      "price": 34.3,
       "source": "LONG"
     }
   ],
@@ -2928,7 +2150,7 @@
     {
       "symbol": "AAPL",
       "side": "BUY",
-      "qty": 5,
+      "qty": 6,
       "price": 213.31,
       "source": "LONG"
     },
@@ -2938,22 +2160,20 @@
       "qty": 5,
       "price": 213.31,
       "source": "SHORT"
-    }
-  ],
-  "2025-03-18": [
+    },
     {
-      "symbol": "NVDA",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 27,
-      "price": 117.96,
+      "qty": 8,
+      "price": 238.01,
       "source": "LONG"
     },
     {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 2198,
-      "price": 10.8,
-      "source": "LONG"
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 6,
+      "price": 238.01,
+      "source": "SHORT"
     }
   ],
   "2025-03-19": [
@@ -2967,9 +2187,37 @@
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 8,
+      "qty": 6,
       "price": 166.28,
       "source": "SHORT"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 28,
+      "price": 117.52,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 2,
+      "price": 584.06,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 1,
+      "price": 584.06,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 8,
+      "price": 235.86,
+      "source": "LONG"
     },
     {
       "symbol": "AMZN",
@@ -2987,108 +2235,41 @@
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 101,
-      "price": 24.12,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 80,
+      "qty": 77,
       "price": 24.12,
       "source": "SHORT"
-    }
-  ],
-  "2025-03-20": [
-    {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 2,
-      "price": 586.0,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 586.0,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 11540,
-      "price": 8.04,
-      "source": "LONG"
-    }
-  ],
-  "2025-03-21": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 27,
-      "price": 116.95,
-      "source": "LONG"
     }
   ],
   "2025-03-25": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 74,
+      "qty": 68,
       "price": 33.85,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 89,
-      "price": 24.94,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 56,
-      "price": 24.94,
       "source": "SHORT"
     }
   ],
   "2025-03-26": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 167.14,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
-      "qty": 9,
+      "qty": 8,
       "price": 167.14,
       "source": "SHORT"
     },
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 27,
-      "price": 118.73,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 389.97,
-      "source": "LONG"
-    },
-    {
       "symbol": "MSFT",
       "side": "SHORT",
       "qty": 3,
       "price": 389.97,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 2,
+      "price": 610.98,
       "source": "SHORT"
     },
     {
@@ -3101,16 +2282,23 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 17,
+      "qty": 16,
       "price": 110.19,
       "source": "SHORT"
     },
     {
-      "symbol": "AMZN",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 7,
-      "price": 201.13,
+      "qty": 8,
+      "price": 272.06,
       "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 272.06,
+      "source": "SHORT"
     },
     {
       "symbol": "AMZN",
@@ -3118,49 +2306,28 @@
       "qty": 6,
       "price": 201.13,
       "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "SELL",
+      "qty": 76,
+      "price": 24.76,
+      "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "SHORT",
+      "qty": 49,
+      "price": 24.76,
+      "source": "SHORT"
     }
   ],
   "2025-03-27": [
     {
       "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 5,
-      "price": 221.39,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AAPL",
       "side": "SHORT",
       "qty": 5,
       "price": 221.39,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 2,
-      "price": 602.58,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 602.58,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 4,
-      "price": 273.13,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SHORT",
-      "qty": 5,
-      "price": 273.13,
       "source": "SHORT"
     },
     {
@@ -3171,28 +2338,30 @@
       "source": "LONG"
     }
   ],
-  "2025-04-08": [
+  "2025-04-07": [
     {
       "symbol": "NVDA",
       "side": "BUY",
-      "qty": 31,
-      "price": 103.81,
+      "qty": 35,
+      "price": 97.64,
       "source": "LONG"
     },
     {
       "symbol": "META",
       "side": "BUY",
       "qty": 2,
-      "price": 510.45,
+      "price": 516.25,
       "source": "LONG"
     },
     {
       "symbol": "META",
       "side": "COVER",
-      "qty": 1,
-      "price": 510.45,
+      "qty": 2,
+      "price": 516.25,
       "source": "SHORT"
-    },
+    }
+  ],
+  "2025-04-08": [
     {
       "symbol": "NFLX",
       "side": "BUY",
@@ -3203,7 +2372,7 @@
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 13160,
+      "qty": 12190,
       "price": 7.03,
       "source": "LONG"
     }
@@ -3212,14 +2381,14 @@
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 9,
+      "qty": 10,
       "price": 161.06,
       "source": "LONG"
     },
     {
       "symbol": "GOOGL",
       "side": "COVER",
-      "qty": 9,
+      "qty": 8,
       "price": 161.06,
       "source": "SHORT"
     },
@@ -3245,23 +2414,23 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 17,
-      "price": 96.84,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 3288,
+      "qty": 2652,
       "price": 7.2,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 8,
+      "price": 272.2,
       "source": "LONG"
     },
     {
       "symbol": "AMZN",
       "side": "BUY",
-      "qty": 8,
+      "qty": 7,
       "price": 191.1,
       "source": "LONG"
     },
@@ -3282,22 +2451,8 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 80,
+      "qty": 77,
       "price": 21.53,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 95,
-      "price": 23.27,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 56,
-      "price": 23.27,
       "source": "SHORT"
     }
   ],
@@ -3305,7 +2460,7 @@
     {
       "symbol": "AAPL",
       "side": "BUY",
-      "qty": 6,
+      "qty": 7,
       "price": 189.06,
       "source": "LONG"
     },
@@ -3318,16 +2473,16 @@
     },
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 381.35,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 3,
       "price": 381.35,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 2,
+      "price": 546.29,
       "source": "SHORT"
     },
     {
@@ -3340,124 +2495,99 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 24,
+      "qty": 23,
       "price": 88.7,
       "source": "SHORT"
     },
     {
       "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 4,
+      "side": "SELL",
+      "qty": 8,
       "price": 252.4,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
-      "side": "COVER",
+      "side": "SHORT",
       "qty": 5,
       "price": 252.4,
       "source": "SHORT"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 7,
+      "price": 181.22,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 82,
+      "price": 23.11,
+      "source": "LONG"
     }
   ],
   "2025-04-11": [
     {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 2,
-      "price": 543.57,
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 47,
+      "price": 26.2,
       "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 2,
-      "price": 543.57,
-      "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 74,
+      "qty": 68,
       "price": 26.2,
       "source": "SHORT"
-    }
-  ],
-  "2025-04-14": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 3288,
-      "price": 7.02,
-      "source": "LONG"
     }
   ],
   "2025-04-15": [
     {
       "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 158.68,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
       "side": "SHORT",
       "qty": 9,
       "price": 158.68,
       "source": "SHORT"
     },
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 31,
-      "price": 110.97,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 36,
-      "price": 26.24,
-      "source": "LONG"
-    },
-    {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 116,
+      "qty": 108,
       "price": 26.24,
       "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 13160,
-      "price": 6.95,
-      "source": "LONG"
-    }
-  ],
-  "2025-04-17": [
-    {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 36,
-      "price": 24.71,
-      "source": "LONG"
     }
   ],
   "2025-04-21": [
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 49,
+      "price": 25.13,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 116,
+      "qty": 108,
       "price": 25.13,
       "source": "SHORT"
     }
   ],
   "2025-04-22": [
     {
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 7,
+      "price": 196.0,
+      "source": "LONG"
+    },
+    {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 9,
+      "qty": 10,
       "price": 153.9,
       "source": "LONG"
     },
@@ -3469,6 +2599,13 @@
       "source": "SHORT"
     },
     {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 38,
+      "price": 98.89,
+      "source": "LONG"
+    },
+    {
       "symbol": "MSFT",
       "side": "BUY",
       "qty": 3,
@@ -3480,6 +2617,20 @@
       "side": "COVER",
       "qty": 3,
       "price": 366.82,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 3,
+      "price": 500.28,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 2,
+      "price": 500.28,
       "source": "SHORT"
     },
     {
@@ -3490,39 +2641,39 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 24,
-      "price": 86.26,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 3679,
+      "qty": 2968,
       "price": 6.25,
       "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 9,
+      "price": 237.97,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 8,
+      "price": 173.18,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "COVER",
+      "qty": 7,
+      "price": 173.18,
+      "source": "SHORT"
     }
   ],
   "2025-04-23": [
     {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 2,
-      "price": 520.27,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 2,
-      "price": 520.27,
-      "source": "SHORT"
-    },
-    {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 14400,
+      "qty": 13330,
       "price": 6.33,
       "source": "LONG"
     }
@@ -3530,59 +2681,56 @@
   "2025-04-25": [
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 112,
-      "price": 20.05,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 107,
+      "qty": 103,
       "price": 20.05,
       "source": "SHORT"
     }
   ],
-  "2025-04-28": [
+  "2025-04-29": [
     {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 3679,
-      "price": 7.37,
-      "source": "LONG"
+      "symbol": "AAPL",
+      "side": "SHORT",
+      "qty": 7,
+      "price": 208.8,
+      "source": "SHORT"
     }
   ],
-  "2025-05-01": [
+  "2025-04-30": [
     {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 3872,
-      "price": 6.98,
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 9,
+      "price": 282.16,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 5,
-      "price": 280.52,
+      "price": 282.16,
       "source": "SHORT"
-    },
+    }
+  ],
+  "2025-05-01": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 117,
+      "qty": 108,
       "price": 27.03,
       "source": "SHORT"
     }
   ],
-  "2025-05-06": [
+  "2025-05-02": [
     {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 9,
-      "price": 165.2,
-      "source": "LONG"
-    },
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 7,
+      "price": 189.98,
+      "source": "SHORT"
+    }
+  ],
+  "2025-05-06": [
     {
       "symbol": "GOOGL",
       "side": "SHORT",
@@ -3593,6 +2741,13 @@
   ],
   "2025-05-07": [
     {
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 9,
+      "price": 276.22,
+      "source": "LONG"
+    },
+    {
       "symbol": "INTC",
       "side": "BUY",
       "qty": 111,
@@ -3602,7 +2757,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 107,
+      "qty": 103,
       "price": 20.31,
       "source": "SHORT"
     }
@@ -3611,7 +2766,7 @@
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 10,
+      "qty": 11,
       "price": 155.75,
       "source": "LONG"
     },
@@ -3623,26 +2778,40 @@
       "source": "SHORT"
     },
     {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 5,
-      "price": 284.82,
-      "source": "SHORT"
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 54,
+      "price": 24.38,
+      "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 117,
+      "qty": 108,
       "price": 24.38,
       "source": "SHORT"
     }
   ],
-  "2025-05-12": [
+  "2025-05-09": [
     {
-      "symbol": "QBTS",
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 7,
+      "price": 199.0,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AAPL",
+      "side": "COVER",
+      "qty": 7,
+      "price": 199.0,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "NFLX",
       "side": "SELL",
-      "qty": 3872,
-      "price": 10.72,
+      "qty": 2,
+      "price": 1147.1,
       "source": "LONG"
     }
   ],
@@ -3650,37 +2819,23 @@
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 136,
+      "qty": 126,
       "price": 25.49,
       "source": "SHORT"
     }
   ],
   "2025-05-14": [
     {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 8,
-      "price": 210.25,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SHORT",
-      "qty": 6,
-      "price": 210.25,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "INTC",
-      "side": "SELL",
-      "qty": 111,
-      "price": 21.52,
+      "symbol": "NFLX",
+      "side": "BUY",
+      "qty": 2,
+      "price": 1129.6,
       "source": "LONG"
     },
     {
       "symbol": "INTC",
       "side": "SHORT",
-      "qty": 98,
+      "qty": 94,
       "price": 21.52,
       "source": "SHORT"
     }
@@ -3688,16 +2843,16 @@
   "2025-05-15": [
     {
       "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 6,
+      "side": "SHORT",
+      "qty": 7,
       "price": 210.89,
-      "source": "LONG"
+      "source": "SHORT"
     },
     {
-      "symbol": "AAPL",
+      "symbol": "META",
       "side": "SHORT",
-      "qty": 6,
-      "price": 210.89,
+      "qty": 2,
+      "price": 643.88,
       "source": "SHORT"
     },
     {
@@ -3710,86 +2865,83 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 19,
+      "qty": 18,
       "price": 114.99,
       "source": "SHORT"
     }
   ],
   "2025-05-16": [
     {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 2,
-      "price": 640.34,
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 55,
+      "price": 24.86,
       "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 2,
-      "price": 640.34,
-      "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 136,
+      "qty": 126,
       "price": 24.86,
+      "source": "SHORT"
+    }
+  ],
+  "2025-05-19": [
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 9,
+      "price": 342.09,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 4,
+      "price": 342.09,
       "source": "SHORT"
     }
   ],
   "2025-05-20": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 458.17,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 458.17,
       "source": "SHORT"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 32,
-      "price": 27.99,
-      "source": "LONG"
     }
   ],
   "2025-05-21": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 137,
+      "qty": 127,
       "price": 25.8,
       "source": "SHORT"
     }
   ],
-  "2025-05-23": [
+  "2025-05-22": [
     {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 32,
-      "price": 26.26,
+      "symbol": "TSLA",
+      "side": "BUY",
+      "qty": 9,
+      "price": 341.04,
       "source": "LONG"
-    },
+    }
+  ],
+  "2025-05-23": [
     {
       "symbol": "BRRR",
       "side": "SELL",
-      "qty": 95,
-      "price": 30.77,
+      "qty": 82,
+      "price": 30.73,
       "source": "LONG"
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
-      "qty": 48,
-      "price": 30.77,
+      "qty": 42,
+      "price": 30.73,
       "source": "SHORT"
     }
   ],
@@ -3797,22 +2949,22 @@
     {
       "symbol": "AAPL",
       "side": "BUY",
-      "qty": 7,
+      "qty": 8,
       "price": 198.29,
       "source": "LONG"
     },
     {
       "symbol": "AAPL",
       "side": "COVER",
-      "qty": 6,
+      "qty": 7,
       "price": 198.29,
       "source": "SHORT"
     },
     {
       "symbol": "NVDA",
       "side": "BUY",
-      "qty": 25,
-      "price": 134.14,
+      "qty": 37,
+      "price": 135.5,
       "source": "LONG"
     },
     {
@@ -3830,6 +2982,20 @@
       "source": "SHORT"
     },
     {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 3,
+      "price": 642.32,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 2,
+      "price": 642.32,
+      "source": "SHORT"
+    },
+    {
       "symbol": "AMD",
       "side": "BUY",
       "qty": 16,
@@ -3837,35 +3003,21 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 19,
-      "price": 114.56,
-      "source": "SHORT"
-    },
-    {
       "symbol": "AMZN",
       "side": "BUY",
-      "qty": 8,
+      "qty": 7,
       "price": 206.02,
       "source": "LONG"
     },
     {
       "symbol": "AMZN",
       "side": "COVER",
-      "qty": 6,
+      "qty": 7,
       "price": 206.02,
       "source": "SHORT"
     }
   ],
   "2025-05-28": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 10,
-      "price": 173.38,
-      "source": "LONG"
-    },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
@@ -3874,57 +3026,18 @@
       "source": "SHORT"
     },
     {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 2,
-      "price": 643.58,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 2,
-      "price": 643.58,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 14400,
-      "price": 12.78,
-      "source": "LONG"
-    }
-  ],
-  "2025-05-29": [
-    {
       "symbol": "TSLA",
       "side": "SELL",
-      "qty": 4,
-      "price": 358.43,
+      "qty": 9,
+      "price": 356.9,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 4,
-      "price": 358.43,
+      "price": 356.9,
       "source": "SHORT"
-    }
-  ],
-  "2025-05-30": [
-    {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 25,
-      "price": 138.69,
-      "source": "LONG"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 2534,
-      "price": 16.33,
-      "source": "LONG"
     }
   ],
   "2025-06-02": [
@@ -3938,7 +3051,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 98,
+      "qty": 94,
       "price": 19.74,
       "source": "SHORT"
     }
@@ -3947,7 +3060,7 @@
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 15020,
+      "qty": 13910,
       "price": 12.21,
       "source": "LONG"
     }
@@ -3956,7 +3069,7 @@
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 10,
+      "qty": 11,
       "price": 169.39,
       "source": "LONG"
     },
@@ -3970,88 +3083,60 @@
   ],
   "2025-06-06": [
     {
-      "symbol": "MRNA",
-      "side": "COVER",
-      "qty": 137,
-      "price": 27.46,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
+      "symbol": "TSLA",
       "side": "BUY",
-      "qty": 99,
-      "price": 29.48,
+      "qty": 11,
+      "price": 295.14,
       "source": "LONG"
     },
     {
-      "symbol": "BRRR",
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 51,
+      "price": 27.46,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 48,
-      "price": 29.48,
+      "qty": 127,
+      "price": 27.46,
       "source": "SHORT"
     }
   ],
   "2025-06-09": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 2534,
-      "price": 17.95,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 5,
-      "price": 308.58,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 4,
-      "price": 308.58,
-      "source": "SHORT"
-    },
     {
       "symbol": "NFLX",
       "side": "SELL",
       "qty": 2,
       "price": 1238.88,
       "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 82,
+      "price": 30.44,
+      "source": "LONG"
     }
   ],
   "2025-06-10": [
     {
       "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 7,
-      "price": 200.56,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AAPL",
       "side": "SHORT",
-      "qty": 7,
+      "qty": 8,
       "price": 200.56,
       "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 119,
+      "qty": 110,
       "price": 27.68,
       "source": "SHORT"
     }
   ],
   "2025-06-11": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 10,
-      "price": 178.79,
-      "source": "LONG"
-    },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
@@ -4060,81 +3145,51 @@
       "source": "SHORT"
     },
     {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 8,
-      "price": 213.2,
-      "source": "LONG"
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 2,
+      "price": 694.14,
+      "source": "SHORT"
     },
     {
       "symbol": "AMZN",
       "side": "SHORT",
-      "qty": 6,
+      "qty": 5,
       "price": 213.2,
       "source": "SHORT"
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 120,
-      "price": 20.68,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 110,
+      "qty": 106,
       "price": 20.68,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SELL",
-      "qty": 99,
-      "price": 30.78,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "SHORT",
-      "qty": 50,
-      "price": 30.78,
       "source": "SHORT"
     }
   ],
   "2025-06-12": [
     {
-      "symbol": "META",
-      "side": "SELL",
+      "symbol": "NFLX",
+      "side": "BUY",
       "qty": 2,
-      "price": 693.36,
+      "price": 1222.59,
       "source": "LONG"
     },
     {
-      "symbol": "META",
+      "symbol": "BRRR",
+      "side": "SELL",
+      "qty": 82,
+      "price": 30.2,
+      "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
       "side": "SHORT",
-      "qty": 1,
-      "price": 693.36,
+      "qty": 43,
+      "price": 30.2,
       "source": "SHORT"
     }
   ],
-  "2025-06-13": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 25,
-      "price": 142.48,
-      "source": "LONG"
-    }
-  ],
   "2025-06-16": [
-    {
-      "symbol": "QBTS",
-      "side": "BUY",
-      "qty": 2833,
-      "price": 16.0,
-      "source": "LONG"
-    },
     {
       "symbol": "INTC",
       "side": "BUY",
@@ -4145,7 +3200,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 110,
+      "qty": 106,
       "price": 20.74,
       "source": "SHORT"
     }
@@ -4154,30 +3209,46 @@
     {
       "symbol": "AAPL",
       "side": "BUY",
-      "qty": 7,
+      "qty": 8,
       "price": 198.12,
       "source": "LONG"
     },
     {
       "symbol": "AAPL",
       "side": "COVER",
-      "qty": 7,
+      "qty": 8,
       "price": 198.12,
       "source": "SHORT"
     },
     {
       "symbol": "MRNA",
-      "side": "COVER",
-      "qty": 119,
+      "side": "BUY",
+      "qty": 55,
       "price": 25.9,
-      "source": "SHORT"
+      "source": "LONG"
     },
     {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 15020,
-      "price": 20.1,
+      "symbol": "MRNA",
+      "side": "COVER",
+      "qty": 110,
+      "price": 25.9,
+      "source": "SHORT"
+    }
+  ],
+  "2025-06-23": [
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 3,
+      "price": 698.53,
       "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 2,
+      "price": 698.53,
+      "source": "SHORT"
     }
   ],
   "2025-06-24": [
@@ -4196,86 +3267,49 @@
       "source": "SHORT"
     },
     {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 2,
-      "price": 712.2,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 712.2,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 31,
-      "price": 26.8,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "BUY",
-      "qty": 8,
-      "price": 212.77,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "COVER",
-      "qty": 6,
-      "price": 212.77,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 102,
-      "price": 29.88,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 50,
-      "price": 29.88,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "BUY",
-      "qty": 16570,
-      "price": 18.17,
-      "source": "LONG"
-    }
-  ],
-  "2025-06-25": [
-    {
       "symbol": "TSLA",
       "side": "SELL",
-      "qty": 5,
-      "price": 327.55,
+      "qty": 11,
+      "price": 340.47,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
       "side": "SHORT",
       "qty": 5,
-      "price": 327.55,
+      "price": 340.47,
       "source": "SHORT"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 7,
+      "price": 212.77,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "COVER",
+      "qty": 5,
+      "price": 212.77,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 83,
+      "price": 29.75,
+      "source": "LONG"
+    },
+    {
+      "symbol": "QUBT",
+      "side": "BUY",
+      "qty": 15340,
+      "price": 18.17,
+      "source": "LONG"
     }
   ],
   "2025-06-27": [
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 495.94,
-      "source": "LONG"
-    },
     {
       "symbol": "MSFT",
       "side": "SHORT",
@@ -4295,44 +3329,37 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 15,
+      "qty": 14,
       "price": 141.9,
       "source": "SHORT"
+    },
+    {
+      "symbol": "QBTS",
+      "side": "BUY",
+      "qty": 3802,
+      "price": 14.64,
+      "source": "LONG"
     }
   ],
   "2025-07-01": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 25,
-      "price": 156.26,
-      "source": "LONG"
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 2,
+      "price": 719.22,
+      "source": "SHORT"
     }
   ],
   "2025-07-02": [
     {
-      "symbol": "META",
+      "symbol": "NFLX",
       "side": "SELL",
       "qty": 2,
-      "price": 713.57,
+      "price": 1296.96,
       "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 713.57,
-      "source": "SHORT"
     }
   ],
   "2025-07-03": [
-    {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 24,
-      "price": 158.37,
-      "source": "LONG"
-    },
     {
       "symbol": "MSFT",
       "side": "BUY",
@@ -4348,23 +3375,7 @@
       "source": "SHORT"
     }
   ],
-  "2025-07-07": [
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 2833,
-      "price": 16.76,
-      "source": "LONG"
-    }
-  ],
   "2025-07-08": [
-    {
-      "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 7,
-      "price": 210.1,
-      "source": "LONG"
-    },
     {
       "symbol": "AAPL",
       "side": "SHORT",
@@ -4380,55 +3391,25 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 15,
-      "price": 137.82,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 16570,
-      "price": 20.21,
-      "source": "LONG"
-    }
-  ],
-  "2025-07-09": [
-    {
       "symbol": "TSLA",
       "side": "BUY",
-      "qty": 5,
-      "price": 295.88,
+      "qty": 12,
+      "price": 297.81,
       "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 5,
-      "price": 295.88,
-      "source": "SHORT"
     }
   ],
   "2025-07-11": [
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 104,
+      "qty": 96,
       "price": 33.64,
       "source": "SHORT"
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 119,
-      "price": 23.43,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 96,
+      "qty": 93,
       "price": 23.43,
       "source": "SHORT"
     }
@@ -4437,38 +3418,40 @@
     {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 2989,
+      "qty": 4012,
       "price": 15.83,
       "source": "LONG"
     }
   ],
   "2025-07-15": [
     {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 31,
-      "price": 31.58,
-      "source": "LONG"
-    },
-    {
       "symbol": "BRRR",
       "side": "SELL",
-      "qty": 102,
-      "price": 32.93,
+      "qty": 83,
+      "price": 33.3,
       "source": "LONG"
     },
     {
       "symbol": "BRRR",
       "side": "SHORT",
-      "qty": 48,
-      "price": 32.93,
+      "qty": 39,
+      "price": 33.3,
       "source": "SHORT"
     },
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 17530,
+      "qty": 16240,
       "price": 19.03,
+      "source": "LONG"
+    }
+  ],
+  "2025-07-16": [
+    {
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 7,
+      "price": 210.3,
       "source": "LONG"
     }
   ],
@@ -4483,7 +3466,7 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 96,
+      "qty": 93,
       "price": 22.8,
       "source": "SHORT"
     }
@@ -4491,16 +3474,23 @@
   "2025-07-18": [
     {
       "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 510.05,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
       "side": "SHORT",
       "qty": 2,
       "price": 510.05,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "META",
+      "side": "BUY",
+      "qty": 3,
+      "price": 704.28,
+      "source": "LONG"
+    },
+    {
+      "symbol": "META",
+      "side": "COVER",
+      "qty": 2,
+      "price": 704.28,
       "source": "SHORT"
     },
     {
@@ -4513,52 +3503,36 @@
     {
       "symbol": "AMD",
       "side": "SHORT",
-      "qty": 14,
+      "qty": 13,
       "price": 156.99,
       "source": "SHORT"
-    }
-  ],
-  "2025-07-21": [
-    {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 24,
-      "price": 172.78,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "BUY",
-      "qty": 2,
-      "price": 712.97,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "COVER",
-      "qty": 1,
-      "price": 712.97,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 17530,
-      "price": 19.6,
-      "source": "LONG"
     }
   ],
   "2025-07-22": [
     {
       "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 56,
+      "price": 32.73,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
       "side": "COVER",
-      "qty": 104,
+      "qty": 96,
       "price": 32.73,
       "source": "SHORT"
     }
   ],
   "2025-07-23": [
     {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 37,
+      "price": 170.78,
+      "source": "LONG"
+    },
+    {
       "symbol": "MSFT",
       "side": "BUY",
       "qty": 3,
@@ -4578,55 +3552,34 @@
       "qty": 16,
       "price": 158.65,
       "source": "LONG"
-    },
-    {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 14,
-      "price": 158.65,
-      "source": "SHORT"
     }
   ],
   "2025-07-24": [
     {
-      "symbol": "NVDA",
-      "side": "BUY",
-      "qty": 24,
-      "price": 172.6,
-      "source": "LONG"
-    },
-    {
-      "symbol": "QBTS",
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 2989,
-      "price": 19.76,
+      "qty": 12,
+      "price": 305.3,
       "source": "LONG"
     },
     {
-      "symbol": "MRNA",
-      "side": "BUY",
-      "qty": 29,
-      "price": 34.01,
-      "source": "LONG"
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 6,
+      "price": 305.3,
+      "source": "SHORT"
     },
     {
       "symbol": "MRNA",
       "side": "SHORT",
-      "qty": 105,
+      "qty": 97,
       "price": 34.01,
       "source": "SHORT"
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 122,
-      "price": 22.63,
-      "source": "LONG"
-    },
-    {
-      "symbol": "INTC",
       "side": "SHORT",
-      "qty": 102,
+      "qty": 98,
       "price": 22.63,
       "source": "SHORT"
     }
@@ -4634,36 +3587,13 @@
   "2025-07-25": [
     {
       "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 5,
+      "side": "BUY",
+      "qty": 12,
       "price": 316.06,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "SHORT",
-      "qty": 5,
-      "price": 316.06,
-      "source": "SHORT"
-    }
-  ],
-  "2025-07-28": [
-    {
-      "symbol": "MRNA",
-      "side": "SELL",
-      "qty": 29,
-      "price": 33.91,
       "source": "LONG"
     }
   ],
   "2025-07-31": [
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 11,
-      "price": 192.86,
-      "source": "LONG"
-    },
     {
       "symbol": "GOOGL",
       "side": "SHORT",
@@ -4688,23 +3618,9 @@
   ],
   "2025-08-01": [
     {
-      "symbol": "NVDA",
-      "side": "SELL",
-      "qty": 24,
-      "price": 174.12,
-      "source": "LONG"
-    },
-    {
-      "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 8,
-      "price": 214.75,
-      "source": "LONG"
-    },
-    {
       "symbol": "AMZN",
       "side": "SHORT",
-      "qty": 6,
+      "qty": 5,
       "price": 214.75,
       "source": "SHORT"
     }
@@ -4713,7 +3629,7 @@
     {
       "symbol": "GOOGL",
       "side": "BUY",
-      "qty": 10,
+      "qty": 11,
       "price": 195.75,
       "source": "LONG"
     },
@@ -4727,7 +3643,7 @@
     {
       "symbol": "QBTS",
       "side": "BUY",
-      "qty": 3427,
+      "qty": 4599,
       "price": 17.18,
       "source": "LONG"
     },
@@ -4741,40 +3657,19 @@
     {
       "symbol": "INTC",
       "side": "COVER",
-      "qty": 102,
+      "qty": 98,
       "price": 19.5,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "BUY",
-      "qty": 103,
-      "price": 32.44,
-      "source": "LONG"
-    },
-    {
-      "symbol": "BRRR",
-      "side": "COVER",
-      "qty": 48,
-      "price": 32.44,
       "source": "SHORT"
     },
     {
       "symbol": "QUBT",
       "side": "BUY",
-      "qty": 22950,
+      "qty": 21250,
       "price": 14.92,
       "source": "LONG"
     }
   ],
   "2025-08-05": [
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
-      "qty": 3,
-      "price": 527.75,
-      "source": "LONG"
-    },
     {
       "symbol": "MSFT",
       "side": "SHORT",
@@ -4783,30 +3678,23 @@
       "source": "SHORT"
     },
     {
-      "symbol": "TSLA",
-      "side": "BUY",
-      "qty": 5,
-      "price": 308.72,
-      "source": "LONG"
-    },
-    {
-      "symbol": "TSLA",
-      "side": "COVER",
-      "qty": 5,
-      "price": 308.72,
+      "symbol": "META",
+      "side": "SHORT",
+      "qty": 1,
+      "price": 763.46,
       "source": "SHORT"
     },
     {
       "symbol": "AMZN",
       "side": "BUY",
-      "qty": 8,
+      "qty": 7,
       "price": 213.75,
       "source": "LONG"
     },
     {
       "symbol": "AMZN",
       "side": "COVER",
-      "qty": 6,
+      "qty": 5,
       "price": 213.75,
       "source": "SHORT"
     }
@@ -4825,27 +3713,6 @@
       "qty": 7,
       "price": 205.63,
       "source": "SHORT"
-    },
-    {
-      "symbol": "META",
-      "side": "SELL",
-      "qty": 2,
-      "price": 771.99,
-      "source": "LONG"
-    },
-    {
-      "symbol": "META",
-      "side": "SHORT",
-      "qty": 1,
-      "price": 771.99,
-      "source": "SHORT"
-    },
-    {
-      "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 3427,
-      "price": 17.58,
-      "source": "LONG"
     }
   ],
   "2025-08-07": [
@@ -4857,13 +3724,6 @@
       "source": "LONG"
     },
     {
-      "symbol": "AMD",
-      "side": "COVER",
-      "qty": 12,
-      "price": 172.4,
-      "source": "SHORT"
-    },
-    {
       "symbol": "NFLX",
       "side": "BUY",
       "qty": 2,
@@ -4871,122 +3731,244 @@
       "source": "LONG"
     },
     {
-      "symbol": "QUBT",
-      "side": "SELL",
-      "qty": 22950,
-      "price": 15.99,
+      "symbol": "BRRR",
+      "side": "BUY",
+      "qty": 84,
+      "price": 32.93,
       "source": "LONG"
     }
   ],
-  "2025-08-08": [
+  "2025-08-12": [
+    {
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 74,
+      "price": 25.66,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "COVER",
+      "qty": 97,
+      "price": 25.66,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-13": [
+    {
+      "symbol": "TSLA",
+      "side": "SELL",
+      "qty": 12,
+      "price": 339.38,
+      "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 339.38,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-14": [
+    {
+      "symbol": "AMD",
+      "side": "SELL",
+      "qty": 16,
+      "price": 180.95,
+      "source": "LONG"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SHORT",
+      "qty": 12,
+      "price": 180.95,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "SELL",
+      "qty": 84,
+      "price": 33.44,
+      "source": "LONG"
+    },
+    {
+      "symbol": "BRRR",
+      "side": "SHORT",
+      "qty": 39,
+      "price": 33.44,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-15": [
+    {
+      "symbol": "AAPL",
+      "side": "SHORT",
+      "qty": 7,
+      "price": 234.0,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-19": [
+    {
+      "symbol": "MRNA",
+      "side": "SHORT",
+      "qty": 147,
+      "price": 27.91,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 228.01,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-20": [
+    {
+      "symbol": "NFLX",
+      "side": "SELL",
+      "qty": 2,
+      "price": 1218.0,
+      "source": "LONG"
+    },
+    {
+      "symbol": "INTC",
+      "side": "SHORT",
+      "qty": 107,
+      "price": 23.54,
+      "source": "SHORT"
+    }
+  ],
+  "2025-08-22": [
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 38,
+      "price": 177.99,
+      "source": "LONG"
+    },
     {
       "symbol": "MSFT",
       "side": "BUY",
       "qty": 3,
-      "price": 522.04,
+      "price": 507.23,
       "source": "LONG"
     },
     {
       "symbol": "MSFT",
       "side": "COVER",
       "qty": 2,
-      "price": 522.04,
+      "price": 507.23,
       "source": "SHORT"
-    }
-  ],
-  "2025-08-11": [
+    },
     {
-      "symbol": "QBTS",
+      "symbol": "META",
       "side": "BUY",
-      "qty": 3456,
-      "price": 17.37,
-      "source": "LONG"
-    }
-  ],
-  "2025-08-12": [
-    {
-      "symbol": "AAPL",
-      "side": "SELL",
-      "qty": 7,
-      "price": 228.01,
-      "source": "LONG"
-    },
-    {
-      "symbol": "GOOGL",
-      "side": "SELL",
-      "qty": 10,
-      "price": 203.34,
-      "source": "LONG"
-    },
-    {
-      "symbol": "MSFT",
-      "side": "SELL",
       "qty": 3,
-      "price": 529.24,
+      "price": 754.79,
       "source": "LONG"
     },
     {
       "symbol": "META",
       "side": "COVER",
       "qty": 1,
-      "price": 790.0,
+      "price": 754.79,
       "source": "SHORT"
     },
     {
-      "symbol": "AMD",
-      "side": "SELL",
-      "qty": 16,
-      "price": 174.95,
-      "source": "LONG"
-    },
-    {
       "symbol": "QBTS",
-      "side": "SELL",
-      "qty": 3456,
-      "price": 18.51,
+      "side": "BUY",
+      "qty": 5362,
+      "price": 15.54,
       "source": "LONG"
     },
     {
       "symbol": "TSLA",
-      "side": "SELL",
-      "qty": 5,
-      "price": 340.84,
+      "side": "BUY",
+      "qty": 12,
+      "price": 340.01,
+      "source": "LONG"
+    },
+    {
+      "symbol": "MRNA",
+      "side": "BUY",
+      "qty": 76,
+      "price": 27.12,
       "source": "LONG"
     },
     {
       "symbol": "MRNA",
       "side": "COVER",
-      "qty": 105,
-      "price": 25.66,
+      "qty": 147,
+      "price": 27.12,
       "source": "SHORT"
     },
     {
-      "symbol": "NFLX",
-      "side": "SELL",
-      "qty": 2,
-      "price": 1225.0,
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 7,
+      "price": 228.84,
       "source": "LONG"
     },
     {
       "symbol": "AMZN",
-      "side": "SELL",
-      "qty": 8,
-      "price": 221.47,
+      "side": "COVER",
+      "qty": 5,
+      "price": 228.84,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "INTC",
+      "side": "BUY",
+      "qty": 134,
+      "price": 24.8,
       "source": "LONG"
     },
     {
       "symbol": "INTC",
-      "side": "SELL",
-      "qty": 141,
-      "price": 21.81,
+      "side": "COVER",
+      "qty": 107,
+      "price": 24.8,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "QUBT",
+      "side": "BUY",
+      "qty": 23210,
+      "price": 14.59,
+      "source": "LONG"
+    }
+  ],
+  "2025-08-25": [
+    {
+      "symbol": "AAPL",
+      "side": "BUY",
+      "qty": 8,
+      "price": 226.48,
       "source": "LONG"
     },
     {
-      "symbol": "BRRR",
+      "symbol": "AAPL",
+      "side": "COVER",
+      "qty": 7,
+      "price": 226.48,
+      "source": "SHORT"
+    },
+    {
+      "symbol": "TSLA",
       "side": "SELL",
-      "qty": 103,
-      "price": 33.83,
+      "qty": 12,
+      "price": 337.66,
       "source": "LONG"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "SHORT",
+      "qty": 5,
+      "price": 337.66,
+      "source": "SHORT"
     }
   ]
 }

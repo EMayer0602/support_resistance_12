@@ -10,8 +10,9 @@ python check_todays_signals.py [--trade-on OPEN|CLOSE]
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import argparse
+from functools import lru_cache
 from tickers_config import tickers
 from config import *
 
@@ -67,6 +68,9 @@ def load_runner_trades_today(trade_on_filter=None):
     if not trades:
         return []
 
+    # Load parameter mapping from runner fullbacktest export (if available)
+    runner_params = load_runner_parameters()
+
     signals = []
     for t in trades:
         ticker = t.get('symbol')
@@ -84,12 +88,22 @@ def load_runner_trades_today(trade_on_filter=None):
         # Map sides to strategy/action
         if side in ('BUY', 'SELL'):
             strategy = 'LONG'
-            action = side
+            action = side  # BUY or SELL
         elif side in ('SHORT', 'COVER'):
             strategy = 'SHORT'
             action = 'SHORT' if side == 'SHORT' else 'COVER'
         else:
             continue
+
+        # Pull p, tw from runner parameters if present
+        p_param = None
+        tw_param = None
+        rp = runner_params.get(ticker)
+        if rp:
+            strat_params = rp.get(strategy)
+            if strat_params:
+                p_param = strat_params.get('p')
+                tw_param = strat_params.get('tw')
 
         signals.append({
             'ticker': ticker,
@@ -98,12 +112,39 @@ def load_runner_trades_today(trade_on_filter=None):
             'action': action,
             'price': t.get('price'),
             'signal_type': 'runner_backtest',
-            'p_param': None,
-            'tw_param': None,
+            'p_param': p_param,
+            'tw_param': tw_param,
             'trade_on': trade_on
         })
 
     return signals
+
+@lru_cache(maxsize=1)
+def load_runner_parameters():
+    """Load per-symbol strategy parameters (p, tw) from runner_fullbacktest_results.json.
+    Returns mapping like { 'AAPL': { 'LONG': {'p':3,'tw':2}, 'SHORT': {'p':4,'tw':1} } }
+    """
+    path = 'runner_fullbacktest_results.json'
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, 'r') as f:
+            data = json.load(f)
+    except Exception:
+        return {}
+    out = {}
+    for symbol, sym_data in data.items():
+        sym_map = {}
+        for side_key, side_name in (('long','LONG'), ('short','SHORT')):
+            if side_key in sym_data:
+                params = sym_data[side_key].get('parameters', {}) or {}
+                p = params.get('p')
+                tw = params.get('tw')
+                if p is not None or tw is not None:
+                    sym_map[side_name] = {'p': p, 'tw': tw}
+        if sym_map:
+            out[symbol] = sym_map
+    return out
 
 def check_todays_signals(trade_on_filter=None):
     """Check for signals today"""
@@ -114,6 +155,7 @@ def check_todays_signals(trade_on_filter=None):
     print("="*50)
     
     found_signals = []
+    printed_keys = set()  # track which (ticker, action, strategy, date) were already printed
     
     # If we have comprehensive backtest results, prefer them
     if backtest_data:
@@ -171,6 +213,9 @@ def check_todays_signals(trade_on_filter=None):
                     print(f"     Params: p={signal['p_param']}, tw={signal['tw_param']}")
                     print(f"     Execute: {signal['trade_on']}")
                     
+                for sig in ticker_signals:
+                    key = (sig['ticker'], sig['action'], sig['strategy'], sig['date'])
+                    printed_keys.add(key)
                 found_signals.extend(ticker_signals)
             else:
                 print("  [NONE] No signals today")
@@ -179,12 +224,28 @@ def check_todays_signals(trade_on_filter=None):
     runner_signals = load_runner_trades_today(trade_on_filter)
     if runner_signals:
         print(f"\n[INFO] Adding {len(runner_signals)} signals from trades_by_day.json (runner backtest)")
-        # Deduplicate by (ticker, action, strategy, date)
+        # Deduplicate & collect those not previously printed
         existing = {(s['ticker'], s['action'], s['strategy'], s['date']) for s in found_signals}
+        newly_added = []
         for s in runner_signals:
             key = (s['ticker'], s['action'], s['strategy'], s['date'])
             if key not in existing:
                 found_signals.append(s)
+                newly_added.append(s)
+        # Print details for newly added runner signals (grouped by ticker)
+        if newly_added:
+            by_ticker = {}
+            for s in newly_added:
+                by_ticker.setdefault(s['ticker'], []).append(s)
+            print("\n[DETAIL] Runner-derived signals (not present in comprehensive backtest):")
+            for ticker in sorted(by_ticker.keys()):
+                print(f"  {ticker} ({by_ticker[ticker][0]['trade_on']} trades)")
+                for sig in by_ticker[ticker]:
+                    action_tag = "[BUY]" if sig['action'] in ['BUY', 'COVER'] else "[SELL]"
+                    price_val = sig.get('price')
+                    price_str = f"${price_val:.2f}" if price_val is not None else "N/A"
+                    print(f"     {action_tag} {sig['strategy']} {sig['action']} @ {price_str} (source={sig.get('signal_type','runner')})")
+                    print(f"        Params: p={sig.get('p_param')}, tw={sig.get('tw_param')} Execute={sig['trade_on']}")
     
     print("\n" + "="*50)
     print(f"[SUMMARY] {len(found_signals)} signals found for today")
@@ -193,14 +254,24 @@ def check_todays_signals(trade_on_filter=None):
         # Group by trade timing
         open_signals = [s for s in found_signals if s['trade_on'] == 'OPEN']
         close_signals = [s for s in found_signals if s['trade_on'] == 'CLOSE']
-        
+
+        # Dynamically compute execution times from config
+        try:
+            market_open_dt = datetime.strptime(MARKET_OPEN_TIME, "%H:%M")
+            market_close_dt = datetime.strptime(MARKET_CLOSE_TIME, "%H:%M")
+            open_exec_dt = (market_open_dt + timedelta(minutes=OPEN_TRADE_DELAY)).strftime('%H:%M')
+            close_exec_dt = (market_close_dt - timedelta(minutes=CLOSE_TRADE_ADVANCE)).strftime('%H:%M')
+        except Exception:
+            open_exec_dt = "(config error)"
+            close_exec_dt = "(config error)"
+
         if open_signals:
             print(f"   OPEN trades: {len(open_signals)} signals")
-            print("      Execute at: 9:40 AM ET (10 min after market open)")
-            
+            print(f"      Execute at: {open_exec_dt} ET ({OPEN_TRADE_DELAY} min after market open)")
+
         if close_signals:
             print(f"   CLOSE trades: {len(close_signals)} signals")
-            print("      Execute at: 3:45 PM ET (15 min before market close)")
+            print(f"      Execute at: {close_exec_dt} ET ({CLOSE_TRADE_ADVANCE} min before market close)")
         
         print(f"\nINSTRUCTIONS:")
         print(f"   - Use LIMIT orders at the specified prices")

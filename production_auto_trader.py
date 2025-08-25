@@ -266,14 +266,14 @@ class ProductionAutoTrader:
             
             trader = ManualTrader(paper_trading=self.paper_trading)
             
-            # Connect to IB
-            if not await trader.connect_ib():
+            # Connect to IB (async-safe)
+            if not await trader.connect_ib_async():
                 self.logger.error(f"❌ Failed to connect to IB for {session_type} session")
                 return False
             
             try:
                 # Sync portfolio positions
-                await trader.sync_portfolio_with_ib()
+                await trader.async_sync_portfolio_with_ib()
                 
                 # Create and execute combined orders
                 orders = trader.portfolio_manager.create_combined_orders(signals)
@@ -286,7 +286,10 @@ class ProductionAutoTrader:
                 for i, order in enumerate(orders, 1):
                     self.logger.info(f"📋 Executing order {i}/{len(orders)}: {order['ticker']} {order['action']} {order['shares']} shares")
                     
-                    if await trader.place_order(order, execute=True):
+                    # place_order is synchronous; run in thread to avoid blocking
+                    loop = asyncio.get_running_loop()
+                    ok = await loop.run_in_executor(None, trader.place_order, order, True)
+                    if ok:
                         successful_orders += 1
                     
                     # Brief pause between orders

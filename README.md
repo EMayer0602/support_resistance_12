@@ -13,6 +13,16 @@ Recent Enhancements (August 2025):
 - Deduplicated backtest runs & safe session skip logic
 - Clear separation of ENTRY vs EXIT signals in execution logs
 - Windows-safe console output (ASCII only in runtime scripts)
+- Unified backtest engine across `runner.py` & `complete_comprehensive_backtest.py`
+- Parameter grid now driven entirely by config (P_RANGE, TW_RANGE, FORCE_TW)
+- Data slicing controls (backtesting_begin / backtesting_end / trade_years) with override flags
+- Extended signal table + Matched trade table printed with full headers (console & CSV)
+- Artificial close handling (forced flatten) with correct commission & PnL attribution
+- Equity curve diagnostics (tail(5) + final capital comparison) in console summary
+- Strict trade-day logic: trade window (tw) based scheduling, NY trading days only
+- Robustness & parsimony scoring (OPT_* flags) to select stable, low-complexity parameter sets
+- Distinct marking of artificially closed positions (ArtClose flag) with aggregated summary
+ - Signal checker (`check_todays_signals.py`) now enriches runner-derived signals with optimized parameters (p, tw) pulled from `runner_fullbacktest_results.json` so OPEN/CLOSE signal listings display the exact backtest configuration
 
 ## QUICK START
 
@@ -73,15 +83,72 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 
 - ✅ **Automated Trading** - Start anytime, runs continuously until stopped
 - ✅ **Smart Timing** - Waits for market open/close, executes once per session
-- ✅ **Comprehensive Backtesting** - 2+ years of data with parameter optimization
-- ✅ **Multiple Strategies** - Long and short support/resistance trading
-- ✅ **Paper Trading Lists** - Single trades ready for execution
-- ✅ **Interactive Charts** - HTML charts with signals and levels
-- ✅ **Performance Analytics** - Detailed statistics and trade analysis
-- ✅ **Dual Equity Curves** - Standard Close-marked and Execution (entry/exit price) variants
-- ✅ **Interactive Brokers** - Full live and paper trading integration
-- ✅ **Flexible Configuration** - Per-ticker strategy and timing settings
+- ✅ **Comprehensive Backtesting** - Multi-year historical tests with parameter grid search
+- ✅ **Config-Driven Optimization** - P & TW ranges + optional forced TW (FORCE_TW)
+- ✅ **Parsimony & Robustness Scoring** - OPT_MIN_TRADES / OPT_TOLERANCE_PCT / OPT_PARSIMONY_TW / OPT_PREFER_MORE_TRADES / OPT_TW_PENALTY
+- ✅ **Extended Signals & Matched Trades** - Rich console tables + CSV exports (with ArtClose flag)
+- ✅ **Artificial Close Accounting** - Forced flattening applies entry-side commission only & flags trade
+- ✅ **Equity Curve Diagnostics** - tail(5) snapshot + final capital match check
+- ✅ **Dual Equity Curves** - Close-marked vs Execution-sensitive variants
+- ✅ **Strict Trade Day Logic** - tw-based forward validation on NY trading days
+- ✅ **Multiple Strategies** - Long & short support/resistance
+- ✅ **Interactive Charts** - Plotly HTML with annotated entries/exits & levels
+- ✅ **Performance Analytics** - Drawdown, win rate, trade counts, parameter stats
+- ✅ **Interactive Brokers** - Live & paper trading integration
+- ✅ **Flexible Configuration** - Global + per-ticker (capital, rounding, trade_on)
 - ✅ **Safety First** - Paper trading default, dry-run mode, confirmations
+
+## BACKTESTING CONFIG & DATA SLICING
+
+Key controls (see `config_new.py`):
+
+| Setting | Purpose | Typical Use |
+|---------|---------|-------------|
+| trade_years | Limit lookback to last N years | Faster iteration (e.g. 1 year) |
+| backtesting_begin / backtesting_end (%) | Percentage slice of available data | Exclude early noisy data / reserve tail for validation |
+| USE_FULL_DATA | Ignore slicing & years entirely | Full-history robustness run |
+| SLICE_FOR_OPTIMIZATION_ONLY | Slice only during parameter search; simulate on full set | Avoid biasing final equity |
+| FORCE_FLAT_AT_END | Force-close any open positions on final bar | Clean final equity number |
+| P_RANGE / TW_RANGE | Parameter grids for level period & trade window | Expand / narrow search space |
+| FORCE_TW | Lock trade window to a single value | Sensitivity isolation |
+| EXTENDED_VERBOSE | Print extended signals with auto-filled prices | Debug & auditing |
+
+Workflow examples:
+1. Tune parameters quickly: set a narrower P_RANGE / TW_RANGE and a smaller `trade_years` (e.g. 0.5) with SLICE_FOR_OPTIMIZATION_ONLY=True.
+2. Final validation: set USE_FULL_DATA=True and FORCE_FLAT_AT_END=True to verify robustness & clean equity end-state.
+
+## OPTIMIZATION PARSIMONY & SELECTION
+Candidate scoring applies filters & preferences:
+1. Discard if trades < OPT_MIN_TRADES.
+2. Compute baseline performance metric (final_capital).
+3. Retain alternatives within OPT_TOLERANCE_PCT of best.
+4. Prefer lower TW if OPT_PARSIMONY_TW=True.
+5. Break ties by higher trade count if OPT_PREFER_MORE_TRADES=True.
+6. Optional complexity penalty: final_cap - (OPT_TW_PENALTY * tw).
+
+This yields stable, minimally complex parameter sets resistant to overfitting.
+
+## EXTENDED & MATCHED TRADE OUTPUTS
+Two complementary views are produced per ticker:
+1. Extended Signals: Every qualifying raw signal (including those not forming a completed trade yet) with levels, timestamps, and auto-filled price columns.
+2. Matched Trades: Executed entry/exit pairs, PnL, fees, holding period, parameter context, plus ArtClose flag when forced closed.
+
+Console prints nicely formatted tables (headers once, wide columns trimmed) and CSV/JSON outputs retain full precision. Artificially closed trades are aggregated into a summary (count, gross PnL, commission) for transparency.
+
+## ARTIFICIAL CLOSE TRADES
+When FORCE_FLAT_AT_END=True or a controlled flatten is required (e.g. slicing cut-off), any still-open position is closed using an "artificial" exit:
+- Marked with ArtClose=True
+- Charged entry-side commission only (no exit commission double-count)
+- PnL computed vs last available mark price
+- Aggregated summary printed per ticker and globally
+
+Use this to ensure final equity reflects only realized + marked value without lingering positions.
+
+## EQUITY CURVE DIAGNOSTICS
+Backtests print the final 5 equity points (tail(5)) alongside final_capital to visually confirm monotonicity / anomalies and verify FORCE_FLAT_AT_END alignment (equity[-1] == final_capital when True).
+
+## STRICT TRADE DAY LOGIC
+Trade execution days are derived using the trade window (tw) applied over valid NYSE trading days only (skips weekends/market holidays). This ensures realistic delay between level identification and actionable entry.
 
 ## CORE FILES
 
@@ -100,6 +167,18 @@ python single_trades.py 2025-08-01 2025-08-15 --csv
 - `manual_trading.py` - Manual trade execution with IB
 - `portfolio_manager.py` - Position and order management
 - `check_todays_signals.py` - Check current trading signals
+
+#### Signal Parameter Enrichment
+`check_todays_signals.py` merges two sources:
+1. Comprehensive backtest export (`complete_comprehensive_backtest_results.json`) – already contains p & tw.
+2. Runner backtest daily trade ledger (`trades_by_day.json`).
+
+Previously runner-derived signals (those only present in `trades_by_day.json`) lacked parameter context and showed `p=None, tw=None`. They are now enriched by loading `runner_fullbacktest_results.json` (generated via `python runner.py fullbacktest`). If that file is missing or stale, these parameters will revert to `None` until you regenerate it. Workflow to guarantee populated parameters:
+```bash
+python runner.py fullbacktest   # builds runner_fullbacktest_results.json with selected p, tw
+python check_todays_signals.py  # now shows p=.. tw=.. for all sources
+```
+This ensures OPEN/CLOSE execution plans reflect the exact optimized configuration used for the latest runner backtest.
 
 ### Core Logic
 - `backtesting_core.py` - Core backtesting functions
@@ -332,6 +411,161 @@ tickers = {
 - Capital curves and equity progression
 - Backtest retry & session timing diagnostics (when verbose)
 
+## ORDER TRANSMISSION UTILITIES (IB API)
+
+The system now provides focused utilities to extract backtest-derived signals and submit orders to Interactive Brokers with precise session control, merging, limit pricing, and safety caps.
+
+### Key Concepts
+| Concept | Meaning |
+|---------|---------|
+| trade_on | Column indicating whether a signal executes at session OPEN or CLOSE |
+| Merged orders | SELL+SHORT or BUY+COVER reversal pairs collapsed into a single net order |
+| Artificial closes | Forced flatten exits (not transmitted) are excluded from live order sets |
+| Phase | OPEN, CLOSE, or BOTH (controls which trade_on signals are acted upon) |
+| Force | Immediate submission bypassing scheduled wait times (testing / weekend QA) |
+| Limit mode | Use day's historical Open (for OPEN trades) or Close (for CLOSE trades) as limit price |
+| Raw mode | Disable reversal merging (submit each leg independently) |
+| Cap fraction | Fraction of AvailableFunds (or NetLiquidation fallback) to cap per-symbol notional |
+| Max notional | Absolute USD cap per order after merging / sizing adjustments |
+
+### Core Transmission Scripts / Commands
+
+1. `schedule_date` (inside `trade_execution.py`)
+    - Schedules (and optionally executes) OPEN (09:30 + delay) and CLOSE (16:00 - advance) batches for a specific historical date.
+    - Can force immediate submission of both groups.
+    - Example (dry run):
+       ```bash
+       python trade_execution.py schedule_date 2025-08-22
+       ```
+    - Execute merged market orders at proper session times:
+       ```bash
+       python trade_execution.py schedule_date 2025-08-22 execute
+       ```
+    - Force immediate (no waiting) and use limit orders:
+       ```bash
+       python trade_execution.py schedule_date 2025-08-22 execute force limit
+       ```
+
+2. `api_transmit_date` (immediate transmit without re-running backtest)
+    - Pulls existing per-symbol trade CSVs, filters real (non-artificial) actions, merges if enabled, and sends immediately.
+    - Phase filter + limit order + raw + max cap control.
+    - Examples:
+       ```bash
+       # Dry run both phases merged
+       python trade_execution.py api_transmit_date 2025-08-22
+
+       # Execute OPEN only, raw legs, market orders
+       python trade_execution.py api_transmit_date 2025-08-22 execute open raw
+
+       # Execute CLOSE only, limit orders, cap to first 5 orders
+       python trade_execution.py api_transmit_date 2025-08-22 execute close limit max=5
+       ```
+
+3. `bt_tx_date` (run backtest first, then transmit)
+    - Ensures a fresh `runner.py fullbacktest` run before building the order set.
+    - Reuses a single IB connection unless `noreuse` specified.
+    - Examples:
+       ```bash
+       # Backtest + transmit both phases (dry run)
+       python trade_execution.py bt_tx_date 2025-08-22
+
+       # Backtest + execute CLOSE only, limit orders
+       python trade_execution.py bt_tx_date 2025-08-22 execute close limit
+
+       # Backtest + execute OPEN only, raw legs, no merge reuse
+       python trade_execution.py bt_tx_date 2025-08-22 execute open raw noreuse
+       ```
+
+4. `daily_trading_scheduler.py`
+    - Continuous loop (weekdays) performing:
+       - OPEN: 09:30 ET + configurable delay -> run backtest -> transmit OPEN orders.
+       - CLOSE: 16:00 ET - configurable advance -> (optionally rerun backtest) -> transmit CLOSE orders.
+       - Disconnects IB between sessions.
+    - Options:
+       ```bash
+       python daily_trading_scheduler.py --force-now --date 2025-08-22 --limit --max-notional 15000 --cap-fraction 0.15
+       ```
+       Flags:
+       - `--force-now` : Immediate backtest + transmit (bypass schedule; useful weekends)
+       - `--date`      : Override trade date
+       - `--limit`     : Use limit orders at day Open/Close
+       - `--raw` / `--merged` : Disable / enable reversal merging
+       - `--max-notional` : Absolute USD per-order cap
+       - `--cap-fraction` : Fraction of available funds per symbol (post-merge)
+       - `--no-backtest-close` : Reuse morning backtest for afternoon
+       - `--once` : Single-day run then exit
+
+### Limit Orders (Open/Close Anchoring)
+- OPEN trades: limit price = historical day Open.
+- CLOSE trades: limit price = historical day Close.
+- If price unavailable (data gap), system falls back to MarketOrder (logged warning).
+
+### Reversal Order Merging
+| Pattern | Result | Rationale |
+|---------|--------|-----------|
+| SELL then SHORT (same symbol, session) | Single SELL with combined qty | Flat long + establish short in one action |
+| BUY then COVER | Single BUY with combined qty | Flat short + establish long in one action |
+- Reduces order count & commissions; set `raw` to inspect unmerged internal legs.
+
+### Artificial Close Exclusion
+Forced flatten exit legs (ArtClose) are filtered out; real strategy exits only are transmitted to prevent sending synthetic bookkeeping actions.
+
+### Risk & Sizing Controls
+| Mechanism | Description |
+|-----------|-------------|
+| cap_fraction | Per-symbol notional <= AvailableFunds * fraction (fallback NetLiquidation) |
+| max_notional | Hard USD ceiling (applied after cap_fraction) |
+| Dynamic resize | Quantity reduced to fit within active cap; skipped if new qty <= 0 |
+| max= argument | CLI cap on number of orders submitted in a batch |
+
+### Connection Handling
+- `connect_ib()` helper with retry used in combined backtest+transmit flow.
+- Reused IB connection (bt_tx_date) avoids reconnect overhead.
+- Standalone API transmit commands create & close their own session unless an IB instance passed internally.
+
+### Phases & Forcing
+| Phase Arg | Effect |
+|-----------|--------|
+| open | Only trade_on == Open actions |
+| close | Only trade_on == Close actions |
+| both (default) | All actions (Open first, then Close) |
+| force / --force-now | Immediate submission ignoring session clocks |
+
+### Example End-to-End Weekend Test
+```bash
+# 1. Run full backtest to ensure trade CSVs are fresh
+python runner.py fullbacktest
+
+# 2. Force immediate transmit of both Open & Close (limit orders, merged)
+python trade_execution.py api_transmit_date 2025-08-22 execute limit
+
+# 3. Cap risk: backtest + transmit with max $10k notional per order, only OPEN trades
+python trade_execution.py bt_tx_date 2025-08-22 execute open limit max=10
+
+# 4. Scheduler dry run (no orders executed) with caps
+python daily_trading_scheduler.py --force-now --date 2025-08-22 --cap-fraction 0.1 --max-notional 12000 --raw
+```
+
+### Troubleshooting Transmission
+| Symptom | Likely Cause | Resolution |
+|---------|--------------|-----------|
+| Rejected order (Error 201) | Insufficient margin / notional too large | Use `--cap-fraction`, `--max-notional`, or reduce per-ticker capital in config |
+| No orders found | Backtest did not produce signals; date mismatch; artificial-only trades | Re-run `runner.py fullbacktest`; confirm date; check CSV contents |
+| Limit orders never fill (historical price unrealistic) | Using historical Open/Close outside current market | Switch to market or implement real-time price fetch adaptation |
+| Duplicate orders expected but missing | Reversal merge collapsed pairs | Add `raw` flag to inspect underlying legs |
+| CLOSE orders missing after morning | `--no-backtest-close` reused morning output lacking new exits | Omit `--no-backtest-close` to refresh mid-day |
+
+### Extending Further
+Potential next enhancements (not yet implemented):
+- Bracket orders (attach stop/target) after core fill
+- Partial fill monitoring & adaptive re-price
+- Holiday calendar auto-skip (currently weekend only in some scripts)
+- Persistent JSON order ledger with fill & PnL trails
+- Slack / email notifications on execution batches
+
+---
+This section documents all current automated & on-demand trading transmission pathways. Keep it updated when adding new execution flags or sizing logic.
+
 ### CSV Exports
 - **Single Trades**: `trade_date,ticker,strategy,action,price,shares`
 - **Matched Trades**: Entry/exit pairs with P&L
@@ -539,4 +773,4 @@ python test_config.py
 
 **🎯 Ready to trade support and resistance levels like a pro!** 📈
 
-Last Updated: August 13, 2025 - Support/Resistance Trading System v1.1
+Last Updated: August 24, 2025 - Support/Resistance Trading System v1.2

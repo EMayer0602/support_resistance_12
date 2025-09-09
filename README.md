@@ -24,6 +24,15 @@ Recent Enhancements (August 2025):
 - Distinct marking of artificially closed positions (ArtClose flag) with aggregated summary
  - Signal checker (`check_todays_signals.py`) now enriches runner-derived signals with optimized parameters (p, tw) pulled from `runner_fullbacktest_results.json` so OPEN/CLOSE signal listings display the exact backtest configuration
 
+## Order Execution Policy (Limit-only)
+
+- All orders are submitted as LIMIT orders.
+- Pricing rule (using LIMIT_ORDER_OFFSET from `config_new.py`):
+   - BUY/COVER: limit = reference price − OFFSET (better/cheaper than current)
+   - SELL/SHORT: limit = reference price + OFFSET
+- Reference price sources depend on context: real-time price when available; otherwise session Open/Close backtest price, plan fallback, or last close.
+- Adjust `LIMIT_ORDER_OFFSET` in `config_new.py` to tune aggressiveness.
+
 ## QUICK START
 
 ### Automated Trading (Recommended)
@@ -268,7 +277,7 @@ Change timings in `config.py` (OPEN_TRADE_DELAY / CLOSE_TRADE_ADVANCE) then rest
    - Strategy-based exit signals for currently held positions (no stop-loss / take-profit; strategy exits only when `USE_STRATEGY_EXITS_ONLY=True`).
    - Deduplicates and tags counts (exits vs entries).
 5. Order Construction: Combines complementary actions (e.g., SELL + SHORT) where possible via portfolio manager; enforces one action per symbol per day (prevents same-day exit then re-entry churn).
-6. Execution: Places LIMIT or MARKET orders as implemented (dry-run prints only).
+6. Execution: Places LIMIT orders (dry-run prints only).
 7. Logging: Session result appended to `logs/sessions_YYYYMMDD.json` and detailed log file.
 8. Between Sessions: Disconnects IB during waits; loops until both sessions complete, then idles until next trading day; real-time prices captured at OPEN, later reconciled with official OHLC after close for accurate historical alignment.
 
